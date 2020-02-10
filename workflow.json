@@ -1,40 +1,40 @@
 {
     "workflows": [
         {
-            "task": "ingest",
-            "name": "csvfiles",
-            "ingress": [
+            "name": "example-read-file",
+            "processors": [
                 {
-                    "file": {
+                    "task": "readfile" ,
+                    "configuration": 
+                    {
                         "path": "/app/mounts/csvingress/data.csv",
-                        "delimiter": ",",
-                        "headerlength": 1,
-                        "skiprows": 0,
                         "removefiles": false
-                    },
-                    "directory": {
-                        "path": "/app/mounts/csvingress/",
-                        "delimiter": ",",
-                        "headerlength": 1,
-                        "skiprows": 0,
-                        "removefiles": true
-                    },
-                    "redis": {
-                        "host": "localhost:6379",
-                        "password": "",
-                        "db": 0,
-                        "topic": "csv"
                     }
-                }
-            ],
-            "egress": [
-                {
-                    "file": {
-                        "path": "/app/mounts/csvegress/"
-                    }
+                },{
+                    "task": "stdout"
                 }
             ]
-
+        },{
+            "name": "example-monitor-directory",
+            "processors": [
+                {
+                    "task": "monitordirectory",
+                    "configuration":
+                    {
+                        "path": "/app/mounts/csvingress/",
+                        "removefiles": false
+                    }
+                },{
+                    "task": "parse-csv",
+                    "configuration": {
+                        "headerlength": 1,
+                        "skiprows": 0,
+                        "delimiter": ","
+                    }
+                },{
+                    "task": "stdout"
+                }
+            ]
         }
     ]
 }

@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"reflect"
 	"sync"
 
 	"github.com/percybolmer/workflow/readers"
@@ -20,6 +20,10 @@ var processors map[string]func(readers.Flow) readers.Flow
 func init() {
 	processors = make(map[string]func(readers.Flow) readers.Flow)
 	// Add default proccessors here
+	processors["readfile"] = readers.ReadFile
+	processors["monitordirectory"] = readers.MonitorDirectory
+	processors["stdout"] = Stdout
+	processors["parse-csv"] = readers.ParseCsvFlow
 
 }
 
@@ -28,47 +32,14 @@ type workflows struct {
 }
 type workflow struct {
 	// Name is the name of the flow
-	Name      string    `json:"name"`
-	Task      string    `json:"task"`
-	Ingresses []ingress `json:"ingress"`
-	Egresses  []egress  `json:"egress"`
+	Name       string      `json:"name"`
+	Processors []processor `json:"processors"`
 }
 
-// ingress is a ingeseter struct used for configuration of the workflow ingress
-type ingress struct {
-	File      *fileingress      `json:"file"`
-	Directory *directoryingress `json:"directory"`
-	Redis     *redisIngress     `json:"redis"`
-}
-
-//redisIngress will read from a records redis topic
-type redisIngress struct {
-	Host     string `json:"host"`
-	Password string `json:"password"`
-	DB       int    `json:"db"`
-	Topic    string `json:"topic"`
-}
-
-//directoryingress is used when its a directory that is suppose to be monitored over time, reading every new file
-type directoryingress struct {
-	fileingress
-}
-
-//fileingress is used when its a single file that is suppose to be read, and only once.
-type fileingress struct {
-	Path           string `json:"path"`
-	Delimiter      string `json:"delimiter"`
-	HeaderLength   int    `json:"headerlength"`
-	SkipRows       int    `json:"skiprows"`
-	RemoveIngested bool   `json:"removefiles"`
-}
-
-type egress struct {
-	File *fileegress `json:"file"`
-}
-
-type fileegress struct {
-	Path string `json:"path"`
+type processor struct {
+	Task          string          `json:"task"`
+	Configuration json.RawMessage `json:"configuration"`
+	Flow          readers.Flow    `json:"-"`
 }
 
 func main() {
@@ -77,113 +48,74 @@ func main() {
 	if len(wflow.Flows) == 0 {
 		panic("Did not read the workflow file properly")
 	}
+
 	var wg sync.WaitGroup
 	for _, flow := range wflow.Flows {
 		wg.Add(1)
-		go flow.Start(&wg)
+		// @TODO adding go before flow.Start will actually make everything run twice.... I dont yet know why.... for now, Ill settle for without separate goroutine	§
+		flow.Start(&wg)
 	}
-
+	// Fix for waiting forever atm ..
+	wg.Add(1)
 	wg.Wait()
+
 }
 
 // Start will trigger an ingress in a goroutine and listen on that goroutine
 func (w *workflow) Start(wg *sync.WaitGroup) {
 	defer wg.Done()
-	resultChan := make(chan readers.Flow)
-	errChan := make(chan error)
-	go w.Ingest(resultChan, errChan)
-
-	for {
-		select {
-		case record := <-resultChan:
-			w.Egress(record)
-		case err := <-errChan:
-			fmt.Println(err)
-		}
-	}
-}
-
-// Ingest will take the ingress sources and read data from them,
-// It will accept a channel of readers.Flow and error that can be used by later stages to report on
-func (w *workflow) Ingest(resultChan chan<- readers.Flow, errChan chan<- error) {
-	for _, ingress := range w.Ingresses {
-		// Handle the sources
-		if ingress.File != nil {
-			go ingestCsvFile(ingress.File, resultChan, errChan)
-		}
-		if ingress.Directory != nil {
-			go ingestDirectory(ingress.Directory, resultChan, errChan)
-		}
-		if ingress.Redis != nil {
-			go ingestRedis(ingress.Redis, resultChan, errChan)
-		}
-	}
-}
-
-// ingestRedis is used to read from a certain Redis Topic and read all records
-func ingestRedis(d *redisIngress, resultChan chan<- readers.Flow, errChan chan<- error) {
-	redisReader, err := readers.NewRedisReader(d.Host, d.Password, d.DB)
-	if err != nil {
-		errChan <- err
-		return
-	}
-	redisReader.SubscribeTopic(d.Topic, resultChan, errChan)
-
-}
-
-// ingestDirectory will monitor a directory for any new files and reports findings to a resultchannel
-func ingestDirectory(d *directoryingress, resultChan chan<- readers.Flow, errChan chan<- error) {
-	finfo, err := os.Stat(d.Path)
-	if err != nil {
-		errChan <- err
-		return
-	}
-	if !finfo.IsDir() {
-		errChan <- errors.New("Cannot use directory ingestion on a regular file")
-		return
-	}
-
-	csvReader := readers.NewCsvReader()
-	csvReader.SetDelimiter(d.Delimiter)
-	csvReader.SetHeaderLength(d.HeaderLength)
-	csvReader.SetSkipRows(d.SkipRows)
-	csvReader.SetRemoveIngested(d.RemoveIngested)
-	csvReader.MonitorDirectory(d.Path, resultChan, errChan)
-
-}
-
-//ingestCsvFile will take a file and ingest all the csv-records from it
-func ingestCsvFile(f *fileingress, resultChan chan<- readers.Flow, errChan chan<- error) {
-	csvReader := readers.NewCsvReader()
-	csvReader.SetDelimiter(f.Delimiter)
-	csvReader.SetHeaderLength(f.HeaderLength)
-	csvReader.SetSkipRows(f.SkipRows)
-	csvReader.SetRemoveIngested(f.RemoveIngested)
-	result, err := csvReader.Read(f.Path)
-	if err != nil {
-		errChan <- err
-		return
-	}
-	resultChan <- result
-}
-
-//Egress will make sure all configured egresses will get the correct output
-// The output will be Json of of the Flow
-// note that If the payload is JSON already, it will be base64 encoded to prevent faulty changes
-// this is a default when usin json.Marshal.
-func (w *workflow) Egress(r readers.Flow) {
-	for _, egress := range w.Egresses {
-		if egress.File != nil {
-			data, err := json.Marshal(r)
-			if err != nil {
-				panic(err)
+	// New Waitgroup that waits for each Proccessor
+	//var processwaitGroup sync.WaitGroup
+	var nextFlow readers.Flow = &readers.NewFlow{}
+	//fmt.Println("Workflow: ", w.Name, "  has X amount of Processors configured ", len(w.Processors))
+	for _, processor := range w.Processors {
+		if p, ok := processors[processor.Task]; ok {
+			newFlow := &readers.NewFlow{}
+			// Apply the current Processors configuration to the flow
+			newFlow.SetConfiguration(processor.Configuration)
+			// Set the previous Flow's egressChannel to the NewFlow if its not Nil
+			if !reflect.ValueOf(nextFlow).IsNil() && nextFlow.GetEgressChannel() != nil {
+				// Set the previsous Flows Egress into the NewFlows ingress
+				newFlow.SetIngressChannel(nextFlow.GetEgressChannel())
 			}
-			err = ioutil.WriteFile(egress.File.Path+"/"+r.GetSource(), data, 0755)
+			processor.Flow = newFlow
+			// Replace value of nextFlow with the returned Flow
+			nextFlow = p(newFlow)
+
+			// Error Checking, @TODO make this a Goroutine when Logging configuration is done, so Processors can make Error() reutrn errors from a channel.
+			err := newFlow.Error()
 			if err != nil {
-				panic(err)
+				fmt.Println(err)
+			}
+		} else {
+			// No Processor found with that Task name, Log?
+			fmt.Println("NO SUCH PROCESSOR IS FOUND")
+		}
+	}
+
+}
+
+// Stdout is a processor used to print Information about the payloads recieved on a Flow
+// This is mainly used for debugging
+func Stdout(f readers.Flow) readers.Flow {
+	// Print any Payload set, or any payload from any EgressChannel
+	if len(f.GetPayload()) != 0 {
+		fmt.Println(fmt.Sprintf("%s: \n%s", f.GetSource(), f.GetPayload()))
+		return nil
+	}
+	if f.GetIngressChannel() == nil {
+		return nil
+	}
+	go func() {
+		for {
+			select {
+			case flow := <-f.GetIngressChannel():
+				fmt.Println(fmt.Sprintf("%s: \n%s", flow.GetSource(), flow.GetPayload()))
 			}
 		}
-	}
+	}()
+
+	return nil
 }
 
 // helper function to just view docker files
