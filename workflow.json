@@ -32,7 +32,10 @@
                         "delimiter": ","
                     }
                 },{
-                    "task": "stdout"
+                    "task": "writefile",
+                    "configuration": {
+                        "path": "/app/mounts/csvegress"
+                    }
                 }
             ]
         }

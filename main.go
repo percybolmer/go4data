@@ -21,6 +21,7 @@ func init() {
 	processors = make(map[string]func(readers.Flow) readers.Flow)
 	// Add default proccessors here
 	processors["readfile"] = readers.ReadFile
+	processors["writefile"] = readers.WriteFile
 	processors["monitordirectory"] = readers.MonitorDirectory
 	processors["stdout"] = Stdout
 	processors["parse-csv"] = readers.ParseCsvFlow
@@ -56,7 +57,7 @@ func main() {
 		flow.Start(&wg)
 	}
 	// Fix for waiting forever atm ..
-	wg.Add(1)
+	//wg.Add(1)
 	wg.Wait()
 
 }
@@ -77,11 +78,13 @@ func (w *workflow) Start(wg *sync.WaitGroup) {
 			if !reflect.ValueOf(nextFlow).IsNil() && nextFlow.GetEgressChannel() != nil {
 				// Set the previsous Flows Egress into the NewFlows ingress
 				newFlow.SetIngressChannel(nextFlow.GetEgressChannel())
+			} else if !reflect.ValueOf(nextFlow).IsNil() && len(nextFlow.GetPayload()) != 0 {
+				// Quick fix until issue 13 is resolved
+				newFlow.SetPayload(nextFlow.GetPayload())
 			}
 			processor.Flow = newFlow
 			// Replace value of nextFlow with the returned Flow
 			nextFlow = p(newFlow)
-
 			// Error Checking, @TODO make this a Goroutine when Logging configuration is done, so Processors can make Error() reutrn errors from a channel.
 			err := newFlow.Error()
 			if err != nil {

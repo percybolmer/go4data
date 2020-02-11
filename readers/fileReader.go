@@ -2,6 +2,7 @@ package readers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -12,6 +13,11 @@ import (
 const (
 	// FileReaderType is a const representation of Payloads read through Files
 	FileReaderType = "file"
+)
+
+var (
+	//ErrInvalidPath is thrown when the path for a file is not correct
+	ErrInvalidPath error = errors.New("The path provided is not a proper path to a file or directory")
 )
 
 //FileReader is used to read a file into payload
@@ -31,7 +37,8 @@ func ReadFile(flow Flow) Flow {
 		flow.Log(err)
 		return nil
 	}
-	payload, err := fr.Read()
+
+	payload, err := fr.Read(fr.Path)
 	if err != nil {
 		flow.Log(err)
 		return nil
@@ -43,6 +50,41 @@ func ReadFile(flow Flow) Flow {
 
 	return output
 
+}
+
+// WriteFile will take a Flows Payload and write it to file
+func WriteFile(flow Flow) Flow {
+	confByte := flow.GetConfiguration()
+
+	fr := FileReader{}
+
+	err := json.Unmarshal(confByte, &fr)
+	if err != nil {
+		flow.Log(err)
+		return nil
+	}
+
+	if fr.Path == "" {
+		flow.Log(ErrInvalidPath)
+		return nil
+	}
+	for {
+		select {
+		case newflow := <-flow.GetIngressChannel():
+			// @TODO add Epoch timestamp for unique names
+			err := fr.WriteFile(fmt.Sprintf("%s/%s", fr.Path, newflow.GetSource()), flow.GetPayload())
+
+			if err != nil {
+				newflow.Log(err)
+				continue
+			}
+		}
+	}
+}
+
+// WriteFile is used to write payloads to files
+func (fr *FileReader) WriteFile(path string, payload []byte) error {
+	return ioutil.WriteFile(path, payload, 0644)
 }
 
 // MonitorDirectory is used to read from a directory for a given time
@@ -65,7 +107,6 @@ func MonitorDirectory(flow Flow) Flow {
 	watcher.ChangeExecutionTime(1)
 
 	go watcher.WatchDirectory(filechannel, fr.Path)
-
 	folderPath := fr.Path
 	egressChannel := make(chan Flow)
 	outputFlow := &NewFlow{}
@@ -77,10 +118,7 @@ func MonitorDirectory(flow Flow) Flow {
 			select {
 			case newFile := <-filechannel:
 				filePath := fmt.Sprintf("%s/%s", folderPath, newFile)
-				fr := FileReader{
-					Path: filePath,
-				}
-				bytes, err := fr.Read()
+				bytes, err := fr.Read(filePath)
 				if err != nil {
 					flow.Log(err)
 					continue
@@ -102,15 +140,15 @@ func MonitorDirectory(flow Flow) Flow {
 }
 
 // Read is used to read a file and return the Byte array of the value
-func (f *FileReader) Read() ([]byte, error) {
-	file, err := os.Open(f.Path)
+func (fr *FileReader) Read(path string) ([]byte, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		file.Close()
-		if f.RemoveAfterRead {
-			os.Remove(f.Path)
+		if fr.RemoveAfterRead {
+			os.Remove(path)
 		}
 	}()
 	return ioutil.ReadAll(file)

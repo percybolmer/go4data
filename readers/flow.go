@@ -1,6 +1,9 @@
 package readers
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // Flow is a interface used to transmit data between Ingresses.
 // It is used so that any struct that follows the interface can be passed between the different types of Readers etc.
@@ -119,6 +122,8 @@ func (nf *NewFlow) SetConfiguration(conf json.RawMessage) {
 //Log should store the error into the configured Logging mechanism
 //Should be changed from single value to Channel I guess.
 func (nf *NewFlow) Log(err error) {
+	// only for debugging remove this fmt.Pritln before publishing
+	fmt.Println(err)
 	nf.err = err
 }
 
