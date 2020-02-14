@@ -6,25 +6,27 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"reflect"
 	"sync"
+	"time"
 
+	"github.com/percybolmer/workflow/flow"
 	"github.com/percybolmer/workflow/readers"
 )
 
 // Processors is a map containing all the given Proccessors and is inited via the init method, add custom functions to this map
 // and they will be possible to configure in the workflow file
-var processors map[string]func(readers.Flow) readers.Flow
+var processors map[string]func(*flow.Flow)
 
 // init is always run, even if somebody only imports our package, so this is a great place to put our processors function
 func init() {
-	processors = make(map[string]func(readers.Flow) readers.Flow)
+	processors = make(map[string]func(*flow.Flow))
 	// Add default proccessors here
+	processors["stdout"] = Stdout
 	processors["readfile"] = readers.ReadFile
 	processors["writefile"] = readers.WriteFile
 	processors["monitordirectory"] = readers.MonitorDirectory
-	processors["stdout"] = Stdout
-	processors["parse-csv"] = readers.ParseCsvFlow
+	/*
+		processors["parse-csv"] = readers.ParseCsvFlow */
 
 }
 
@@ -33,14 +35,8 @@ type workflows struct {
 }
 type workflow struct {
 	// Name is the name of the flow
-	Name       string      `json:"name"`
-	Processors []processor `json:"processors"`
-}
-
-type processor struct {
-	Task          string          `json:"task"`
-	Configuration json.RawMessage `json:"configuration"`
-	Flow          readers.Flow    `json:"-"`
+	Name       string       `json:"name"`
+	Processors []*flow.Flow `json:"processors"`
 }
 
 func main() {
@@ -52,47 +48,49 @@ func main() {
 
 	var wg sync.WaitGroup
 	for _, flow := range wflow.Flows {
-		wg.Add(1)
 		// @TODO adding go before flow.Start will actually make everything run twice.... I dont yet know why.... for now, Ill settle for without separate goroutine	§
 		flow.Start(&wg)
 	}
-	// Fix for waiting forever atm ..
-	//wg.Add(1)
+	// Wait until all Flows are upp and Running
 	wg.Wait()
+	// Dirty trick to BLock forever, this shouldd be replaced by a hosted GUI or API
+	for {
+		time.Sleep(10 * time.Second)
+	}
 
 }
 
 // Start will trigger an ingress in a goroutine and listen on that goroutine
 func (w *workflow) Start(wg *sync.WaitGroup) {
-	defer wg.Done()
-	// New Waitgroup that waits for each Proccessor
-	//var processwaitGroup sync.WaitGroup
-	var nextFlow readers.Flow = &readers.NewFlow{}
+
 	//fmt.Println("Workflow: ", w.Name, "  has X amount of Processors configured ", len(w.Processors))
-	for _, processor := range w.Processors {
-		if p, ok := processors[processor.Task]; ok {
-			newFlow := &readers.NewFlow{}
-			// Apply the current Processors configuration to the flow
-			newFlow.SetConfiguration(processor.Configuration)
-			// Set the previous Flow's egressChannel to the NewFlow if its not Nil
-			if !reflect.ValueOf(nextFlow).IsNil() && nextFlow.GetEgressChannel() != nil {
-				// Set the previsous Flows Egress into the NewFlows ingress
-				newFlow.SetIngressChannel(nextFlow.GetEgressChannel())
-			} else if !reflect.ValueOf(nextFlow).IsNil() && len(nextFlow.GetPayload()) != 0 {
-				// Quick fix until issue 13 is resolved
-				newFlow.SetPayload(nextFlow.GetPayload())
+	for index, flow := range w.Processors {
+		flow.SetWaitGroup(wg)
+		if p, ok := processors[flow.ProcessorName]; ok {
+			if index > 0 {
+				//  Channels are passed by reference by default. Thats why I have made these GetEgress/SetEgress to transfer
+				// the channel properly between flows
+				flow.SetIngressChannel(w.Processors[index-1].GetEgressChannel())
 			}
-			processor.Flow = newFlow
-			// Replace value of nextFlow with the returned Flow
-			nextFlow = p(newFlow)
-			// Error Checking, @TODO make this a Goroutine when Logging configuration is done, so Processors can make Error() reutrn errors from a channel.
-			err := newFlow.Error()
-			if err != nil {
-				fmt.Println(err)
-			}
+
+			p(flow)
+			// Handle loggin properly in the future
+			go func() {
+				for {
+					select {
+					case err := <-flow.ErrorChannel:
+						if err != nil {
+							fmt.Println(err)
+						}
+					case <-flow.StopChannel:
+						return
+					}
+				}
+			}()
+
 		} else {
 			// No Processor found with that Task name, Log?
-			fmt.Println("NO SUCH PROCESSOR IS FOUND")
+			fmt.Println("NO SUCH PROCESSOR IS FOUND", flow.ProcessorName)
 		}
 	}
 
@@ -100,25 +98,32 @@ func (w *workflow) Start(wg *sync.WaitGroup) {
 
 // Stdout is a processor used to print Information about the payloads recieved on a Flow
 // This is mainly used for debugging
-func Stdout(f readers.Flow) readers.Flow {
+func Stdout(f *flow.Flow) {
 	// Print any Payload set, or any payload from any EgressChannel
-	if len(f.GetPayload()) != 0 {
-		fmt.Println(fmt.Sprintf("%s: \n%s", f.GetSource(), f.GetPayload()))
-		return nil
-	}
 	if f.GetIngressChannel() == nil {
-		return nil
+		f.Log(flow.ErrNoIngressChannel)
+		return
 	}
+
+	wg := f.GetWaitGroup()
+	defer wg.Done()
+	wg.Add(1)
+
+	outputChannel := make(chan flow.Payload, flow.DefaultBufferSize)
+	f.SetEgressChannel(outputChannel)
+
 	go func() {
 		for {
 			select {
-			case flow := <-f.GetIngressChannel():
-				fmt.Println(fmt.Sprintf("%s: \n%s", flow.GetSource(), flow.GetPayload()))
+			case payload := <-f.GetIngressChannel():
+				fmt.Println(fmt.Sprintf("%s: \n%s", payload.GetSource(), payload.GetPayload()))
+				outputChannel <- payload
+			case <-f.StopChannel:
+				return
 			}
 		}
 	}()
 
-	return nil
 }
 
 // helper function to just view docker files
@@ -149,6 +154,11 @@ func loadWorkflow() workflows {
 	err = json.Unmarshal(workfile, &w)
 	if err != nil {
 		panic(err)
+	}
+	for _, f := range w.Flows {
+		for _, fl := range f.Processors {
+			fl = flow.NewFlow(fl.ProcessorName, nil, fl.Configuration)
+		}
 	}
 	return w
 }

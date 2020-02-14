@@ -1,6 +1,20 @@
 {
     "workflows": [
-       {
+        {
+            "name": "example-read-file",
+            "processors": [
+                {
+                    "processor": "readfile" ,
+                    "configuration": 
+                    {
+                        "path": "/app/mounts/csvingress/data.csv",
+                        "removefiles": false
+                    }
+                },{
+                    "processor": "stdout"
+                }
+            ]
+        },{
             "name": "example-monitor-directory",
             "processors": [
                 {
@@ -10,8 +24,6 @@
                         "path": "/app/mounts/csvingress/",
                         "removefiles": false
                     }
-                },{
-                    "processor": "stdout"
                 },{
                     "processor": "writefile",
                     "configuration": {

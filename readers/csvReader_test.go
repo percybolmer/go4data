@@ -99,9 +99,9 @@ func TestSetPayload(t *testing.T) {
 	for _, tc := range testCases {
 		n := CsvRow{}
 		n.SetPayload(tc.Data)
-		if tc.ExpectedError && n.Error() == nil {
+		if tc.ExpectedError && n.Error == nil {
 			t.Fatalf("%s: Should have found an error in this case", tc.Name)
-		} else if !tc.ExpectedError && n.Error() != nil {
+		} else if !tc.ExpectedError && n.Error != nil {
 			t.Fatalf("%s: %s", tc.Name, n.Error().Error())
 		}
 

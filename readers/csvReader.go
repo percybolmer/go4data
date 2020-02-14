@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
+
+	"github.com/percybolmer/workflow/flow"
 )
 
 // CsvReader Reads CSV flows
@@ -61,7 +63,7 @@ func (cr *CsvReader) SetSkipRows(i int) {
 // ParseCsvFlow is used to parse a CsvFlow
 // It will output a new Flow with a EgressChannel setup that all csvRows will be sent to
 // as separate Flows
-func ParseCsvFlow(f Flow) Flow {
+func ParseCsvFlow(f *flow.Flow) chan flow.Payload {
 	cr := NewCsvReader()
 	err := json.Unmarshal(f.GetConfiguration(), cr)
 	if err != nil {
@@ -76,36 +78,28 @@ func ParseCsvFlow(f Flow) Flow {
 		return nil
 	}
 
-	egressChannel := make(chan Flow)
-	outputFlow := &NewFlow{}
-	outputFlow.SetEgressChannel(egressChannel)
-	outputFlow.SetType(CsvType)
-
+	egressChannel := make(chan flow.Payload)
 	go func() {
 		for {
 			select {
 			case newinput := <-ingress:
 				rows, err := cr.ParseCsv(newinput.GetPayload())
 				if err != nil {
-					// Push this error to outputFlow or?
-					outputFlow.Log(err)
+					f.Log(err)
 					continue
 				}
 				// Each row is going to become its own output Flow on egressChannel
 				if len(rows) != 0 {
-					for _, row := range rows {
-						payload := &NewFlow{}
+					for _, payload := range rows {
 						payload.SetSource(newinput.GetSource())
-						payload.SetType(CsvType)
-						payload.SetPayload(row.GetPayload())
-						outputFlow.GetEgressChannel() <- payload
+						egressChannel <- payload
 					}
 
 				}
 			}
 		}
 	}()
-	return outputFlow
+	return egressChannel
 
 }
 
@@ -162,45 +156,23 @@ func (cr *CsvReader) ParseCsv(payload []byte) ([]*CsvRow, error) {
 //CsvRow is a struct representing Csv data as a map
 //Its also a part of the FLow interface
 type CsvRow struct {
-	Payload     map[string]string `json:"payload"`
-	Source      string            `json:"source"`
-	ProcessType string            `json:"type"`
-	Err         error             `json:"error"`
+	Payload map[string]string `json:"payload"`
+	Source  string            `json:"source"`
+	Error   error             `json:"error"`
 }
 
 // GetPayload is used to return an actual value for the Flow
 func (nf *CsvRow) GetPayload() []byte {
 	data, err := json.Marshal(nf.Payload)
 	if err != nil {
-		nf.Log(err)
+		nf.Error = err
 	}
 	return data
 }
 
 //SetPayload will change the value of the Flow
 func (nf *CsvRow) SetPayload(newpayload []byte) {
-	nf.Log(json.Unmarshal(newpayload, &nf.Payload))
-}
-
-//GetIngressChannel is used by processors that require a continous flow of new flows,
-//It should return a channel that will keep returning Flows for the duration of the Workflow duration
-func (nf *CsvRow) GetIngressChannel() chan Flow {
-	return nil
-}
-
-// SetIngressChannel is used to set a new Channel for ingressing flows, This hsould be the previous channels Egress Channel
-// The ingressChannel should commonly be set by the previous Flow executed
-// and should be the previous flows EgressChannel
-func (nf *CsvRow) SetIngressChannel(newchan chan Flow) {
-}
-
-//GetEgressChannel will return a channel that reports Outgoing Flows from a Flow
-func (nf *CsvRow) GetEgressChannel() chan Flow {
-	return nil
-}
-
-//SetEgressChannel will change the egress channel into a new one
-func (nf *CsvRow) SetEgressChannel(egress chan Flow) {
+	nf.Error = json.Unmarshal(newpayload, &nf.Payload)
 }
 
 //GetSource will return the source of the flow
@@ -213,34 +185,4 @@ func (nf *CsvRow) GetSource() string {
 //Errors, so for files etc its the filename.
 func (nf *CsvRow) SetSource(s string) {
 	nf.Source = s
-}
-
-//GetType will retutrn the configured type, Type should be the processor name
-func (nf *CsvRow) GetType() string {
-	return nf.ProcessType
-}
-
-//SetType is used to change the value of a type
-func (nf *CsvRow) SetType(s string) {
-	nf.ProcessType = s
-}
-
-//GetConfiguration will return a raw JSON to be Unmarshalled into propriate struct
-func (nf *CsvRow) GetConfiguration() json.RawMessage {
-	return nil
-}
-
-//SetConfiguration is a way to change the Configs
-func (nf *CsvRow) SetConfiguration(conf json.RawMessage) {
-}
-
-//Log should store the error into the configured Logging mechanism
-//Should be changed from single value to Channel I guess.
-func (nf *CsvRow) Log(err error) {
-	nf.Err = err
-}
-
-//Error will return the next error in triggerd
-func (nf *CsvRow) Error() error {
-	return nf.Err
 }
