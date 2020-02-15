@@ -6,14 +6,6 @@ import (
 	"testing"
 )
 
-func TestInheritance(t *testing.T) {
-	n := CsvRow{}
-
-	if n.GetIngressChannel() != nil {
-		t.Logf("%+v", n.GetEgressChannel())
-	}
-	t.Log("Seems unimplemented functions just return nil")
-}
 func TestParseCsv(t *testing.T) {
 	r := NewCsvReader()
 	badCsv := []string{"this is not csv"}
@@ -76,8 +68,8 @@ func TestGetPayload(t *testing.T) {
 	n.Payload = newPayload
 
 	data := n.GetPayload()
-	if n.Error() != nil {
-		t.Fatal(n.Error())
+	if n.Error != nil {
+		t.Fatal(n.Error)
 	}
 
 	t.Log(string(data))
@@ -102,7 +94,7 @@ func TestSetPayload(t *testing.T) {
 		if tc.ExpectedError && n.Error == nil {
 			t.Fatalf("%s: Should have found an error in this case", tc.Name)
 		} else if !tc.ExpectedError && n.Error != nil {
-			t.Fatalf("%s: %s", tc.Name, n.Error().Error())
+			t.Fatalf("%s: %s", tc.Name, n.Error)
 		}
 
 	}

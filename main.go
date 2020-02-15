@@ -11,6 +11,7 @@ import (
 
 	"github.com/percybolmer/workflow/flow"
 	"github.com/percybolmer/workflow/readers"
+	"github.com/rs/zerolog"
 )
 
 // Processors is a map containing all the given Proccessors and is inited via the init method, add custom functions to this map
@@ -25,18 +26,23 @@ func init() {
 	processors["readfile"] = readers.ReadFile
 	processors["writefile"] = readers.WriteFile
 	processors["monitordirectory"] = readers.MonitorDirectory
-	/*
-		processors["parse-csv"] = readers.ParseCsvFlow */
+	processors["parse-csv"] = readers.ParseCsvFlow
 
 }
 
-type workflows struct {
-	Flows []workflow `json:"workflows"`
+// Workflows is a collection of gather workflows that are currently configured
+type Workflows struct {
+	Flows []Workflow `json:"workflows"`
 }
-type workflow struct {
+
+//Workflow is a whole workflow chain, it contains Processors that are executed in the order of the Procesors Slice
+type Workflow struct {
 	// Name is the name of the flow
 	Name       string       `json:"name"`
 	Processors []*flow.Flow `json:"processors"`
+	// TODO currently only File based logging is allowed, change this to any wanted type.....if requested
+	Logger  zerolog.Logger `json:"-"`
+	LogPath string         `json:"logpath"`
 }
 
 func main() {
@@ -48,7 +54,6 @@ func main() {
 
 	var wg sync.WaitGroup
 	for _, flow := range wflow.Flows {
-		// @TODO adding go before flow.Start will actually make everything run twice.... I dont yet know why.... for now, Ill settle for without separate goroutine	§
 		flow.Start(&wg)
 	}
 	// Wait until all Flows are upp and Running
@@ -60,9 +65,43 @@ func main() {
 
 }
 
-// Start will trigger an ingress in a goroutine and listen on that goroutine
-func (w *workflow) Start(wg *sync.WaitGroup) {
+// SetupLogging is used to enable configured Logging
+func (w *Workflow) SetupLogging() {
+	if w.LogPath == "" {
+		w.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
+	} else {
+		date := time.Now().Format("02-01-2006")
+		f, err := os.OpenFile(fmt.Sprintf("%s/%s-%s", w.LogPath, w.Name, date), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			// TODO how do I solve errors before the workflows are initialized?, right now jst stdout, but in the future?
+			w.Logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
+			w.Logger.Log().Msgf("Error setting up logger: %s", err)
+		}
+		w.Logger = zerolog.New(f).With().Timestamp().Logger()
+	}
+}
 
+// StartLogging will enable logging for a flow
+func (w *Workflow) StartLogging(wg *sync.WaitGroup, inflow *flow.Flow) {
+	defer wg.Done()
+	wg.Add(1)
+	go func() {
+		for {
+			select {
+			case err := <-inflow.ErrorChannel:
+				if err != nil {
+					w.Logger.Log().Msg(err.Error())
+				}
+			case <-inflow.StopChannel:
+				return
+			}
+		}
+	}()
+}
+
+// Start will trigger an ingress in a goroutine and listen on that goroutine
+func (w *Workflow) Start(wg *sync.WaitGroup) {
+	w.SetupLogging()
 	//fmt.Println("Workflow: ", w.Name, "  has X amount of Processors configured ", len(w.Processors))
 	for index, flow := range w.Processors {
 		flow.SetWaitGroup(wg)
@@ -74,26 +113,23 @@ func (w *workflow) Start(wg *sync.WaitGroup) {
 			}
 
 			p(flow)
-			// Handle loggin properly in the future
-			go func() {
-				for {
-					select {
-					case err := <-flow.ErrorChannel:
-						if err != nil {
-							fmt.Println(err)
-						}
-					case <-flow.StopChannel:
-						return
-					}
-				}
-			}()
+			w.StartLogging(wg, flow)
 
 		} else {
 			// No Processor found with that Task name, Log?
-			fmt.Println("NO SUCH PROCESSOR IS FOUND", flow.ProcessorName)
+			w.Logger.Log().Str("No such processor found", flow.ProcessorName).Str("workflow", w.Name).Msg("Exiting current workflow")
+			w.Close()
+			return
+
 		}
 	}
+}
 
+// Close will itterate all processors and close them
+func (w *Workflow) Close() {
+	for _, flow := range w.Processors {
+		flow.Close()
+	}
 }
 
 // Stdout is a processor used to print Information about the payloads recieved on a Flow
@@ -126,6 +162,40 @@ func Stdout(f *flow.Flow) {
 
 }
 
+//ProcessorTemplate this is a base processor that I would recommend every processor to replicate
+func ProcessorTemplate(inflow *flow.Flow) {
+	confByte := inflow.GetConfiguration()
+
+	// Replace customStrcut with Custom struct
+	var customStruct string
+	err := json.Unmarshal(confByte, &customStruct)
+	if err != nil {
+		inflow.Log(err)
+		return
+	}
+
+	// Get waitgroup to correctly handle Gorotuines shutting down and waiting
+	wg := inflow.GetWaitGroup()
+	// Set egress for follow up flow
+	egress := make(chan flow.Payload)
+	inflow.SetEgressChannel(egress)
+	// Do stuff with ur processor, either sent egress payloads once or start goroutine to handle flow that should maintain
+	go func() {
+		defer wg.Done()
+		wg.Add(1)
+		for {
+			select {
+			case payload := <-inflow.GetIngressChannel():
+				// Do stuff with payload?
+				egress <- payload
+			case <-inflow.StopChannel:
+				return
+			}
+		}
+	}()
+
+}
+
 // helper function to just view docker files
 func listDirectory(path string) {
 	files, err := ioutil.ReadDir(path)
@@ -140,7 +210,7 @@ func listDirectory(path string) {
 
 //loadWorkFlow is used to get the workflow file and unmarshal it
 // will panic since the workflow file is a needed element to actually run the program
-func loadWorkflow() workflows {
+func loadWorkflow() Workflows {
 	path := os.Getenv("WORKFLOW_PATH")
 	if path == "" {
 		panic("No workflow file is found, cannot operate without a workflow")
@@ -150,7 +220,7 @@ func loadWorkflow() workflows {
 		panic(err)
 	}
 
-	var w workflows
+	var w Workflows
 	err = json.Unmarshal(workfile, &w)
 	if err != nil {
 		panic(err)

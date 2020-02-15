@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/percybolmer/filewatcher"
 	"github.com/percybolmer/workflow/flow"
@@ -20,12 +21,16 @@ const (
 var (
 	//ErrInvalidPath is thrown when the path for a file is not correct
 	ErrInvalidPath error = errors.New("The path provided is not a proper path to a file or directory")
+	//ErrBadWriteData is thrown when the size written to file is not the same as the payload
+	ErrBadWriteData error = errors.New("The size written to file does not match the payload")
 )
 
 //FileReader is used to read a file into payload
+// TODO break out FileWriter struct into its own?
 type FileReader struct {
 	Path            string `json:"path"`
 	RemoveAfterRead bool   `json:"removefiles"`
+	AppendTo        bool   `json:"append"`
 }
 
 // ReadFile will read the bytes from a file and set them as the current payload
@@ -80,7 +85,7 @@ func WriteFile(inflow *flow.Flow) {
 		for {
 			select {
 			case newflow := <-inflow.GetIngressChannel():
-				// @TODO add Epoch timestamp for unique names
+				// TODO add Epoch timestamp for unique names
 				file := filepath.Base(newflow.GetSource())
 				err := fr.WriteFile(fmt.Sprintf("%s/%s", fr.Path, file), newflow.GetPayload())
 				if err != nil {
@@ -96,8 +101,26 @@ func WriteFile(inflow *flow.Flow) {
 }
 
 // WriteFile is used to write payloads to files
+// If the file exists it will use  the
+// append setting to check wether to overwrite or append to file
 func (fr *FileReader) WriteFile(path string, payload []byte) error {
+	if fr.AppendTo {
+		f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		n, err := f.Write(payload)
+		if err != nil {
+			return err
+		}
+		if n != len(payload) {
+			return ErrBadWriteData
+		}
+		return nil
+	}
 	return ioutil.WriteFile(path, payload, 0644)
+
 }
 
 // MonitorDirectory is used to read from a directory for a given time
@@ -132,7 +155,14 @@ func MonitorDirectory(inflow *flow.Flow) {
 		for {
 			select {
 			case newFile := <-filechannel:
-				filePath := fmt.Sprintf("%s/%s", folderPath, newFile)
+				file := filepath.Base(newFile)
+				var filePath string
+				if strings.HasSuffix(folderPath, "/") {
+					filePath = fmt.Sprintf("%s%s", folderPath, file)
+				} else {
+					filePath = fmt.Sprintf("%s/%s", folderPath, file)
+				}
+
 				bytes, err := fr.Read(filePath)
 				if err != nil {
 					inflow.Log(err)

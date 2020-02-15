@@ -63,23 +63,25 @@ func (cr *CsvReader) SetSkipRows(i int) {
 // ParseCsvFlow is used to parse a CsvFlow
 // It will output a new Flow with a EgressChannel setup that all csvRows will be sent to
 // as separate Flows
-func ParseCsvFlow(f *flow.Flow) chan flow.Payload {
+func ParseCsvFlow(f *flow.Flow) {
 	cr := NewCsvReader()
 	err := json.Unmarshal(f.GetConfiguration(), cr)
 	if err != nil {
 		f.Log(err)
-		return nil
+		return
 	}
-	// Should I handle both Flows that are single source and Egress?
-	// Or remove Single source flows alltogether?
 	ingress := f.GetIngressChannel()
 	if ingress == nil {
 		f.Log(ErrNeedAnIngressChannel)
-		return nil
+		return
 	}
 
 	egressChannel := make(chan flow.Payload)
+	f.SetEgressChannel(egressChannel)
+	wg := f.GetWaitGroup()
 	go func() {
+		defer wg.Done()
+		wg.Add(1)
 		for {
 			select {
 			case newinput := <-ingress:
@@ -96,10 +98,12 @@ func ParseCsvFlow(f *flow.Flow) chan flow.Payload {
 					}
 
 				}
+			case <-f.StopChannel:
+				return
 			}
 		}
 	}()
-	return egressChannel
+	return
 
 }
 
