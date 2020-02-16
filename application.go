@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"sync"
 
+	"github.com/percybolmer/workflow/statistics"
+
 	"github.com/percybolmer/workflow/flow"
 )
 
@@ -59,9 +61,11 @@ func (a *Application) LoadWorkflowFile(path string) error {
 	if err != nil {
 		return err
 	}
+	// TODO go through all configs properly and add all Flows and Init statistics
 	// Quick and Dirty way to Init all Flows, Loading the Config works fine, but Channels and others are not
 	// correctly inited that way, this way we will create a NewFlow for each flow in the config to correct that
 	for _, f := range a.Flows {
+		f.Statistics = statistics.NewStatistics()
 		for _, fl := range f.Processors {
 			fl = flow.NewFlow(fl.ProcessorName, nil, fl.Configuration)
 		}

@@ -9,6 +9,7 @@ import (
 
 	"github.com/percybolmer/workflow/flow"
 	"github.com/percybolmer/workflow/flow/processors"
+	"github.com/percybolmer/workflow/statistics"
 	"github.com/rs/zerolog"
 )
 
@@ -20,6 +21,8 @@ type Workflow struct {
 	// TODO currently only File based logging is allowed, change this to any wanted type.....if requested
 	Logger  zerolog.Logger `json:"-"`
 	LogPath string         `json:"logpath"`
+	// Statistics is a map containing the values about processors and their processing state
+	Statistics *statistics.Statistics `json:"-"`
 }
 
 // AddFlow adds a flow to the processor slice
