@@ -2,7 +2,7 @@
     "workflows": [
        {
             "name": "example-monitor-directory",
-            "logpath": "/app/mounts/logs/",
+            "logpath": "/app/mounts/logs",
             "processors": [
                 {
                     "processor": "monitordirectory",
@@ -12,17 +12,12 @@
                         "removefiles": false
                     }
                 },{
-                    "processor": "parse-csv",
-                    "configuration":{
-                        "headerlength": 1,
-                        "skipRows": 0,
-                        "delimiter": ","
-                    }
-                },{
-                    "processor": "writefile",
+                    "processor":"cmd",
                     "configuration": {
-                        "path": "/app/mounts/csvegress",
-                        "append": true
+                        "command": "echo",
+                        "arguments": {
+                            "payload": "payload"
+                        }
                     }
                 },{
                     "processor": "stdout"
