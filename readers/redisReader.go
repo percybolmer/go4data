@@ -1,5 +1,6 @@
 package readers
 
+// FIXME This reader is not yet implemented
 import (
 	"errors"
 	"fmt"
@@ -41,8 +42,9 @@ func NewRedisReader(host, password string, db int) (*RedisReader, error) {
 	}, nil
 }
 
-// @TODO ADD ABLIITY TO PUBLISH TO TOPICS
+// TODO ADD ABLIITY TO PUBLISH TO TOPICS
 // ALSO MAKE 2 Functions for Publish(flow) And Subscribe(flow)
-func (r *RedisReader) Publish() error {
+func (r *RedisReader) Publish(data []byte) error {
+	//r.Client.Set()
 	return nil
 }
