@@ -8,8 +8,9 @@ package flow
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sync"
+
+	"github.com/percybolmer/workflow/statistics"
 )
 
 var (
@@ -27,6 +28,7 @@ func NewFlow(name string, ingress chan Payload, conf json.RawMessage) *Flow {
 		ingressChannel: ingress,
 		Configuration:  conf,
 		ErrorChannel:   make(chan error, DefaultBufferSize),
+		Statistics:     statistics.NewStatistics(),
 	}
 }
 
@@ -36,9 +38,12 @@ type Flow struct {
 	egressChannel  chan Payload
 	ErrorChannel   chan error `json:"-"`
 	//StopChannel is a channel that should be used by Spawned Goroutines to know when to exit
-	StopChannel   chan bool       `json:"-"`
-	ProcessorName string          `json:"processor"`
-	Configuration json.RawMessage `json:"configuration"`
+	StopChannel   chan bool `json:"-"`
+	ProcessorName string    `json:"processor"`
+	// Statistics is an optional thing for flows, but it can store metadata about processing
+	// usefull when monitoring how an flow is doing an or / if it is working correctly
+	Statistics    *statistics.Statistics `json:"statistics"`
+	Configuration json.RawMessage        `json:"configuration"`
 	wg            *sync.WaitGroup
 }
 
@@ -105,10 +110,9 @@ func (nf *Flow) SetConfiguration(conf json.RawMessage) {
 	nf.Configuration = conf
 }
 
-//Log should store the error into the configured Logging mechanism
-//Should be changed from single value to Channel I guess.
+//Log will take an error and send it upon the ErrorChannel.
+// It will also add statistic count to errors
 func (nf *Flow) Log(err error) {
-	// only for debugging remove this fmt.Pritln before publishing
-	fmt.Println(err)
+	nf.Statistics.AddStat("errors", 1)
 	nf.ErrorChannel <- err
 }

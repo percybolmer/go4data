@@ -90,14 +90,21 @@ func ParseCsvFlow(f *flow.Flow) {
 					f.Log(err)
 					continue
 				}
+				// Add stats about the payload
+				f.Statistics.AddStat("ingress_bytes", len(newinput.GetPayload()))
+				f.Statistics.AddStat("ingress_flows", 1)
 				// Each row is going to become its own output Flow on egressChannel
+				var outputBytes int
 				if len(rows) != 0 {
 					for _, payload := range rows {
+						outputBytes += len(payload.GetPayload())
 						payload.SetSource(newinput.GetSource())
 						egressChannel <- payload
 					}
-
 				}
+				f.Statistics.AddStat("egress_bytes", outputBytes)
+				f.Statistics.AddStat("egress_flows", len(rows))
+
 			case <-f.StopChannel:
 				return
 			}

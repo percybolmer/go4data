@@ -26,6 +26,10 @@ func Stdout(f *flow.Flow) {
 		for {
 			select {
 			case payload := <-f.GetIngressChannel():
+				f.Statistics.AddStat("ingress_flows", 1)
+				f.Statistics.AddStat("ingress_bytes", len(payload.GetPayload()))
+				f.Statistics.AddStat("egress_flows", 1)
+				f.Statistics.AddStat("egress_bytes", len(payload.GetPayload()))
 				fmt.Println(fmt.Sprintf("Source: %s: \nPayload: %s", payload.GetSource(), payload.GetPayload()))
 				outputChannel <- payload
 			case <-f.StopChannel:

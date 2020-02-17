@@ -40,11 +40,12 @@ func Cmd(inflow *flow.Flow) {
 		for {
 			select {
 			case payload := <-inflow.GetIngressChannel():
+				inflow.Statistics.AddStat("ingress_flows", 1)
+				inflow.Statistics.AddStat("ingress_bytes", len(payload.GetPayload()))
 				// Execute Cmd command on payload
 				// Build a Argument Slice
 				var command string
 				for _, value := range conf.Arguments {
-
 					if strings.Contains(value, "payload") {
 						// If value contains payload it will use it to insert the payloads Payload
 						ploud := strings.Replace(value, "payload", string(payload.GetPayload()), -1)
@@ -71,6 +72,8 @@ func Cmd(inflow *flow.Flow) {
 				newpayload := &flow.BasePayload{}
 				newpayload.SetPayload(stdout.Bytes())
 				newpayload.SetSource(fullCmd.String())
+				inflow.Statistics.AddStat("egress_flows", 1)
+				inflow.Statistics.AddStat("egress_bytes", len(newpayload.GetPayload()))
 				egress <- newpayload
 			case <-inflow.StopChannel:
 				return

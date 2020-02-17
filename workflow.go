@@ -21,8 +21,10 @@ type Workflow struct {
 	// TODO currently only File based logging is allowed, change this to any wanted type.....if requested
 	Logger  zerolog.Logger `json:"-"`
 	LogPath string         `json:"logpath"`
-	// Statistics is a map containing the values about processors and their processing state
-	Statistics *statistics.Statistics `json:"-"`
+	// Statistics is struct containing metadata about statistics, workflow has one, but its rarely used at the moment
+	// Only an global error_count is used, It would be cool if WorkFlow could itterate all Flows
+	// and sort of "group" all stats together for a general overview.
+	Statistics *statistics.Statistics `json:"stastistics"`
 }
 
 // AddFlow adds a flow to the processor slice

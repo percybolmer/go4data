@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,7 +21,17 @@ func main() {
 	go app.Run()
 	// Dirty trick to BLock forever, this shouldd be replaced by a hosted GUI or API
 	for {
-		time.Sleep(10 * time.Second)
+		time.Sleep(2 * time.Second)
+		for _, wf := range app.Flows {
+			data, err := json.Marshal(&wf)
+			if err != nil {
+				panic(err)
+			}
+			fmt.Println(string(data))
+			/*for _, processor := range wf.Processors {
+				fmt.Println(processor.ProcessorName, ": ", processor.Statistics)
+			}*/
+		}
 	}
 
 }

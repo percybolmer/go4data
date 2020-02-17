@@ -50,6 +50,10 @@ func ReadFile(inflow *flow.Flow) {
 		inflow.Log(err)
 		return
 	}
+	// Add stats about the payload
+	inflow.Statistics.AddStat("egress_bytes", len(payload))
+	inflow.Statistics.AddStat("egress_flows", 1)
+
 	outChan := make(chan flow.Payload, 1)
 	inflow.SetEgressChannel(outChan)
 
@@ -86,12 +90,17 @@ func WriteFile(inflow *flow.Flow) {
 			select {
 			case newflow := <-inflow.GetIngressChannel():
 				// TODO add Epoch timestamp for unique names
+				inflow.Statistics.AddStat("ingress_flows", 1)
+				inflow.Statistics.AddStat("ingress_bytes", len(newflow.GetPayload()))
 				file := filepath.Base(newflow.GetSource())
 				err := fr.WriteFile(fmt.Sprintf("%s/%s", fr.Path, file), newflow.GetPayload())
 				if err != nil {
 					inflow.Log(err)
 					continue
 				}
+				// Add stats about the payload
+				inflow.Statistics.AddStat("egress_bytes", len(newflow.GetPayload()))
+				inflow.Statistics.AddStat("egress_flows", 1)
 				outChan <- newflow
 			case <-inflow.StopChannel:
 				return
@@ -155,6 +164,8 @@ func MonitorDirectory(inflow *flow.Flow) {
 		for {
 			select {
 			case newFile := <-filechannel:
+				fmt.Printf("flow: %+v \n stat:%+v", inflow, inflow.Statistics)
+				inflow.Statistics.AddStat("ingress_flows", 1)
 				file := filepath.Base(newFile)
 				var filePath string
 				if strings.HasSuffix(folderPath, "/") {
@@ -162,13 +173,15 @@ func MonitorDirectory(inflow *flow.Flow) {
 				} else {
 					filePath = fmt.Sprintf("%s/%s", folderPath, file)
 				}
-
 				bytes, err := fr.Read(filePath)
 				if err != nil {
 					inflow.Log(err)
 					continue
 				}
 				if len(bytes) != 0 {
+					// Add stats about the payload
+					inflow.Statistics.AddStat("egress_bytes", len(bytes))
+					inflow.Statistics.AddStat("egress_flows", 1)
 					payload := &flow.BasePayload{}
 					payload.SetSource(filePath)
 					payload.SetPayload(bytes)
