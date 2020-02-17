@@ -26,10 +26,28 @@ type Statistics struct {
 
 // NewStatistics will initialize a statistics object adn return a pointer to it
 // It will also trigger a goroutine that will Wipe data based on the duration set
-func NewStatistics() *Statistics {
-	return &Statistics{
-		Stats: make(map[string]int),
+func NewStatistics(t time.Duration) *Statistics {
+	s := &Statistics{
+		Stats:    make(map[string]int),
+		duration: t,
 	}
+	s.start()
+	return s
+}
+
+// start will start a goroutine that will wipe data between duration interval
+func (s *Statistics) start() {
+	go func() {
+		ticker := time.NewTicker(s.duration)
+		for range ticker.C {
+			s.ResetStats()
+		}
+	}()
+}
+
+// ResetStats will remove all stats in memory and replace with a fresh map
+func (s *Statistics) ResetStats() {
+	s.Stats = make(map[string]int)
 }
 
 // GetStat is used to lookup a statistic value

@@ -73,7 +73,7 @@ func (a *Application) LoadWorkflowFile(path string) error {
 		newWorkFlow := &Workflow{
 			Name:       configWorkflows.Name,
 			LogPath:    configWorkflows.LogPath,
-			Statistics: statistics.NewStatistics(),
+			Statistics: statistics.NewStatistics(flow.DefaultStatDuration),
 		}
 
 		for _, processor := range configWorkflows.Processors {

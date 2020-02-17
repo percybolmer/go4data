@@ -2,10 +2,13 @@ package statistics
 
 import (
 	"testing"
+	"time"
 )
 
+var baseduration time.Duration = 10 * time.Second
+
 func TestAddStat(t *testing.T) {
-	s := NewStatistics()
+	s := NewStatistics(baseduration)
 
 	s.AddStat("bytes", 10)
 
@@ -19,7 +22,7 @@ func TestAddStat(t *testing.T) {
 }
 
 func TestGetStat(t *testing.T) {
-	s := NewStatistics()
+	s := NewStatistics(baseduration)
 
 	s.AddStat("bytes", 10)
 
@@ -31,5 +34,41 @@ func TestGetStat(t *testing.T) {
 	value, err = s.GetStat("noexisting")
 	if err == nil || value != -1 {
 		t.Fatalf("Failed second get test, Err is: %v and value is = %d", err, value)
+	}
+}
+func TestResetStat(t *testing.T) {
+	s := NewStatistics(baseduration)
+
+	s.AddStat("bytes", 10)
+
+	value, err := s.GetStat("bytes")
+	if err != nil || value != 10 {
+		t.Fatalf("Failed first get test, Err is: %v and value is = %d", err, value)
+	}
+	s.ResetStats()
+
+	value, err = s.GetStat("bytes")
+	if value != -1 || err != ErrNoSuchStat {
+		t.Fatalf("Failed to reset stats")
+	}
+}
+
+func TestStart(t *testing.T) {
+	s := NewStatistics(2 * time.Second)
+
+	s.AddStat("bytes", 10)
+	value, err := s.GetStat("bytes")
+	if err != nil || value != 10 {
+		t.Fatalf("Failed first get test, Err is: %v and value is = %d", err, value)
+	}
+
+	time.Sleep(2 * time.Second)
+
+	// Now the stats should have reset properly
+
+	s.GetStat("bytes")
+	value, err = s.GetStat("bytes")
+	if value != -1 || err != ErrNoSuchStat {
+		t.Fatalf("Failed to reset stats")
 	}
 }

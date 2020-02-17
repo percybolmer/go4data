@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/percybolmer/workflow/statistics"
 )
@@ -16,6 +17,9 @@ import (
 var (
 	//DefaultBufferSize is used to set a default buffer to channels
 	DefaultBufferSize int = 1000
+	// DefaultStatDuration is a time in seconds that it will take before wiping stats from processors
+	// TODO this hsould be configurable for the Flows in configs
+	DefaultStatDuration time.Duration = 3600 * time.Second
 	//ErrNoIngressChannel is a error that occurs when the flow does not have a ingress
 	ErrNoIngressChannel error = errors.New("There is no ingressChannel configured in the flow")
 )
@@ -28,7 +32,7 @@ func NewFlow(name string, ingress chan Payload, conf json.RawMessage) *Flow {
 		ingressChannel: ingress,
 		Configuration:  conf,
 		ErrorChannel:   make(chan error, DefaultBufferSize),
-		Statistics:     statistics.NewStatistics(),
+		Statistics:     statistics.NewStatistics(DefaultStatDuration),
 	}
 }
 
