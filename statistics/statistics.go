@@ -11,6 +11,10 @@ import (
 var (
 	//ErrNoSuchStat will be returned when no stat with a given value has yet been set
 	ErrNoSuchStat error = errors.New("There is no statistic named what you asked")
+
+	// DefaultStatDuration is a time in seconds that it will take before wiping stats from processors
+	// TODO this hsould be configurable for the Flows in configs
+	DefaultStatDuration time.Duration = 3600 * time.Second
 )
 
 // Statistics is used to store metadata about certain workflows
@@ -20,26 +24,39 @@ type Statistics struct {
 	// such as, processed Bytes or X number of flows.
 	Stats map[string]int `json:"stats"`
 	//duration is how long metadata will be stored before being wiped
-	duration time.Duration
+	Duration time.Duration `json:"duration"`
+	closed   bool
 	mux      sync.Mutex
 }
 
 // NewStatistics will initialize a statistics object adn return a pointer to it
 // It will also trigger a goroutine that will Wipe data based on the duration set
 func NewStatistics(t time.Duration) *Statistics {
+	if t == 0 {
+		t = DefaultStatDuration
+	}
 	s := &Statistics{
 		Stats:    make(map[string]int),
-		duration: t,
+		Duration: t,
 	}
 	s.start()
 	return s
 }
 
+// Close will make the statsistics goroutine close
+func (s *Statistics) Close() {
+	s.closed = true
+}
+
 // start will start a goroutine that will wipe data between duration interval
 func (s *Statistics) start() {
 	go func() {
-		ticker := time.NewTicker(s.duration)
+		ticker := time.NewTicker(s.Duration)
 		for range ticker.C {
+			// TODO replace this flag with a channel so that we can close goroutine right away instead of between ticks
+			if s.closed {
+				return
+			}
 			s.ResetStats()
 		}
 	}()

@@ -17,22 +17,20 @@ import (
 var (
 	//DefaultBufferSize is used to set a default buffer to channels
 	DefaultBufferSize int = 1000
-	// DefaultStatDuration is a time in seconds that it will take before wiping stats from processors
-	// TODO this hsould be configurable for the Flows in configs
-	DefaultStatDuration time.Duration = 3600 * time.Second
+
 	//ErrNoIngressChannel is a error that occurs when the flow does not have a ingress
 	ErrNoIngressChannel error = errors.New("There is no ingressChannel configured in the flow")
 )
 
 // NewFlow is used to correctly initialize a new Flow with all values needed
 // Use this instead of creating flows manually to avoid nil pointers etc
-func NewFlow(name string, ingress chan Payload, conf json.RawMessage) *Flow {
+func NewFlow(name string, ingress chan Payload, conf json.RawMessage, statDur time.Duration) *Flow {
 	return &Flow{
 		ProcessorName:  name,
 		ingressChannel: ingress,
 		Configuration:  conf,
 		ErrorChannel:   make(chan error, DefaultBufferSize),
-		Statistics:     statistics.NewStatistics(DefaultStatDuration),
+		Statistics:     statistics.NewStatistics(statDur),
 	}
 }
 

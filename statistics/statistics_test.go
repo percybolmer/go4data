@@ -72,3 +72,21 @@ func TestStart(t *testing.T) {
 		t.Fatalf("Failed to reset stats")
 	}
 }
+
+func TestClose(t *testing.T) {
+	s := NewStatistics(2 * time.Second)
+
+	s.AddStat("bytes", 10)
+	value, err := s.GetStat("bytes")
+	if err != nil || value != 10 {
+		t.Fatalf("Failed first get test, Err is: %v and value is = %d", err, value)
+	}
+	s.Close()
+	time.Sleep(2 * time.Second)
+	// Now the stats should NOT have reset
+	s.GetStat("bytes")
+	value, err = s.GetStat("bytes")
+	if value == -1 || err == ErrNoSuchStat {
+		t.Fatalf("Failed to close goroutine")
+	}
+}

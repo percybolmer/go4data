@@ -4,6 +4,9 @@
         {
             "name": "example-monitor-directory",
             "logpath": "/app/mounts/logs/",
+            "statistics": {
+                "duration": 10
+            },
             "processors": [
                 {
                     "processor": "monitordirectory",
@@ -25,6 +28,9 @@
                     "configuration": {
                         "path": "/app/mounts/csvegress",
                         "append": true
+                    },
+                    "statistics":{
+                        "duration": 3600
                     }
                 },
                 {

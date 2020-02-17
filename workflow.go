@@ -24,7 +24,7 @@ type Workflow struct {
 	// Statistics is struct containing metadata about statistics, workflow has one, but its rarely used at the moment
 	// Only an global error_count is used, It would be cool if WorkFlow could itterate all Flows
 	// and sort of "group" all stats together for a general overview.
-	Statistics *statistics.Statistics `json:"stastistics"`
+	Statistics *statistics.Statistics `json:"statistics"`
 }
 
 // AddFlow adds a flow to the processor slice

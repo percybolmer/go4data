@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"sync"
+	"time"
 
 	"github.com/percybolmer/workflow/statistics"
 
@@ -70,14 +71,28 @@ func (a *Application) LoadWorkflowFile(path string) error {
 	// Quick and Dirty way to Init all Flows, Loading the Config works fine, but Channels and others are not
 	// correctly inited that way, this way we will create a NewFlow for each flow in the config to correct that
 	for _, configWorkflows := range config.Flows {
+		// See if statistics is configured, if not it will set the default Value as duration
+		// If the processors does not have a Duration config set, it will use the workflows
+		var statDuration time.Duration
+		if configWorkflows.Statistics != nil && configWorkflows.Statistics.Duration != 0 {
+			// Convert input to seconds
+			statDuration = configWorkflows.Statistics.Duration * time.Second
+		}
 		newWorkFlow := &Workflow{
 			Name:       configWorkflows.Name,
 			LogPath:    configWorkflows.LogPath,
-			Statistics: statistics.NewStatistics(flow.DefaultStatDuration),
+			Statistics: statistics.NewStatistics(statDuration),
 		}
 
 		for _, processor := range configWorkflows.Processors {
-			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration)
+			// Handle each Processor separate, if no duration is set then use the same as the workflow has
+			var procStatDur time.Duration
+			if processor.Statistics != nil && processor.Statistics.Duration != 0 {
+				procStatDur = processor.Statistics.Duration * time.Second
+			} else {
+				procStatDur = statDuration
+			}
+			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration, procStatDur)
 			newWorkFlow.AddFlow(newFlow)
 		}
 		a.AddWorkFlow(newWorkFlow)

@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/percybolmer/workflow/flow"
-	"github.com/percybolmer/workflow/readers"
 )
 
 var (
@@ -22,10 +21,10 @@ func init() {
 	ProcessorMap = make(map[string]func(*flow.Flow))
 	// Add default proccessors here
 	ProcessorMap["stdout"] = Stdout
-	ProcessorMap["readfile"] = readers.ReadFile
-	ProcessorMap["writefile"] = readers.WriteFile
-	ProcessorMap["monitordirectory"] = readers.MonitorDirectory
-	ProcessorMap["parse-csv"] = readers.ParseCsvFlow
+	ProcessorMap["readfile"] = ReadFile
+	ProcessorMap["writefile"] = WriteFile
+	ProcessorMap["monitordirectory"] = MonitorDirectory
+	ProcessorMap["parse-csv"] = ParseCsvFlow
 	ProcessorMap["cmd"] = Cmd
 
 }
@@ -51,7 +50,8 @@ func ProcessorTemplate(inflow *flow.Flow) {
 		inflow.Log(err)
 		return
 	}
-
+	//inflow.Statistics.AddStat("ingress_bytes", len(newinput.GetPayload()))
+	//inflowf.Statistics.AddStat("ingress_flows", 1)
 	// Get waitgroup to correctly handle Gorotuines shutting down and waiting
 	wg := inflow.GetWaitGroup()
 	// Set egress for follow up flow
@@ -65,6 +65,7 @@ func ProcessorTemplate(inflow *flow.Flow) {
 			select {
 			case payload := <-inflow.GetIngressChannel():
 				// Do stuff with payload?
+				// Add payload Output to egress_bytes ?
 				egress <- payload
 			case <-inflow.StopChannel:
 				return

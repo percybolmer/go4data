@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"strings"
-
-	"github.com/percybolmer/workflow/flow"
 )
 
 // CsvReader Reads CSV flows
@@ -58,60 +56,6 @@ func (cr *CsvReader) SetHeaderLength(i int) {
 //SetSkipRows will skip N number of rows before reading headerline
 func (cr *CsvReader) SetSkipRows(i int) {
 	cr.SkipRows = i
-}
-
-// ParseCsvFlow is used to parse a CsvFlow
-// It will output a new Flow with a EgressChannel setup that all csvRows will be sent to
-// as separate Flows
-func ParseCsvFlow(f *flow.Flow) {
-	cr := NewCsvReader()
-	err := json.Unmarshal(f.GetConfiguration(), cr)
-	if err != nil {
-		f.Log(err)
-		return
-	}
-	ingress := f.GetIngressChannel()
-	if ingress == nil {
-		f.Log(ErrNeedAnIngressChannel)
-		return
-	}
-
-	egressChannel := make(chan flow.Payload)
-	f.SetEgressChannel(egressChannel)
-	wg := f.GetWaitGroup()
-	go func() {
-		defer wg.Done()
-		wg.Add(1)
-		for {
-			select {
-			case newinput := <-ingress:
-				rows, err := cr.ParseCsv(newinput.GetPayload())
-				if err != nil {
-					f.Log(err)
-					continue
-				}
-				// Add stats about the payload
-				f.Statistics.AddStat("ingress_bytes", len(newinput.GetPayload()))
-				f.Statistics.AddStat("ingress_flows", 1)
-				// Each row is going to become its own output Flow on egressChannel
-				var outputBytes int
-				if len(rows) != 0 {
-					for _, payload := range rows {
-						outputBytes += len(payload.GetPayload())
-						payload.SetSource(newinput.GetSource())
-						egressChannel <- payload
-					}
-				}
-				f.Statistics.AddStat("egress_bytes", outputBytes)
-				f.Statistics.AddStat("egress_flows", len(rows))
-
-			case <-f.StopChannel:
-				return
-			}
-		}
-	}()
-	return
-
 }
 
 // ParseCsv will take the payload expecting a byte array of a CSV file
