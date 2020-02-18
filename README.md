@@ -28,4 +28,5 @@ configuerd processor in the workflow is used to collect any data, etc readfile o
 #processors
 
 #readers
+Readers are tools to read in from data source, such as a filereader to handle file reading
 #cmd
