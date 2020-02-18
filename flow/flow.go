@@ -57,6 +57,7 @@ func (nf *Flow) Close() {
 	close(nf.ingressChannel)
 	close(nf.egressChannel)
 	close(nf.StopChannel)
+	nf.Statistics.Close()
 }
 
 // SetWaitGroup will change the current waitgroup

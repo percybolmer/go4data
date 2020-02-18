@@ -28,9 +28,6 @@
                     "configuration": {
                         "path": "/app/mounts/csvegress",
                         "append": true
-                    },
-                    "statistics":{
-                        "duration": 3600
                     }
                 },
                 {

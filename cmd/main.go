@@ -19,11 +19,11 @@ func main() {
 	}
 	// Run app.Run With go or without, internal workflow will run Goroutines so its really not neccesarry to do go App.Run()
 	go app.Run()
-	// Dirty trick to BLock forever, this shouldd be replaced by a hosted GUI or API
+	// Dirty trick to BLock forever, this should be replaced by a hosted GUI or API
 	for {
 		time.Sleep(2 * time.Second)
 		for _, wf := range app.Flows {
-			data, err := json.Marshal(&wf)
+			data, err := json.Marshal(&wf.Statistics)
 			if err != nil {
 				panic(err)
 			}

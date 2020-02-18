@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/percybolmer/workflow/statistics"
-
 	"github.com/percybolmer/workflow/flow"
 )
 
@@ -78,11 +76,7 @@ func (a *Application) LoadWorkflowFile(path string) error {
 			// Convert input to seconds
 			statDuration = configWorkflows.Statistics.Duration * time.Second
 		}
-		newWorkFlow := &Workflow{
-			Name:       configWorkflows.Name,
-			LogPath:    configWorkflows.LogPath,
-			Statistics: statistics.NewStatistics(statDuration),
-		}
+		newWorkFlow := NewWorkFlow(configWorkflows.Name, configWorkflows.LogPath, statDuration)
 
 		for _, processor := range configWorkflows.Processors {
 			// Handle each Processor separate, if no duration is set then use the same as the workflow has
@@ -93,6 +87,7 @@ func (a *Application) LoadWorkflowFile(path string) error {
 				procStatDur = statDuration
 			}
 			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration, procStatDur)
+			newFlow.Statistics.Start()
 			newWorkFlow.AddFlow(newFlow)
 		}
 		a.AddWorkFlow(newWorkFlow)

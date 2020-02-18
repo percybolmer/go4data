@@ -23,9 +23,13 @@ type Statistics struct {
 	// stats contains the metadata, for now its a map of ints, Since usually Stats will be integers
 	// such as, processed Bytes or X number of flows.
 	Stats map[string]int `json:"stats"`
-	//duration is how long metadata will be stored before being wiped
+	// Since is the timestamp from when the stats are started to gather
+	Since string `json:"since"`
+	// LastUpdated is when the last stat update was inserted
+	LastUpdated string `json:"lastupdated"`
+	// Duration is how long metadata will be stored before being wiped
 	Duration time.Duration `json:"duration"`
-	closed   bool
+	closed   chan bool
 	mux      sync.Mutex
 }
 
@@ -38,33 +42,49 @@ func NewStatistics(t time.Duration) *Statistics {
 	s := &Statistics{
 		Stats:    make(map[string]int),
 		Duration: t,
+		closed:   make(chan bool),
 	}
-	s.start()
 	return s
 }
 
 // Close will make the statsistics goroutine close
 func (s *Statistics) Close() {
-	s.closed = true
+	s.Since = ""
+	s.LastUpdated = ""
+	s.closed <- true
 }
 
-// start will start a goroutine that will wipe data between duration interval
-func (s *Statistics) start() {
+func getDateTime() string {
+	dt := time.Now()
+	return dt.Format("2006-02-01 15:04:05")
+
+}
+
+// Start will start a goroutine that will wipe data between duration interval
+func (s *Statistics) Start() {
+	s.Since = getDateTime()
 	go func() {
 		ticker := time.NewTicker(s.Duration)
-		for range ticker.C {
-			// TODO replace this flag with a channel so that we can close goroutine right away instead of between ticks
-			if s.closed {
+		for {
+			select {
+			case <-ticker.C:
+				s.ResetStats()
+			case <-s.closed:
 				return
 			}
-			s.ResetStats()
+
 		}
+
 	}()
 }
 
 // ResetStats will remove all stats in memory and replace with a fresh map
 func (s *Statistics) ResetStats() {
+	defer s.mux.Unlock()
+	s.mux.Lock()
 	s.Stats = make(map[string]int)
+	s.Since = getDateTime()
+	s.LastUpdated = getDateTime()
 }
 
 // GetStat is used to lookup a statistic value
@@ -87,4 +107,5 @@ func (s *Statistics) AddStat(name string, value int) {
 	} else {
 		s.Stats[name] = s.Stats[name] + value
 	}
+	s.LastUpdated = getDateTime()
 }
