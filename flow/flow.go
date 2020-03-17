@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
-	"time"
 
 	"github.com/percybolmer/workflow/statistics"
 )
@@ -24,13 +23,13 @@ var (
 
 // NewFlow is used to correctly initialize a new Flow with all values needed
 // Use this instead of creating flows manually to avoid nil pointers etc
-func NewFlow(name string, ingress chan Payload, conf json.RawMessage, statDur time.Duration) *Flow {
+func NewFlow(name string, ingress chan Payload, conf json.RawMessage, stats *statistics.Statistics) *Flow {
 	return &Flow{
 		ProcessorName:  name,
 		ingressChannel: ingress,
 		Configuration:  conf,
 		ErrorChannel:   make(chan error, DefaultBufferSize),
-		Statistics:     statistics.NewStatistics(statDur),
+		Statistics:     stats,
 	}
 }
 
@@ -44,6 +43,7 @@ type Flow struct {
 	ProcessorName string    `json:"processor"`
 	// Statistics is an optional thing for flows, but it can store metadata about processing
 	// usefull when monitoring how an flow is doing an or / if it is working correctly
+	// Statistics should be a pointer to the Workflows total StatEngine
 	Statistics    *statistics.Statistics `json:"statistics"`
 	Configuration json.RawMessage        `json:"configuration"`
 	wg            *sync.WaitGroup
@@ -57,7 +57,6 @@ func (nf *Flow) Close() {
 	close(nf.ingressChannel)
 	close(nf.egressChannel)
 	close(nf.StopChannel)
-	nf.Statistics.Close()
 }
 
 // SetWaitGroup will change the current waitgroup
@@ -116,6 +115,6 @@ func (nf *Flow) SetConfiguration(conf json.RawMessage) {
 //Log will take an error and send it upon the ErrorChannel.
 // It will also add statistic count to errors
 func (nf *Flow) Log(err error) {
-	nf.Statistics.AddStat("errors", 1)
+	nf.Statistics.AddStat("errors", "totalnumber of errors encounterd", statistics.CounterType, 1)
 	nf.ErrorChannel <- err
 }

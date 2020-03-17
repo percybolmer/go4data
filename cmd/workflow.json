@@ -5,7 +5,10 @@
             "name": "example-monitor-directory",
             "logpath": "/app/mounts/logs/",
             "statistics": {
-                "duration": 10
+                "duration": 3600,
+                "prometheusexport": true,
+                "url": "/metrics",
+                "port": 2222
             },
             "processors": [
                 {
@@ -16,7 +19,7 @@
                     }
                 },
                 {
-                    "processor": "parse-csv",
+                    "processor": "parse_csv",
                     "configuration": {
                         "headerlength": 1,
                         "skipRows": 0,

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/percybolmer/workflow/flow"
+	"github.com/percybolmer/workflow/statistics"
 )
 
 // Stdout is a processor used to print Information about the payloads recieved on a Flow
@@ -26,11 +27,11 @@ func Stdout(f *flow.Flow) {
 		for {
 			select {
 			case payload := <-f.GetIngressChannel():
-				f.Statistics.AddStat("ingress_flows", 1)
-				f.Statistics.AddStat("ingress_bytes", len(payload.GetPayload()))
-				f.Statistics.AddStat("egress_flows", 1)
-				f.Statistics.AddStat("egress_bytes", len(payload.GetPayload()))
-				fmt.Println(fmt.Sprintf("Source: %s: \nPayload: %s", payload.GetSource(), payload.GetPayload()))
+				fmt.Println(string(payload.GetPayload()))
+				f.Statistics.AddStat("stdout_ingress_flows", "Stdout input flows files", statistics.CounterType, 1)
+				f.Statistics.AddStat("stdout_ingress_bytes", "Stdout input bytes", statistics.GaugeType, payload.GetPayloadLength())
+				f.Statistics.AddStat("stdout_egress_flows", "Stdout egress flow files", statistics.CounterType, 1)
+				f.Statistics.AddStat("stdout_egress_bytes", "Stdout egress bytes", statistics.GaugeType, payload.GetPayloadLength())
 				outputChannel <- payload
 			case <-f.StopChannel:
 				return

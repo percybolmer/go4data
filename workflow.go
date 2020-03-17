@@ -21,9 +21,8 @@ type Workflow struct {
 	// TODO currently only File based logging is allowed, change this to any wanted type.....if requested
 	Logger  zerolog.Logger `json:"-"`
 	LogPath string         `json:"logpath"`
-	// Statistics is struct containing metadata about statistics, workflow has one, but its rarely used at the moment
-	// Only an global error_count is used, It would be cool if WorkFlow could itterate all Flows
-	// and sort of "group" all stats together for a general overview.
+	// Statistics is a stat Engine used by the workflow that its processors can use to publish stats and metrics
+	// It has the ability to export prometheus metrics
 	Statistics *statistics.Statistics `json:"statistics"`
 	//CloseChannel is used to makesure goroutines are exitied
 	CloseChannel chan bool `json:"-"`
@@ -34,7 +33,7 @@ func NewWorkFlow(name, logpath string, statDuration time.Duration) *Workflow {
 	return &Workflow{
 		Name:         name,
 		LogPath:      logpath,
-		Statistics:   statistics.NewStatistics(statDuration),
+		Statistics:   statistics.NewStatistics(statDuration, true),
 		CloseChannel: make(chan bool),
 	}
 }
@@ -62,32 +61,9 @@ func (w *Workflow) SetupLogging() {
 	}
 }
 
-// StartStatistics will start gather stats from all processors and append them as one total work the whole workflow
-// So WOrkflow collect stats from ALL its processors and adds them together
-// It then forces a reset on all procs and itself
-// It will then write the Stats to Promoetheus
-// THe users SCRAPER setting from prometheus has to match or else it will recieve 
-func (w *Workflow) StartStatistics(wg *sync.WaitGroup) {
-	defer wg.Done()
-	wg.Add(1)
-	go func() {
-		for {
-			ticker := time.NewTicker(5 * time.Second)
-			select {
-			case <-w.CloseChannel:
-				return
-			case <-ticker.C:
-				w.Statistics.ResetStats()
-				for _, p := range w.Processors {
-					// Range over the processor stats and add to WOrkflow
-					for name, value := range p.Statistics.Stats {
-						w.Statistics.AddStat(name, value)
-					}
-				}
-			}
-		}
-	}()
-
+// StartStatistics will start the Statistics engine
+func (w *Workflow) StartStatistics() {
+	w.Statistics.Start()
 }
 
 // StartLogging will enable logging for a flow
@@ -111,7 +87,7 @@ func (w *Workflow) StartLogging(wg *sync.WaitGroup, inflow *flow.Flow) {
 // Start will trigger an ingress in a goroutine and listen on that goroutine
 func (w *Workflow) Start(wg *sync.WaitGroup) {
 	w.SetupLogging()
-	w.StartStatistics(wg)
+	w.StartStatistics()
 	//fmt.Println("Workflow: ", w.Name, "  has X amount of Processors configured ", len(w.Processors))
 	for index, flow := range w.Processors {
 		flow.SetWaitGroup(wg)
@@ -137,6 +113,7 @@ func (w *Workflow) Start(wg *sync.WaitGroup) {
 
 // Close will itterate all processors and close them
 func (w *Workflow) Close() {
+	defer w.Statistics.Close()
 	for _, flow := range w.Processors {
 		flow.Close()
 	}

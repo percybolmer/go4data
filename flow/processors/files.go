@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/percybolmer/workflow/statistics"
+
 	"github.com/percybolmer/filewatcher"
 	"github.com/percybolmer/workflow/flow"
 	"github.com/percybolmer/workflow/readers"
@@ -31,8 +33,8 @@ func ReadFile(inflow *flow.Flow) {
 		return
 	}
 	// Add stats about the payload
-	inflow.Statistics.AddStat("egress_bytes", len(payload))
-	inflow.Statistics.AddStat("egress_flows", 1)
+	inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_bytes", inflow.ProcessorName), "Total number of bytes read", statistics.GaugeType, float64(len(payload)))
+	inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_flows", inflow.ProcessorName), "Total number of files read", statistics.CounterType, 1)
 
 	outChan := make(chan flow.Payload, 1)
 	inflow.SetEgressChannel(outChan)
@@ -70,8 +72,8 @@ func WriteFile(inflow *flow.Flow) {
 			select {
 			case newflow := <-inflow.GetIngressChannel():
 				// TODO add Epoch timestamp for unique names
-				inflow.Statistics.AddStat("ingress_flows", 1)
-				inflow.Statistics.AddStat("ingress_bytes", len(newflow.GetPayload()))
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_ingress_flows", inflow.ProcessorName), "Number of ingress flows", statistics.CounterType, 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_ingress_bytes", inflow.ProcessorName), "Number of ingress bytes", statistics.GaugeType, newflow.GetPayloadLength())
 				file := filepath.Base(newflow.GetSource())
 				err := fr.WriteFile(fmt.Sprintf("%s/%s", fr.Path, file), newflow.GetPayload())
 				if err != nil {
@@ -79,8 +81,8 @@ func WriteFile(inflow *flow.Flow) {
 					continue
 				}
 				// Add stats about the payload
-				inflow.Statistics.AddStat("egress_bytes", len(newflow.GetPayload()))
-				inflow.Statistics.AddStat("egress_flows", 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_flows", inflow.ProcessorName), "Number of egress flows", statistics.CounterType, 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_bytes", inflow.ProcessorName), "Number of egress bytes", statistics.GaugeType, newflow.GetPayloadLength())
 				outChan <- newflow
 			case <-inflow.StopChannel:
 				return
@@ -121,7 +123,7 @@ func MonitorDirectory(inflow *flow.Flow) {
 		for {
 			select {
 			case newFile := <-filechannel:
-				inflow.Statistics.AddStat("ingress_flows", 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_ingress_files", inflow.ProcessorName), "The number of files found by the watcher", statistics.CounterType, 1)
 				file := filepath.Base(newFile)
 				var filePath string
 				if strings.HasSuffix(folderPath, "/") {
@@ -135,12 +137,13 @@ func MonitorDirectory(inflow *flow.Flow) {
 					continue
 				}
 				if len(bytes) != 0 {
-					// Add stats about the payload
-					inflow.Statistics.AddStat("egress_bytes", len(bytes))
-					inflow.Statistics.AddStat("egress_flows", 1)
 					payload := &flow.BasePayload{}
 					payload.SetSource(filePath)
 					payload.SetPayload(bytes)
+					// Add stats about the payload
+					inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_files", inflow.ProcessorName), "The number of output files, can differ from input", statistics.CounterType, 1)
+					inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_bytes", inflow.ProcessorName), "The number of outbyte bytes", statistics.GaugeType, payload.GetPayloadLength())
+
 					egressChannel <- payload
 				}
 				if fr.RemoveAfterRead {
@@ -186,8 +189,8 @@ func ParseCsvFlow(f *flow.Flow) {
 					continue
 				}
 				// Add stats about the payload
-				f.Statistics.AddStat("ingress_bytes", len(newinput.GetPayload()))
-				f.Statistics.AddStat("ingress_flows", 1)
+				f.Statistics.AddStat(fmt.Sprintf("%s_ingress_bytes", f.ProcessorName), "Ingress bytes", statistics.GaugeType, newinput.GetPayloadLength())
+				f.Statistics.AddStat(fmt.Sprintf("%s_ingress_flows", f.ProcessorName), "Ingress flows", statistics.CounterType, 1)
 				// Each row is going to become its own output Flow on egressChannel
 				var outputBytes int
 				if len(rows) != 0 {
@@ -197,8 +200,8 @@ func ParseCsvFlow(f *flow.Flow) {
 						egressChannel <- payload
 					}
 				}
-				f.Statistics.AddStat("egress_bytes", outputBytes)
-				f.Statistics.AddStat("egress_flows", len(rows))
+				f.Statistics.AddStat(fmt.Sprintf("%s_egress_bytes", f.ProcessorName), "Egress bytes for CSV parser", statistics.GaugeType, float64(outputBytes))
+				f.Statistics.AddStat(fmt.Sprintf("%s_egress_flows", f.ProcessorName), "Number of egress CSV Rows", statistics.CounterType, float64(len(rows)))
 
 			case <-f.StopChannel:
 				return

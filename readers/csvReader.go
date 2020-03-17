@@ -116,6 +116,15 @@ type CsvRow struct {
 	Error   error             `json:"error"`
 }
 
+// GetPayloadLength will return the payload X Bytes
+func (nf *CsvRow) GetPayloadLength() float64 {
+	data, err := json.Marshal(nf.Payload)
+	if err != nil {
+		nf.Error = err
+	}
+	return float64(len(data))
+}
+
 // GetPayload is used to return an actual value for the Flow
 func (nf *CsvRow) GetPayload() []byte {
 	data, err := json.Marshal(nf.Payload)

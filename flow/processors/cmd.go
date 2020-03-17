@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/percybolmer/workflow/statistics"
+
 	"github.com/percybolmer/workflow/flow"
 )
 
@@ -40,8 +42,9 @@ func Cmd(inflow *flow.Flow) {
 		for {
 			select {
 			case payload := <-inflow.GetIngressChannel():
-				inflow.Statistics.AddStat("ingress_flows", 1)
-				inflow.Statistics.AddStat("ingress_bytes", len(payload.GetPayload()))
+
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_ingress_flows", inflow.ProcessorName), "Total number of ingress flows", statistics.CounterType, 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_ingress_bytes", inflow.ProcessorName), "Number of bytes in", statistics.GaugeType, float64(len(payload.GetPayload())))
 				// Execute Cmd command on payload
 				// Build a Argument Slice
 				var command string
@@ -72,8 +75,8 @@ func Cmd(inflow *flow.Flow) {
 				newpayload := &flow.BasePayload{}
 				newpayload.SetPayload(stdout.Bytes())
 				newpayload.SetSource(fullCmd.String())
-				inflow.Statistics.AddStat("egress_flows", 1)
-				inflow.Statistics.AddStat("egress_bytes", len(newpayload.GetPayload()))
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_flows", inflow.ProcessorName), "Total number of egress flows", statistics.CounterType, 1)
+				inflow.Statistics.AddStat(fmt.Sprintf("%s_egress_bytes", inflow.ProcessorName), "Total number of egress bytes", statistics.GaugeType, float64(len(newpayload.GetPayload())))
 				egress <- newpayload
 			case <-inflow.StopChannel:
 				return

@@ -72,25 +72,30 @@ func (a *Application) LoadWorkflowFile(path string) error {
 		// See if statistics is configured, if not it will set the default Value as duration
 		// If the processors does not have a Duration config set, it will use the workflows
 		var statDuration time.Duration
-		if configWorkflows.Statistics != nil && configWorkflows.Statistics.Duration != 0 {
-			// Convert input to seconds
-			statDuration = configWorkflows.Statistics.Duration * time.Second
+		var url string
+		var port int
+		var promexport bool
+		if configWorkflows.Statistics != nil {
+			if configWorkflows.Statistics.Duration != 0 {
+				// Convert input to seconds
+				statDuration = configWorkflows.Statistics.Duration * time.Second
+			}
+			url = configWorkflows.Statistics.URL
+			port = configWorkflows.Statistics.Port
+			promexport = configWorkflows.Statistics.PromExport
 		}
 		newWorkFlow := NewWorkFlow(configWorkflows.Name, configWorkflows.LogPath, statDuration)
 
 		for _, processor := range configWorkflows.Processors {
-			// Handle each Processor separate, if no duration is set then use the same as the workflow has
-			var procStatDur time.Duration
-			if processor.Statistics != nil && processor.Statistics.Duration != 0 {
-				procStatDur = processor.Statistics.Duration * time.Second
-			} else {
-				procStatDur = statDuration
-			}
-			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration, procStatDur)
-			newFlow.Statistics.Start()
+			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration, newWorkFlow.Statistics)
 			newWorkFlow.AddFlow(newFlow)
 		}
+
+		if promexport {
+			newWorkFlow.Statistics.ExportToPrometheus(url, port)
+		}
 		a.AddWorkFlow(newWorkFlow)
+
 	}
 
 	return nil
