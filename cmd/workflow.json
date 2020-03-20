@@ -27,13 +27,14 @@
                     }
                 },
                 {
-                    "processor": "writefile",
+                    "processor": "filtermap",
                     "configuration": {
-                        "path": "/app/mounts/csvegress",
-                        "append": true
+                        "hardmatch": true,
+                        "values": {
+                            "age": "25"
+                        }
                     }
-                },
-                {
+                },{
                     "processor": "stdout"
                 }
             ]

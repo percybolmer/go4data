@@ -25,6 +25,7 @@ func init() {
 	ProcessorMap["writefile"] = WriteFile
 	ProcessorMap["monitordirectory"] = MonitorDirectory
 	ProcessorMap["parse_csv"] = ParseCsvFlow
+	ProcessorMap["filtermap"] = FilterStringMap
 	ProcessorMap["cmd"] = Cmd
 
 }

@@ -42,9 +42,22 @@ func NewRedisReader(host, password string, db int) (*RedisReader, error) {
 	}, nil
 }
 
-// TODO ADD ABLIITY TO PUBLISH TO TOPICS
-// ALSO MAKE 2 Functions for Publish(flow) And Subscribe(flow)
-func (r *RedisReader) Publish(data []byte) error {
-	//r.Client.Set()
+// Publish will send out data to a topic to a database configured
+func (r *RedisReader) Publish(topic string, data []byte) error {
+	if err := r.Client.LPush(topic, string(data)).Err(); err != nil {
+		return err
+	}
 	return nil
+}
+
+// Subscribe will return a channel that returns messaes on a redis topic
+func (r *RedisReader) Subscribe(topic string) (*redis.PubSub, error) {
+	sub := r.Client.Subscribe(topic)
+
+	_, err := sub.Receive()
+	if err != nil {
+		return nil, err
+	}
+	return sub, nil
+
 }
