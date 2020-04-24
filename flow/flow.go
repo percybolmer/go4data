@@ -44,7 +44,7 @@ type Flow struct {
 	// Statistics is an optional thing for flows, but it can store metadata about processing
 	// usefull when monitoring how an flow is doing an or / if it is working correctly
 	// Statistics should be a pointer to the Workflows total StatEngine
-	Statistics    *statistics.Statistics `json:"statistics"`
+	Statistics    *statistics.Statistics `json:"-"`
 	Configuration json.RawMessage        `json:"configuration"`
 	wg            *sync.WaitGroup
 }

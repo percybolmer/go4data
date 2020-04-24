@@ -22,4 +22,5 @@ COPY --from=builder /app/workflow .
 
 #Configurations varibales
 ENV WORKFLOW_PATH="/app/workflow.json"
+ENV API_PORT=8080
 CMD ["./app"]

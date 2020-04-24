@@ -11,8 +11,10 @@ import (
 
 // Application is a container for workflows
 type Application struct {
-	Name  string      `json:"application"`
-	Flows []*Workflow `json:"workflows"`
+	Name    string      `json:"application"`
+	Flows   []*Workflow `json:"workflows"`
+	APIPort int         `json:"apiport"`
+	sync.RWMutex
 }
 
 // NewApplication will return a pointer to a freshly inited Application
@@ -25,6 +27,8 @@ func NewApplication(name string) *Application {
 
 // AddWorkFlow is used to add a workflow into the application
 func (a *Application) AddWorkFlow(w *Workflow) {
+	a.Lock()
+	defer a.Unlock()
 	a.Flows = append(a.Flows, w)
 }
 
@@ -46,6 +50,8 @@ func NewApplicationFromFile(path string) (*Application, error) {
 // Run will start an Application and all its Flows
 func (a *Application) Run() {
 	var wg sync.WaitGroup
+	a.RLock()
+	defer a.RUnlock()
 	for _, flow := range a.Flows {
 		flow.Start(&wg)
 	}
@@ -65,6 +71,8 @@ func (a *Application) LoadWorkflowFile(path string) error {
 	if err != nil {
 		return err
 	}
+
+	a.APIPort = config.APIPort
 	// TODO go through all configs properly and add all Flows and Init statistics
 	// Quick and Dirty way to Init all Flows, Loading the Config works fine, but Channels and others are not
 	// correctly inited that way, this way we will create a NewFlow for each flow in the config to correct that

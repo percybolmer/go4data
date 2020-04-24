@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"time"
 
 	"github.com/percybolmer/workflow"
 )
@@ -18,21 +17,27 @@ func main() {
 	}
 	// Run app.Run With go or without, internal workflow will run Goroutines so its really not neccesarry to do go App.Run()
 	go app.Run()
-	// Dirty trick to BLock forever, this should be replaced by a hosted GUI or API
-	for {
-		time.Sleep(2 * time.Second)
-		//for _, wf := range app.Flows {
-		//	data, err := json.Marshal(&wf.Statistics)
-		//	if err != nil {
-		//		panic(err)
-		//	}
-		//	fmt.Println(string(data))
-		/*for _, processor := range wf.Processors {
-			fmt.Println(processor.ProcessorName, ": ", processor.Statistics)
-		}*/
-		//}
+	// HOST API
+	fmt.Println("Starting api")
+	err = NewAPI(app)
+	if err != nil {
+		panic(err)
 	}
-
+	fmt.Println("Passed api")
+	// Dirty trick to BLock forever, this should be replaced by a hosted GUI or API
+	//for {
+	//	time.Sleep(2 * time.Second)
+	//for _, wf := range app.Flows {
+	//	data, err := json.Marshal(&wf.Statistics)
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//	fmt.Println(string(data))
+	/*for _, processor := range wf.Processors {
+		fmt.Println(processor.ProcessorName, ": ", processor.Statistics)
+	}*/
+	//}
+	//}
 }
 
 // helper function to just view docker files

@@ -51,7 +51,7 @@ type Statistics struct {
 	PromExport   bool          `json:"prometheusexport"`
 	promRegistry *prometheus.Registry
 	closed       chan bool
-	mux          sync.Mutex
+	mux          sync.RWMutex
 }
 
 // NewStatistics will initialize a statistics object adn return a pointer to it

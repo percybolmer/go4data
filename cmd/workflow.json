@@ -1,5 +1,6 @@
 {
     "name": "test-app",
+    "APIPort": 8080,
     "workflows": [
         {
             "name": "example-monitor-directory",
