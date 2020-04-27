@@ -2,11 +2,16 @@
 package readers
 
 import (
+	"bytes"
+	"context"
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
+
+	"github.com/elastic/go-elasticsearch/esapi"
 
 	"github.com/elastic/go-elasticsearch"
 )
@@ -26,12 +31,13 @@ type ElasticConfig struct {
 	Addresses []string `json:"addresses"`
 	Username  string   `json:"username"`
 	Password  string   `json:"password"`
+	Index string `json:"index"`
 }
 
 // NewElasticReader is used to generate a new working ElasticReader instance
 func NewElasticReader(addresses []string, username, password string) (*ElasticReader, error) {
 	if len(addresses) == 0 {
-		return
+		return nil, ErrNoAddresses
 	}
 	cfg := elasticsearch.Config{
 		Addresses: addresses,
@@ -60,4 +66,34 @@ func NewElasticReader(addresses []string, username, password string) (*ElasticRe
 	return &ElasticReader{
 		esClient: es,
 	}, nil
+}
+
+// ReadIndex will read items from a certain index
+func (es *ElasticReader) ReadIndex() {
+	// #TODO
+	// Somehow we should read INdexes, but We cannot read whole index as that may result in millions of hits
+	// Maybe split into Query Index and One Search Index based on timeline?
+}
+
+// WriteIndex is used to insert payloads into Certain index
+func (es *ElasticReader) WriteIndex(index string, payload []byte) error {
+	// Create context to use for requests
+	ctx := context.Background()
+
+	req := esapi.IndexRequest{
+		Index: index,
+		Body:  bytes.NewReader(payload),
+	}
+
+	res, err := req.Do(ctx, es.esClient)
+	if err != nil {
+		return fmt.Errorf("%v:%w", err, "Failed to updated the index")
+	}
+	defer res.Body.Close()
+
+	if res.IsError() {
+		return fmt.Errorf("%v:%w", res.Status(), "Failed to update the index")
+	}
+	return nil
+
 }
