@@ -1,0 +1,93 @@
+{
+    "Ext.data.Model": {
+        "proxy": {
+            "aliasPrefix" : "proxy.",
+            "defaultPropertyName" : "defaultProxyType"
+        }
+    },
+
+    "Ext.data.proxy.Proxy": {
+        "reader": {
+            "aliasPrefix" : "reader.",
+            "defaultPropertyName" : "defaultReaderType"
+        },
+
+        "writer": {
+            "aliasPrefix" : "writer.",
+            "defaultPropertyName" : "defaultWriterType"
+        }
+    },
+
+    "Ext.data.AbstractStore": {
+        "proxy": {
+            "aliasPrefix" : "proxy."
+        }
+    },
+
+    "Ext.data.ProxyStore": {
+        "model": {
+            "aliasPrefix": "model.",
+            "mvc": true,
+            "blame": "all"
+        }
+    },
+
+    "Ext.app.ViewModel": {
+        "stores": {
+            "isKeyedObject": true,
+            "aliasPrefix": "store.",
+            "defaultType": "store"
+        }
+    },    
+    
+    "Ext.app.Controller": {
+        "models": {
+            "aliasPrefix" : "model.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "stores": {
+            "aliasPrefix" : "store.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "views": {
+            "aliasPrefix" : "view.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "controllers": {
+            "aliasPrefix" : "controller.",
+            "mvc" : true,
+            "blame": "all"
+        }
+    },
+    
+    "Ext.container.Container": {
+        "items": {
+            "aliasPrefix": "widget.",
+            "typeProperty": "xtype",
+            "defaultTypeProperty": "defaultType",
+            "defaultsProperty": "defaults"
+        }
+    },
+    
+    "Ext.panel.Panel": {
+        "dockedItems": {
+            "aliasPrefix": "widget.",
+            "typeProperty": "xtype",
+            "defaultTypeProperty": "defaultType",
+            "defaultsProperty": "defaults"
+        }
+    },
+    
+    "Ext.form.field.Text": {
+        "triggers": {
+            "aliasPrefix": "trigger.",
+            "isKeyedObject": true
+        }
+    }
+}

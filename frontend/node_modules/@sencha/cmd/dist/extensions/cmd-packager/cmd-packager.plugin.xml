@@ -1,0 +1,288 @@
+<!--
+    Copyright (c) 2012-2013, Sencha Inc.
+-->
+<project name="cmd-packager" default=".cmd-packager-help">
+    <target name=".cmd-packager-help"/>
+
+    <property name="help.sencha.phonegap"
+              value="Quick init support for PhoneGap"/>
+
+    <property name="help.sencha.cordova"
+              value="Quick init Support for Cordova"/>
+
+    <target name="sencha-phonegap-init" description="Adds PhoneGap support to your application">
+        <property name="packager.type" value="phonegap"/>
+        <property name="build.platform.data"><![CDATA[// Uncomment the line below and add the platform you wish to build for
+                    //"platform": "ios",
+
+                    // Uncomment and Set this line to true to enable PhoneGap Remote Building.
+                    // To properly use this you must set the following properties in your local.properties file (if this file does not exist create it in your app root)
+                    // phonegap.remote.username=myname@domain.com
+                    // phonegap.remote.password=mys3cr3tp@ssw0rd
+                    //"remote":false]]></property>
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                <if>
+                    <available file="${app.dir}/cordova" type="dir"/>
+                    <then>
+                        <x-echo level="error">You cannot have PhoneGap and Cordova in the same Application using this command</x-echo>
+                        <x-echo> level="error"Please use the new multi-build system via app.json</x-echo>
+                    </then>
+                    <else>
+                        <if>
+                            <available file="${app.dir}/phonegap" type="dir"/>
+                            <then>
+                                <x-echo level="error">This Application already has PhoneGap Packager Integration</x-echo>
+                            </then>
+                            <else>
+                                <x-ant-call target="init-packaged-app"/>
+                            </else>
+                        </if>
+                    </else>
+                </if>
+            </then>
+            <else>
+                <x-echo level="error">PhoneGap can only be initialized inside a Sencha Application folder</x-echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="sencha-cordova-init" description="Adds Cordova support to your application">
+        <property name="packager.type" value="cordova"/>
+        <property name="build.platform.data"><![CDATA[// Uncomment the line below and add the platforms you wish to build for
+                    //"platforms": "ios android"]]></property>
+        <if>
+            <isset property="app.dir"/>
+            <then>
+                <if>
+                    <available file="${app.dir}/phonegap" type="dir"/>
+                    <then>
+                        <x-echo level="error">You cannot have PhoneGap and Cordova in the same Application using this command</x-echo>
+                        <x-echo level="error">Please use the new multi-build system via app.json</x-echo>
+                    </then>
+                    <else>
+                        <if>
+                            <available file="${app.dir}/cordova"/>
+                            <then>
+                                <x-echo level="error">This Application already has Cordova Packager Integration</x-echo>
+                            </then>
+                            <else>
+                                <x-ant-call target="init-packaged-app"/>
+                            </else>
+                        </if>
+                    </else>
+                </if>
+            </then>
+            <else>
+                <x-echo level="error">Cordova can only be initialized inside a Sencha Application folder</x-echo>
+            </else>
+        </if>
+    </target>
+
+    <target name="init-packaged-app">
+        <property name="packager.dir" value="${app.dir}/${packager.type}"/>
+        <property name="packager.www.dir" value="${packager.dir}/www"/>
+
+        <if>
+            <isset property="args.0"/>
+            <then>
+                <property name="packager.id" value="${args.0}"/>
+            </then>
+            <else>
+                <property name="packager.id" value="com.domain.${app.name}"/>
+                <x-echo level="info">ApplicationID was NOT specified, defaulting to ${packager.id}. You can edit this in your PhoneGap/Cordova config.json</x-echo>
+            </else>
+        </if>
+
+        <if>
+            <isset property="args.1"/>
+            <then>
+                <property name="packager.name" value="${args.1}"/>
+            </then>
+        </if>
+        <property name="packager.name" value="${app.name}"/>
+
+        <x-echo level="info">Creating App</x-echo>
+        <x-shell reloadprofile="true" dir="${app.dir}">
+            ${packager.type} create "${packager.dir}" ${packager.id} ${packager.name}
+        </x-shell>
+
+        <!--
+            Phonegap puts config.xml in the www root folder, this is dangerous due to how we clean this folder out
+            we will move it up to the ${packager.type} root in order to keep parity with cordova.
+            Later we will copy this file back into www during remote builds
+        -->
+        <move file="${packager.www.dir}/config.xml" todir="${packager.dir}" failonerror="false" overwrite="false" quiet="true"/>
+
+        <x-script-def name="x-check-multi-build"> <![CDATA[
+                    importClass(java.io.File);
+                    importClass(java.nio.charset.StandardCharsets);
+                    importClass(com.sencha.util.FileUtil);
+
+                    var content = FileUtil.readFile(project.getProperty("app.dir") + File.separator + "app.json");
+                    var data = eval("(" + content + ")");
+
+                    if (data.builds) {
+                        project.setProperty("app.json.has.builds", "true");
+                    }
+                ]]>
+        </x-script-def>
+        <x-check-multi-build/>
+
+        <if>
+            <not>
+                <isset property="app.json.has.builds"/>
+            </not>
+            <then>
+                <x-echo level="info">Adding native build to app.json</x-echo>
+                <property name="builds.data"><![CDATA[{
+    "builds": {
+        "web": {"default": true},
+        "native": {
+            "packager": "${packager.type}",
+            "${packager.type}" : {
+                "config": {
+                    ${build.platform.data},
+
+                    "id": "${packager.id}",
+                    "name": "${packager.name}"
+                }
+            }
+        }
+    },
+]]>
+                </property>
+                <replaceregexp file="${app.dir}/app.json" match="\{" replace='${builds.data}'/>
+            </then>
+            <else>
+                <x-echo level="warn">App.json already contains a builds object. Please configure build / packager definitions in app.json manually.</x-echo>
+            </else>
+        </if>
+
+        <x-echo level="info">Application has been initialized for native packaging. Please edit app.json and add platform(s) to build for.</x-echo>
+    </target>
+
+    <!--After Applications are upgraded we need to check them for cordova/phonegap legacy files-->
+    <target name="-after-app-upgrade">
+        <if>
+            <resourcecontains resource="build.xml" substring="cordova-impl.xml"/>
+            <then>
+                <property name="packager.type" value="cordova"/>
+                <property name="build.platform.data"><![CDATA[// Uncomment the line below and add the platforms you wish to build for
+                    //"platforms": "ios android"]]></property>
+            </then>
+            <elseif>
+                <resourcecontains resource="build.xml" substring="phonegap-impl.xml"/>
+                <then>
+                    <property name="packager.type" value="phonegap"/>
+                    <property name="build.platform.data"><![CDATA[// Uncomment the line below and add the platform you wish to build for
+                    //"platform": "ios",
+
+                    // Uncomment and Set this line to true to enable PhoneGap Remote Building.
+                    // To properly use this you must set the following properties in your local.properties file (if this file does not exist create it in your app root)
+                    // phonegap.remote.username=myname@domain.com
+                    // phonegap.remote.password=mys3cr3tp@ssw0rd
+                    //"remote":false]]></property>
+                </then>
+            </elseif>
+        </if>
+
+        <if>
+            <isset property="packager.type"/>
+            <then>
+                <x-echo level="info">Existing native support was found, upgrading native packaging</x-echo>
+
+
+                <x-script-def name="x-check-multi-build"> <![CDATA[
+                    importClass(java.io.File);
+                    importClass(java.nio.charset.StandardCharsets);
+                    importClass(com.sencha.util.FileUtil);
+
+                    var content = FileUtil.readFile(project.getProperty("app.dir") + File.separator + "app.json");
+                    var data = eval("(" + content + ")");
+
+                    if (data.builds) {
+                        project.setProperty("app.json.has.builds", "true");
+                    }
+                ]]>
+                </x-script-def>
+                <x-check-multi-build/>
+
+
+                <property name="packager.dir" value="${app.dir}/${packager.type}"/>
+                <property name="packager.www.dir" value="${packager.dir}/www"/>
+
+                <!--
+                    Check for config.xml in the www root of the cordova/phonegap project and move that up a level.
+                    If there is a app level config.xml use that instead
+                -->
+                <x-echo level="info">Checking for config.xml and moving to native root.</x-echo>
+                <move file="${packager.www.dir}/config.xml" todir="${packager.dir}" failonerror="false" overwrite="false" quiet="true"/>
+                <move file="${app.dir}/config.xml" todir="${packager.dir}" failonerror="false" overwrite="false" quiet="true"/>
+
+                <!--
+                    Legacy Native build would modify build.xml, this needs to be removed now
+                -->
+
+                <x-echo level="info">Patching build.xml to original state.</x-echo>
+                <replaceregexp file="${app.dir}/build.xml"
+                               match='&lt;import.*${packager.type}.*/&gt;\n.*&lt;import.*build-impl.xml"/&gt;'
+                               replace='&lt;import file="$${basedir}/.sencha/app/build-impl.xml"/&gt;'/>
+
+                <!-- native.properties is no longer used as it is no longer an environment -->
+                <x-echo level="info">Removing native.properties file.</x-echo>
+                <delete file="${app.dir}/.sencha/app/native.properties" quiet="true" />
+
+                <!--Legacy native support would add properties into build.properties, these need to be removed-->
+                <x-echo level="info">Removing Build properties</x-echo>
+                <x-property-file file="${app.dir}/.sencha/app/build.properties">
+                    <entry type="string"
+                           operation="del"
+                           key="app.${packager.type}.dir"/>
+                    <entry type="string"
+                           operation="del"
+                           key="app.${packager.type}.www.dir"/>
+                </x-property-file>
+
+                <!--Legacy native init would manually add files into JS and resources arrays of app.json. These need to be removed-->
+                <x-echo level="info">Patching app.json removing old properties</x-echo>
+                <property name="TAB" value="&#x9;"/>
+                <replace file="${app.dir}/app.json" value='"js": [' token='"js": [${line.separator}${TAB}${TAB}{${line.separator}${TAB}${TAB}${TAB}"path": "${packager.type}.js",${line.separator}${TAB}${TAB}${TAB}"remote": true${line.separator}${TAB}${TAB}},'/>
+                <replace file="${app.dir}/app.json" value='"resources": [' token='"resources": [${line.separator}${TAB}${TAB}"config.xml",'/>
+
+                <property name="builds.data"><![CDATA[{
+    "builds": {
+        "web": {"default": true},
+        "native": {
+            "packager": "${packager.type}",
+            "${packager.type}" : {
+                "config": {
+                    ${build.platform.data},
+
+                    // Name and ID properties are only used during app creation
+                    // edit this if you are recreating your ${packager.type} app
+                    //"id": "com.domain.${app.name}",
+                    //"name": "${app.name}"
+                }
+            }
+        }
+    },
+]]>
+                </property>
+                <if>
+                    <not>
+                        <isset property="app.json.has.builds"/>
+                    </not>
+                    <then>
+                        <x-echo level="info">Adding native build to app.json</x-echo>
+                        <replaceregexp file="${app.dir}/app.json" match="\{" replace='${builds.data}'/>
+                    </then>
+                    <else>
+                        <x-echo level="warn">App.json already contains a builds object. Please configure build / packager definitions in app.json manually.</x-echo>
+                    </else>
+                </if>
+            </then>
+        </if>
+    </target>
+</project>

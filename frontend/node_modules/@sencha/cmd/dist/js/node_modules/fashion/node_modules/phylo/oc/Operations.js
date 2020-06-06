@@ -1,0 +1,316 @@
+'use strict';
+
+var Base = require('../Base');
+var fs = require('fs');
+var Util = require('orion-core/lib/Util');
+
+// defer loading the ProcessUtil module, as ProcessUtil needs File to extract the shell
+// wrapper, and File will import this.
+var ProcessUtil = function() {
+    var module = require('orion-core/lib/process/ProcessUtil');
+    ProcessUtil = function() {
+        return module;
+    }
+    return module;
+};
+
+class Operations extends Base {
+    getStat () {
+        var me = this;
+        return new Promise(function (resolve, reject) {
+            fs.stat(me.path, function (err, stat) {
+                if (err) {
+                    resolve(false);
+                }
+                else {
+                    resolve(stat);
+                }
+            });
+        });
+    }
+
+    ensurePathExists () {
+        var me = this,
+            parent = me.parent;
+        return new Promise(function(resolve, reject) {
+            function creator () {
+                if (me.path) {
+                    me.exists().then(function(exists) {
+                        if (!exists) {
+                            fs.mkdir(me.path, function(err) {
+                                // checking for error code EEXIST ensures that we do not
+                                // error when checking multiple paths in a loop that may
+                                // overlap each other.  Due to the asynchonous nature of
+                                // the exists call, it may return false because a previous
+                                // call to ensurePathExists just hasn't yet completed
+                                if(err && (err.code !== 'EEXIST')) {
+                                    reject(err);
+                                }
+                                else {
+                                    resolve(me);
+                                }
+                            });
+                        }
+                        else {
+                            resolve(me);
+                        }
+                    }, reject);
+                }
+                else {
+                    resolve(false);
+                }
+            }
+            if (parent) {
+                parent.ensurePathExists().then(function(){
+                    creator();
+                }, reject);
+            }
+            else {
+                creator();
+            }
+        });
+    }
+
+    write (data, options) {
+        var me = this,
+            parent = me.parent,
+            path = me.path;
+
+        return new Promise(function(resolve, reject) {
+            function writer () {
+                fs.writeFile(path, data, options, function (error) {
+                    if (error) {
+                        reject(Operations.wrapError(path, error));
+                    } else {
+                        resolve(me);
+                    }
+                });
+            }
+            if (parent) {
+                parent.ensurePathExists().then(writer, reject);
+            }
+            else {
+                writer();
+            }
+        });
+    }
+
+    writeJson (obj, options) {
+        var data = options && options.prettyPrint
+            ? JSON.stringify(obj, null, 4)
+            : JSON.stringify(obj);
+        return this.write(data, options).then(function(){
+            return obj;
+        });
+    }
+
+    read (options) {
+        var me = this;
+        return new Promise(function(resolve, reject){
+            fs.readFile(me.path, Object.assign({
+                encoding: 'utf8'
+            }, options), function(err, data){
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    resolve(data);
+                }
+            });
+        });
+    }
+
+    readJson (options) {
+        return this.read(options).then(function(data){
+            return JSON.parse(data);
+        });
+    }
+
+    exists () {
+        var me = this;
+        return new Promise(function(resolve, reject){
+            fs.access(me.path, fs.F_OK, function(err){
+                if (err) {
+                    resolve(false);
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    getFiles (recursive) {
+        var me = this;
+
+        return new Promise(function(resolve, reject) {
+            var files = [];
+
+            fs.readdir(me.path, function (err, items) {
+                if (err) {
+                    reject(err);
+                }
+                else {
+                    items.forEach(function (item) {
+                        var file = new me.constructor(me, item);
+
+                        files.push(new Promise(function (resolve, reject) {
+                            file.getStat().then(function (stat) {
+                                file.stat = stat;
+                                if (recursive && stat.isDirectory()) {
+                                    file.getFiles(true).then(function (files) {
+                                        file.items = files;
+                                        resolve(file);
+                                    }, reject);
+                                }
+                                else {
+                                    resolve(file);
+                                }
+                            }, function (err) {
+                                reject(err);
+                            });
+                        }));
+                    });
+                    Promise.all(files).then(function (files) {
+                        files.sort(me.constructor.fileStatSorter);
+                        resolve(files);
+                    }, reject);
+                }
+            });
+
+        });
+    }
+
+    _removeDirWin () {
+        var me = this,
+            path = me.getCanonicalPath();
+        return new Promise(function(resolve, reject){
+            var proc = ProcessUtil().spawn('rmdir', [
+                '/S',
+                '/Q',
+                path
+            ]);
+            proc.on('exit', function() {
+                if (proc.exitCode != 0) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    _removeDirUnix () {
+        var me = this,
+            path = me.getCanonicalPath();
+        return new Promise(function(resolve, reject){
+            var proc = ProcessUtil().spawn('rm', [
+                '-fr',
+                path
+            ]);
+            proc.on('exit', function() {
+                if (proc.exitCode != 0) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    // TODO refactor so that removeDir and _removeDirWin live in WindowsFileOperations.js
+    removeDir () {
+        var me = this,
+            path = me.getCanonicalPath();
+        if (Util.isWin) {
+            return me._removeDirWin(path);
+        } else {
+            return me._removeDirUnix(path);
+        }
+    }
+
+    remove () {
+        var me = this,
+            path = me.path;
+        return new Promise(function(resolve, reject) {
+            me.getStat().then(function(stat){
+                if (stat) {
+                    if (stat.isDirectory()) {
+                        if (Util.isWin) {
+                            me._removeDirWin(path).then(resolve, reject);
+                        } else {
+                            me._removeDirUnix(path).then(resolve, reject);
+                        }
+                    }
+                    else {
+                        fs.unlink(path, function(err){
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                resolve(true);
+                            }
+                        });
+                    }
+                }
+                else {
+                    resolve(true);
+                }
+            });
+        });
+    }
+
+    // the beforeExit event is fired during the exit process, but is re-triggered when any
+    // new work is added to node's event queue. Spawning any async code from the beforeExit
+    // handler then will cause beforeExit to be fired again. So...
+    //
+    // ALWAYS do process.once('beforeExit'), ...
+    // NEVER  do process.on('beforeExit'), ...
+    //
+    // Also, we don't care about the result of remove() or removeSync() because on startup Sencha Studio
+    // will cleanup this directory as well.
+    removeOnExit () {
+        var me = this;
+
+        process.once('beforeExit', function() {
+            me.remove();
+        });
+        process.on('exit', function() {
+            try {
+                me.removeSync();
+            } catch (e) {
+                // probably already removed in beforeExit so don't care.
+            }
+        });
+    }
+
+    static wrapError (fileName, error) {
+        var message = 'Failed to read "' + fileName + '"',
+            err;
+
+        if (error instanceof Error) {
+            if (!error.message) {
+                error.message = message;
+            } else if (error.message.indexOf(fileName) < 0) {
+                error.message = message + ': ' + error.message;
+            }
+
+            err = error;
+        }
+        else if (typeof error === 'string') {
+            if (error.indexOf(fileName) < 0) {
+                err = new Error(message + ': ' + error);
+            } else {
+                err = new Error(error);
+            }
+        }
+        else {
+            err = new Error(message);
+            err.details = error;
+        }
+
+        return err;
+    }
+}
+
+module.exports = Operations;

@@ -1,0 +1,126 @@
+{
+    "Ext.Component": {
+        "componentLayout": {
+            "aliasPrefix" : "layout.",
+            "defaultPropertyName" : "defaultComponentLayoutType"
+        }
+    },
+
+    "Ext.container.AbstractContainer": {
+        "layout": {
+            "aliasPrefix": "layout.",
+            "defaultPropertyName" : "defaultLayoutType"
+        }
+    },
+
+    "Ext.data.Model": {
+        "proxy": {
+            "aliasPrefix" : "proxy.",
+            "defaultPropertyName" : "defaultProxyType"
+        },
+        "identifier": {
+            "aliasPrefix": "data.identifier."
+        },
+        "validations": {
+            "directRef" : "Ext.data.Validations"
+        }
+    },
+
+    "Ext.data.proxy.Proxy": {
+        "reader": {
+            "aliasPrefix" : "reader.",
+            "defaultPropertyName" : "defaultReaderType"
+        },
+        "writer": {
+            "aliasPrefix" : "writer.",
+            "defaultPropertyName" : "defaultWriterType"
+        }
+    },
+
+    "Ext.data.Store": {
+        "proxy": {
+            "aliasPrefix" : "proxy."
+        },
+        "model": {
+            "blame": "all"
+        }
+    },
+
+    "Ext.app.Profile": {
+        "models": {
+            "aliasPrefix" : "model.",
+            "profile" : true,
+            "blame": "all"
+        },
+
+        "stores": {
+            "aliasPrefix" : "store.",
+            "profile" : true,
+            "blame": "all"
+        },
+
+        "views": {
+            "aliasPrefix" : "view.",
+            "profile" : true,
+            "blame": "all"
+        },
+
+        "controllers": {
+            "aliasPrefix" : "controller.",
+            "profile" : true,
+            "blame": "all"
+        }
+    },
+
+    "Ext.app.Controller": {
+        "models": {
+            "aliasPrefix" : "model.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "stores": {
+            "aliasPrefix" : "store.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "views": {
+            "aliasPrefix" : "view.",
+            "mvc" : true,
+            "blame": "all"
+        }
+    },
+
+    "Ext.app.Application": {
+        "controllers": {
+            "aliasPrefix" : "controller.",
+            "mvc" : true,
+            "blame": "all"
+        },
+
+        "profiles": {
+            "aliasPrefix" : "profile.",
+            "mvc" : true,
+            "blame": "all"
+        }
+    },
+    
+    "Ext.container.Container": {
+        "items": {
+            "aliasPrefix": "widget.",
+            "typeProperty": "xtype",
+            "defaultTypeProperty": "defaultType",
+            "defaultsProperty": "defaults"
+        }
+    },
+    
+    "Ext.panel.Panel": {
+        "dockedItems": {
+            "aliasPrefix": "widget.",
+            "typeProperty": "xtype",
+            "defaultTypeProperty": "defaultType",
+            "defaultsProperty": "defaults"
+        }
+    }
+}

@@ -1,0 +1,35 @@
+{
+    "compress": false,
+    "split": -1,
+    
+    // global variable overrides
+    "variables": null,
+    
+    // see CssVariables.js execute method
+    "cssVars": {
+        "enable": true
+    },
+    
+    // see DataInliner.js execute method
+    "inliner": {
+        "enable": false,
+        "report": false,
+        "maxItemSize": -1,
+    
+        // array of regexes to include (based on url match)
+        "includes": [],
+    
+        // array of regexes to exclude (based on url match)
+        "excludes": []
+    },
+    
+    // path to a variable override save file
+    "saveFile": null,
+    
+    // path to a directory containing generated code
+    "srcSavePath": null,
+    
+    // controls whether parameters to functions or mixins without a default value
+    // must be supplied at the call point
+    "missingParameters": null
+}

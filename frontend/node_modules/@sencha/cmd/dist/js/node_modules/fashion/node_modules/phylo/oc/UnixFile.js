@@ -1,0 +1,8 @@
+"use strict";
+
+var File = require('./File');
+
+class UnixFile extends File {}
+
+UnixFile.separator = UnixFile.separator = '/';
+UnixFile.sepRe = UnixFile.sepRe = /\//;

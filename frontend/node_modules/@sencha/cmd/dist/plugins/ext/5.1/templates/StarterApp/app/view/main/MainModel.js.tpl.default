@@ -1,0 +1,14 @@
+/**
+ * This class is the view model for the Main view of the application.
+ */
+Ext.define('{appName}.view.main.MainModel', {
+    extend: 'Ext.app.ViewModel',
+
+    alias: 'viewmodel.main',
+
+    data: \u007B
+        name: '{appName}'
+    }
+
+    //TODO - add data, formulas and/or methods to support your view
+});

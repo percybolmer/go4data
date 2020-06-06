@@ -1,0 +1,358 @@
+'use strict';
+
+var Observable = require('../Observable');
+var fs = require('fs');
+var Path = require('path');
+var Operations = require('./Operations');
+var SyncOperations = require('./SyncOperations');
+var WindowsFileOperations = require('orion-core/lib/fs/WindowsFileOperations');
+var Util = require('../Util');
+
+const slashRe = /\\/g;
+const splitRe = /[\/\\]/g;
+
+class File extends Observable {
+    static get meta () {
+        return {
+            prototype: {
+                $isFile: true
+            },
+
+            mixins: [
+                // WindowsFileOperations MUST be first so that on windows
+                // it's overridden methods getFiles, getFilesSync, getStat, getStatSync
+                // will get in first and be used instead of those in Operations and SyncOperations.
+                WindowsFileOperations,
+                Operations,
+                SyncOperations
+            ]
+        };
+    }
+
+    static get (path) {
+        if (!path) {
+            return null;
+        }
+        if (path.$isFile) {
+            return path;
+        }
+        return new File(path);
+    }
+
+    constructor (parent, path) {
+        super();
+
+        if (path) {
+            if (parent.$isFile) {
+                parent = parent.getPath();
+            }
+            path = File.join(parent, path);
+        }
+        else if (parent) {
+            if (parent.$isFile) {
+                path = parent.getPath();
+            } else if (typeof parent === 'string') {
+                path = parent;
+            }
+        }
+
+        this.path = path;
+    }
+
+    lastIndexOfSep () {
+        var path = this.path;
+
+        return Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+    }
+
+    get name () {
+        var me = this,
+            name = me._name,
+            slash;
+
+        if (name === undefined) {
+            slash = me.lastIndexOfSep();
+
+            if (slash < 0) {
+                name = null;
+            } else {
+                name = me.path.substring(slash+1);
+            }
+
+            me._name = name;
+        }
+
+        return name;
+    }
+
+    get parent () {
+        var me = this,
+            parent = me._parent,
+            slash, parentPath;
+
+        if (parent === undefined) {
+            slash = me.lastIndexOfSep();
+            parentPath = me.path.substring(0, slash);
+
+            if (slash < 0 || !parentPath) {
+                parent = null;
+            } else {
+                parent = new File(parentPath);
+            }
+
+            me._parent = parent;
+        }
+
+        return parent;
+    }
+
+    getPath() {
+        return this.path;
+    }
+
+    get canonicalPath () {
+        return this.getCanonicalPath();
+    }
+
+    getCanonicalFile () {
+        return new File(this.getCanonicalPath());
+    }
+
+    getCanonicalPath() {
+        return Path.resolve(this.getPath());
+    }
+
+    isAbsolute() {
+        return Path.isAbsolute(this.getPath());
+    }
+
+    /**
+     * Replaces slashes with the right slashes for the platform.
+     * @return {String}
+     */
+    normalizePath () {
+        var separator = this.separator;
+        return this.getPath().replace(slashRe, separator).replace(slashRe, separator);
+    }
+
+    relativeTo (path) {
+        if (path.$isFile) {
+            path = path.getCanonicalPath();
+        }
+        return new File(Path.relative(this.getCanonicalPath(), path));
+    }
+
+    /**
+     * Return whether the file and this instance have equal paths.
+     * On Linux case matters to /foo != to /FOO. Windows and MAC
+     * don't care about case.
+     * @param file
+     * @return {Boolean}
+     */
+    equals (file) {
+        file = File.get(file); 
+        if (file === null) {
+            return false;
+        }
+        if (Util.isLinux) {
+            return file.trimSlash() == this.trimSlash();
+        } else {
+            return file.trimSlash().toLowerCase() == this.trimSlash().toLowerCase();
+        }
+    }
+
+    contains (file) {
+        file = File.get(file);
+        if (file === null) {
+            return false;
+        }
+
+        var path1 = this.slashify(),
+            path2 = file.slashify();
+
+        if (path2.startsWith(path1)) {
+            if (path1.endsWith('/') || path2.charAt(path1.length) === '/') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Replace forward/backward slashes with forward slashes.
+     * @return {String}
+     */
+    slashify () {
+        return this.getPath().replace(slashRe, '/');
+    }
+
+    /**
+     * Remove any trailing slash from the path.
+     * @return {String}
+     */
+    trimSlash () {
+        var path = this.getPath();
+        if (path === undefined) {
+            return "";
+        }
+        if (path.endsWith('/') || path.endsWith('\\')) {
+            return path.substring(0,path.length - 1);
+        } else {
+            return path;
+        }
+    }
+
+    getPathParts () {
+        return File.split(this.getPath());
+    }
+
+    getParent () {
+        var parent = this.parent;
+        if (parent) {
+            return parent.getPath();
+        }
+        return null;
+    }
+
+    getParentFile() {
+        return this.parent;
+    }
+
+    getTempFile (prefix) {
+        var now = new Date(),
+            suffix = '',
+            counter = 0,
+            file;
+
+        now = [
+            now.getFullYear(),
+            now.getUTCMonth(),
+            now.getUTCDate(),
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds()
+        ].join('.');
+
+        while (true) {
+            file = new File(this, now + suffix);
+            if (!file.existsSync()) {
+                // TODO: we need to create either a file or dir here to ensure
+                // subsequent calls to getTempFile don't calculate the same name
+                return file;
+            }
+            counter++;
+            suffix = '.' + counter;
+        }
+    }
+
+    join (path) {
+        path = path.$isFile ? path.path : path;
+        return new File(this, path);
+    }
+
+    static sanitizePath (path) {
+        return path.trim()
+            .replace(/\s+/g, '_')            //exchange whitespaces for underscores
+            .replace(/[^0-9a-zA-Z_-]/g, '')  //remove special chars
+            .substr(0, 60);                  //limit char length (also think of adding suffix for unique check)
+    }
+
+    static slashify (path) {
+        return path && path.replace(slashRe, '/');
+    }
+
+    static join () {
+        var args = Util.flatten(arguments),
+            ln = args.length,
+            // if the first arg is an empty string treat it as a leading separator
+            // this can happen if a user splits the parts of a path before passing to join.
+            // TODO: shouldn't have to do this, fix the caller (Studio.model.run.Node)
+            leadingSeparator = this.sepRe.test(args[0].charAt(0)) || (args[0] === ''),
+            i, arg, path;
+
+        for (i = 0; i < ln; i++) {
+            arg = args[i];
+            if (typeof arg === 'string') {
+                args[i] = arg.split(splitRe);
+            }
+        }
+
+        path = Util.flatten(args).filter(function(a) { return !!a; }).join(this.separator);
+
+        if (leadingSeparator) {
+            path = this.separator + path;
+        }
+
+        return path;
+    }
+
+    static setSeparator (sep) {
+        this.separator = sep;
+    }
+
+    static getSeparator () {
+        return this.separator;
+    }
+
+    static split (filename) {
+        return (filename || '').split(splitRe);
+    }
+
+    static  flatten () {
+        return File._flatten(
+            Util.flatten(Array.prototype.slice.call(arguments)));
+    }
+
+    static  _flatten (paths) {
+        var separator = this.separator,
+            pathstr = paths.join(separator),
+            parts = File.split(pathstr),
+            reduced = [],
+            part, i;
+
+        for (i = 0; i < parts.length; i++) {
+            part = parts[i];
+
+            if (part === '..' && reduced.length) {
+                var curr = reduced.pop();
+                if (curr === '..') {
+                    reduced.push(curr);
+                    reduced.push(part);
+                }
+            }
+            else if (part === '.') {
+                continue;
+            }
+            else {
+                reduced.push(part);
+            }
+        }
+
+        return reduced.join(separator);
+    }
+
+    static fileStatSorter (f1, f2) {
+        var s1 = f1.stat,
+            s2 = f2.stat;
+
+        if (s1.isDirectory()) {
+            if (s2.isFile()) {
+                return -1;
+            }
+        } else if (s2.isDirectory()) {
+            return 1;
+        }
+
+        return f1.name.localeCompare(f2.name);
+    }
+
+
+    toString () {
+        return this.path;
+    }
+}
+
+File.separator = File.prototype.separator = (Util.isWin ? '\\' : '/');
+File.sepRe = File.prototype.sepRe = /[\/\\]/;
+
+module.exports = File;

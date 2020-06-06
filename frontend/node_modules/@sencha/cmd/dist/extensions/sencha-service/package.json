@@ -1,0 +1,10 @@
+{
+    "name": "sencha-service",
+    "format": "1",
+    "version": "@@CMD_VERSION@@",
+    "creator": "Sencha",
+    "summary": "Sencha Cmd Management Server",
+    "type": "extension",
+    "requires": [
+    ]
+}

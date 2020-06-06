@@ -1,0 +1,2331 @@
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-camera-front::before {
+    content: 'camera_front';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-camera-rear::before {
+    content: 'camera_rear';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-camera-roll::before {
+    content: 'camera_roll';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-center-focus-strong::before {
+    content: 'center_focus_strong';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-center-focus-weak::before {
+    content: 'center_focus_weak';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-collections::before {
+    content: 'collections';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-collections-bookmark::before {
+    content: 'collections_bookmark';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-color-lens::before {
+    content: 'color_lens';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-colorize::before {
+    content: 'colorize';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-compare::before {
+    content: 'compare';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-control-point::before {
+    content: 'control_point';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-control-point-duplicate::before {
+    content: 'control_point_duplicate';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop::before {
+    content: 'crop';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-16-9::before {
+    content: 'crop_16_9';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-3-2::before {
+    content: 'crop_3_2';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-5-4::before {
+    content: 'crop_5_4';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-7-5::before {
+    content: 'crop_7_5';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-din::before {
+    content: 'crop_din';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-free::before {
+    content: 'crop_free';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-landscape::before {
+    content: 'crop_landscape';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-original::before {
+    content: 'crop_original';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-portrait::before {
+    content: 'crop_portrait';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-rotate::before {
+    content: 'crop_rotate';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-crop-square::before {
+    content: 'crop_square';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-dehaze::before {
+    content: 'dehaze';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-details::before {
+    content: 'details';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-edit::before {
+    content: 'edit';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure::before {
+    content: 'exposure';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure-neg-1::before {
+    content: 'exposure_neg_1';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure-neg-2::before {
+    content: 'exposure_neg_2';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure-plus-1::before {
+    content: 'exposure_plus_1';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure-plus-2::before {
+    content: 'exposure_plus_2';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-exposure-zero::before {
+    content: 'exposure_zero';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter::before {
+    content: 'filter';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-1::before {
+    content: 'filter_1';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-2::before {
+    content: 'filter_2';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-3::before {
+    content: 'filter_3';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-4::before {
+    content: 'filter_4';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-5::before {
+    content: 'filter_5';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-6::before {
+    content: 'filter_6';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-7::before {
+    content: 'filter_7';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-8::before {
+    content: 'filter_8';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-9::before {
+    content: 'filter_9';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-9-plus::before {
+    content: 'filter_9_plus';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-b-and-w::before {
+    content: 'filter_b_and_w';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-center-focus::before {
+    content: 'filter_center_focus';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-drama::before {
+    content: 'filter_drama';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-frames::before {
+    content: 'filter_frames';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-hdr::before {
+    content: 'filter_hdr';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-none::before {
+    content: 'filter_none';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-tilt-shift::before {
+    content: 'filter_tilt_shift';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-filter-vintage::before {
+    content: 'filter_vintage';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flare::before {
+    content: 'flare';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flash-auto::before {
+    content: 'flash_auto';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flash-off::before {
+    content: 'flash_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flash-on::before {
+    content: 'flash_on';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flip::before {
+    content: 'flip';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-gradient::before {
+    content: 'gradient';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-grain::before {
+    content: 'grain';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-grid-off::before {
+    content: 'grid_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-grid-on::before {
+    content: 'grid_on';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hdr-off::before {
+    content: 'hdr_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hdr-on::before {
+    content: 'hdr_on';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hdr-strong::before {
+    content: 'hdr_strong';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hdr-weak::before {
+    content: 'hdr_weak';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-healing::before {
+    content: 'healing';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-image::before {
+    content: 'image';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-image-aspect-ratio::before {
+    content: 'image_aspect_ratio';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-iso::before {
+    content: 'iso';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-landscape::before {
+    content: 'landscape';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-leak-add::before {
+    content: 'leak_add';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-leak-remove::before {
+    content: 'leak_remove';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-lens::before {
+    content: 'lens';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-linked-camera::before {
+    content: 'linked_camera';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks::before {
+    content: 'looks';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-3::before {
+    content: 'looks_3';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-4::before {
+    content: 'looks_4';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-5::before {
+    content: 'looks_5';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-6::before {
+    content: 'looks_6';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-one::before {
+    content: 'looks_one';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-looks-two::before {
+    content: 'looks_two';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-loupe::before {
+    content: 'loupe';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-monochrome-photos::before {
+    content: 'monochrome_photos';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-movie-creation::before {
+    content: 'movie_creation';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-movie-filter::before {
+    content: 'movie_filter';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-music-note::before {
+    content: 'music_note';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-nature::before {
+    content: 'nature';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-nature-people::before {
+    content: 'nature_people';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-navigate-before::before {
+    content: 'navigate_before';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-navigate-next::before {
+    content: 'navigate_next';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-palette::before {
+    content: 'palette';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-panorama::before {
+    content: 'panorama';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-panorama-fish-eye::before {
+    content: 'panorama_fish_eye';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-panorama-horizontal::before {
+    content: 'panorama_horizontal';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-panorama-vertical::before {
+    content: 'panorama_vertical';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-panorama-wide-angle::before {
+    content: 'panorama_wide_angle';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo::before {
+    content: 'photo';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-album::before {
+    content: 'photo_album';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-camera::before {
+    content: 'photo_camera';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-filter::before {
+    content: 'photo_filter';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-library::before {
+    content: 'photo_library';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-size-select-actual::before {
+    content: 'photo_size_select_actual';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-size-select-large::before {
+    content: 'photo_size_select_large';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-photo-size-select-small::before {
+    content: 'photo_size_select_small';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-picture-as-pdf::before {
+    content: 'picture_as_pdf';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-portrait::before {
+    content: 'portrait';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-remove-red-eye::before {
+    content: 'remove_red_eye';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-rotate-90-degrees-ccw::before {
+    content: 'rotate_90_degrees_ccw';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-rotate-left::before {
+    content: 'rotate_left';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-rotate-right::before {
+    content: 'rotate_right';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-slideshow::before {
+    content: 'slideshow';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-straighten::before {
+    content: 'straighten';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-style::before {
+    content: 'style';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-switch-camera::before {
+    content: 'switch_camera';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-switch-video::before {
+    content: 'switch_video';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-tag-faces::before {
+    content: 'tag_faces';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-texture::before {
+    content: 'texture';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-timelapse::before {
+    content: 'timelapse';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-timer::before {
+    content: 'timer';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-timer-10::before {
+    content: 'timer_10';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-timer-3::before {
+    content: 'timer_3';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-timer-off::before {
+    content: 'timer_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-tonality::before {
+    content: 'tonality';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-transform::before {
+    content: 'transform';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-tune::before {
+    content: 'tune';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-view-comfy::before {
+    content: 'view_comfy';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-view-compact::before {
+    content: 'view_compact';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-vignette::before {
+    content: 'vignette';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wb-auto::before {
+    content: 'wb_auto';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wb-cloudy::before {
+    content: 'wb_cloudy';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wb-incandescent::before {
+    content: 'wb_incandescent';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wb-iridescent::before {
+    content: 'wb_iridescent';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wb-sunny::before {
+    content: 'wb_sunny';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-add-location::before {
+    content: 'add_location';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-beenhere::before {
+    content: 'beenhere';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions::before {
+    content: 'directions';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-bike::before {
+    content: 'directions_bike';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-boat::before {
+    content: 'directions_boat';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-bus::before {
+    content: 'directions_bus';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-car::before {
+    content: 'directions_car';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-railway::before {
+    content: 'directions_railway';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-run::before {
+    content: 'directions_run';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-subway::before {
+    content: 'directions_subway';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-transit::before {
+    content: 'directions_transit';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-directions-walk::before {
+    content: 'directions_walk';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-edit-location::before {
+    content: 'edit_location';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-ev-station::before {
+    content: 'ev_station';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-flight::before {
+    content: 'flight';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hotel::before {
+    content: 'hotel';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-layers::before {
+    content: 'layers';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-layers-clear::before {
+    content: 'layers_clear';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-activity::before {
+    content: 'local_activity';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-airport::before {
+    content: 'local_airport';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-atm::before {
+    content: 'local_atm';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-bar::before {
+    content: 'local_bar';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-cafe::before {
+    content: 'local_cafe';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-car-wash::before {
+    content: 'local_car_wash';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-convenience-store::before {
+    content: 'local_convenience_store';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-dining::before {
+    content: 'local_dining';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-drink::before {
+    content: 'local_drink';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-florist::before {
+    content: 'local_florist';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-gas-station::before {
+    content: 'local_gas_station';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-grocery-store::before {
+    content: 'local_grocery_store';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-hospital::before {
+    content: 'local_hospital';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-hotel::before {
+    content: 'local_hotel';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-laundry-service::before {
+    content: 'local_laundry_service';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-library::before {
+    content: 'local_library';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-mall::before {
+    content: 'local_mall';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-movies::before {
+    content: 'local_movies';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-offer::before {
+    content: 'local_offer';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-parking::before {
+    content: 'local_parking';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-pharmacy::before {
+    content: 'local_pharmacy';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-phone::before {
+    content: 'local_phone';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-pizza::before {
+    content: 'local_pizza';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-play::before {
+    content: 'local_play';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-post-office::before {
+    content: 'local_post_office';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-printshop::before {
+    content: 'local_printshop';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-see::before {
+    content: 'local_see';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-shipping::before {
+    content: 'local_shipping';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-local-taxi::before {
+    content: 'local_taxi';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-map::before {
+    content: 'map';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-my-location::before {
+    content: 'my_location';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-navigation::before {
+    content: 'navigation';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-near-me::before {
+    content: 'near_me';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-person-pin::before {
+    content: 'person_pin';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-person-pin-circle::before {
+    content: 'person_pin_circle';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-pin-drop::before {
+    content: 'pin_drop';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-place::before {
+    content: 'place';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-rate-review::before {
+    content: 'rate_review';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-restaurant::before {
+    content: 'restaurant';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-restaurant-menu::before {
+    content: 'restaurant_menu';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-satellite::before {
+    content: 'satellite';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-store-mall-directory::before {
+    content: 'store_mall_directory';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-streetview::before {
+    content: 'streetview';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-subway::before {
+    content: 'subway';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-terrain::before {
+    content: 'terrain';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-traffic::before {
+    content: 'traffic';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-train::before {
+    content: 'train';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-tram::before {
+    content: 'tram';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-transfer-within-a-station::before {
+    content: 'transfer_within_a_station';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-zoom-out-map::before {
+    content: 'zoom_out_map';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-apps::before {
+    content: 'apps';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-back::before,
+.x-fi-arrow-left::before {
+    content: 'arrow_back';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-downward::before {
+    content: 'arrow_downward';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-drop-down::before {
+    content: 'arrow_drop_down';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-drop-down-circle::before {
+    content: 'arrow_drop_down_circle';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-drop-up::before {
+    content: 'arrow_drop_up';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-forward::before {
+    content: 'arrow_forward';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-arrow-upward::before {
+    content: 'arrow_upward';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-cancel::before {
+    content: 'cancel';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-check::before {
+    content: 'check';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-chevron-left::before {
+    content: 'chevron_left';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-chevron-right::before {
+    content: 'chevron_right';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-close::before {
+    content: 'close';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-expand-less::before {
+    content: 'expand_less';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-expand-more::before {
+    content: 'expand_more';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-first-page::before {
+    content: 'first_page';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-fullscreen::before {
+    content: 'fullscreen';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-fullscreen-exit::before {
+    content: 'fullscreen_exit';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-last-page::before {
+    content: 'last_page';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-menu::before {
+    content: 'menu';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-more-horiz::before {
+    content: 'more_horiz';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-more-vert::before {
+    content: 'more_vert';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-refresh::before {
+    content: 'refresh';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-subdirectory-arrow-left::before {
+    content: 'subdirectory_arrow_left';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-subdirectory-arrow-right::before {
+    content: 'subdirectory_arrow_right';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-adb::before {
+    content: 'adb';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-flat::before {
+    content: 'airline_seat_flat';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-flat-angled::before {
+    content: 'airline_seat_flat_angled';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-individual-suite::before {
+    content: 'airline_seat_individual_suite';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-legroom-extra::before {
+    content: 'airline_seat_legroom_extra';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-legroom-normal::before {
+    content: 'airline_seat_legroom_normal';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-legroom-reduced::before {
+    content: 'airline_seat_legroom_reduced';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-recline-extra::before {
+    content: 'airline_seat_recline_extra';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airline-seat-recline-normal::before {
+    content: 'airline_seat_recline_normal';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-bluetooth-audio::before {
+    content: 'bluetooth_audio';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-confirmation-number::before {
+    content: 'confirmation_number';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-disc-full::before {
+    content: 'disc_full';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-do-not-disturb::before {
+    content: 'do_not_disturb';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-do-not-disturb-alt::before {
+    content: 'do_not_disturb_alt';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-do-not-disturb-off::before {
+    content: 'do_not_disturb_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-do-not-disturb-on::before {
+    content: 'do_not_disturb_on';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-drive-eta::before {
+    content: 'drive_eta';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-enhanced-encryption::before {
+    content: 'enhanced_encryption';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-event-available::before {
+    content: 'event_available';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-event-busy::before {
+    content: 'event_busy';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-event-note::before {
+    content: 'event_note';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-folder-special::before {
+    content: 'folder_special';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-live-tv::before {
+    content: 'live_tv';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-mms::before {
+    content: 'mms';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-more::before {
+    content: 'more';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-network-check::before {
+    content: 'network_check';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-network-locked::before {
+    content: 'network_locked';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-no-encryption::before {
+    content: 'no_encryption';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-ondemand-video::before {
+    content: 'ondemand_video';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-personal-video::before {
+    content: 'personal_video';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-bluetooth-speaker::before {
+    content: 'phone_bluetooth_speaker';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-forwarded::before {
+    content: 'phone_forwarded';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-in-talk::before {
+    content: 'phone_in_talk';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-locked::before {
+    content: 'phone_locked';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-missed::before {
+    content: 'phone_missed';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-phone-paused::before {
+    content: 'phone_paused';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-power::before {
+    content: 'power';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-priority-high::before {
+    content: 'priority_high';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sd-card::before {
+    content: 'sd_card';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sim-card-alert::before {
+    content: 'sim_card_alert';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sms::before {
+    content: 'sms';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sms-failed::before {
+    content: 'sms_failed';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sync::before {
+    content: 'sync';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sync-disabled::before {
+    content: 'sync_disabled';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sync-problem::before {
+    content: 'sync_problem';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-system-update::before {
+    content: 'system_update';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-tap-and-play::before {
+    content: 'tap_and_play';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-time-to-leave::before {
+    content: 'time_to_leave';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-vibration::before {
+    content: 'vibration';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-voice-chat::before {
+    content: 'voice_chat';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-vpn-lock::before {
+    content: 'vpn_lock';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wc::before {
+    content: 'wc';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-wifi::before {
+    content: 'wifi';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-ac-unit::before {
+    content: 'ac_unit';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-airport-shuttle::before {
+    content: 'airport_shuttle';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-all-inclusive::before {
+    content: 'all_inclusive';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-beach-access::before {
+    content: 'beach_access';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-business-center::before {
+    content: 'business_center';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-casino::before {
+    content: 'casino';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-child-care::before {
+    content: 'child_care';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-child-friendly::before {
+    content: 'child_friendly';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-fitness-center::before {
+    content: 'fitness_center';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-free-breakfast::before {
+    content: 'free_breakfast';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-golf-course::before {
+    content: 'golf_course';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-hot-tub::before {
+    content: 'hot_tub';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-kitchen::before {
+    content: 'kitchen';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-pool::before {
+    content: 'pool';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-room-service::before {
+    content: 'room_service';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-rv-hookup::before {
+    content: 'rv_hookup';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-smoke-free::before {
+    content: 'smoke_free';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-smoking-rooms::before {
+    content: 'smoking_rooms';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-spa::before {
+    content: 'spa';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-cake::before {
+    content: 'cake';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-domain::before {
+    content: 'domain';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-group::before {
+    content: 'group';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-group-add::before {
+    content: 'group_add';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-location-city::before {
+    content: 'location_city';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-mood::before {
+    content: 'mood';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-mood-bad::before {
+    content: 'mood_bad';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-notifications::before {
+    content: 'notifications';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-notifications-active::before {
+    content: 'notifications_active';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-notifications-none::before {
+    content: 'notifications_none';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-notifications-off::before {
+    content: 'notifications_off';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-notifications-paused::before {
+    content: 'notifications_paused';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-pages::before {
+    content: 'pages';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-party-mode::before {
+    content: 'party_mode';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-people::before {
+    content: 'people';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-people-outline::before {
+    content: 'people_outline';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-person::before {
+    content: 'person';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-person-add::before {
+    content: 'person_add';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-person-outline::before {
+    content: 'person_outline';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-plus-one::before {
+    content: 'plus_one';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-poll::before {
+    content: 'poll';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-public::before {
+    content: 'public';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-school::before {
+    content: 'school';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sentiment-dissatisfied::before {
+    content: 'sentiment_dissatisfied';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sentiment-neutral::before {
+    content: 'sentiment_neutral';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sentiment-satisfied::before {
+    content: 'sentiment_satisfied';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sentiment-very-dissatisfied::before {
+    content: 'sentiment_very_dissatisfied';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-sentiment-very-satisfied::before {
+    content: 'sentiment_very_satisfied';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-share::before {
+    content: 'share';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-whatshot::before {
+    content: 'whatshot';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-check-box::before {
+    content: 'check_box';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-check-box-outline-blank::before {
+    content: 'check_box_outline_blank';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-indeterminate-check-box::before {
+    content: 'indeterminate_check_box';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-radio-button-checked::before {
+    content: 'radio_button_checked';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-radio-button-unchecked::before {
+    content: 'radio_button_unchecked';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-star::before {
+    content: 'star';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-star-border::before {
+    content: 'star_border';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/etc/mixins/icons.scss:8 */
+.md-icon-star-half::before {
+    content: 'star_half';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:68 */
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-style: normal;
+    src: local('Roboto Regular'), local('Roboto-Regular'), url("../../desktop/resources/fonts/roboto/Roboto-Regular.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:76 */
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 100;
+    font-style: normal;
+    src: local('Roboto Light'), local('Roboto-Light'), url("../../desktop/resources/fonts/roboto/Roboto-Light.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:85 */
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 600;
+    font-style: normal;
+    src: local('Roboto Medium'), local('Roboto-Medium'), url("../../desktop/resources/fonts/roboto/Roboto-Medium.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:94 */
+@font-face {
+    font-family: 'Roboto';
+    font-weight: 900;
+    font-style: normal;
+    src: local('Roboto Bold'), local('Roboto-Bold'), url("../../desktop/resources/fonts/roboto/Roboto-Bold.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:103 */
+@font-face {
+    font-family: 'Roboto';
+    font-weight: normal;
+    font-style: italic;
+    src: local('Roboto Italic'), local('Roboto-Italic'), url("../../desktop/resources/fonts/roboto/Roboto-Italic.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:114 */
+@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Material Icons'), local('MaterialIcons-Regular'), url("../../desktop/resources/fonts/MaterialIcons-Regular.ttf") format('truetype');
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Component.scss:123 */
+html,
+body {
+    font-family: 'Roboto', sans-serif;
+    color: #111;
+    color: var(--color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Indicator.scss:1 */
+.x-indicator span {
+    transition: background-color 0.25s ease-out, width 0.1s ease-out, height 0.1s ease-out;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/list/TreeItem.scss:1 */
+.x-gridcell.x-treelist-item {
+    border: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:10 */
+.x-button-fab .x-inner-el {
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.18), 2px 2px 5px 0 rgba(0, 0, 0, 0.12);
+    z-index: 2;
+    color: #222;
+    color: var(--accent-foreground-color);
+    display: flex;
+    width: 56px;
+    height: 56px;
+    background-color: #ff9800;
+    background-color: var(--accent-color);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 450ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:23 */
+.x-button-fab .x-ripple {
+    background-color: #222;
+    background-color: var(--accent-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:27 */
+.x-button-fab.x-hovered .x-inner-el {
+    background-color: #ffb74d;
+    background-color: var(--accent-pressed-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:31 */
+.x-keyboard-mode .x-button-fab.x-focused .x-inner-el {
+    background-color: #ffb74d;
+    background-color: var(--accent-pressed-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:36 */
+.x-big .x-button-fab .x-inner-el {
+    border-radius: 50%;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:41 */
+.x-button-fab .x-icon-el {
+    color: #222;
+    color: var(--accent-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:46 */
+.x-button-fab.x-pressing .x-inner-el {
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.21), 2px 2px 6px 0 rgba(0, 0, 0, 0.18);
+    z-index: 3;
+    background-color: #ffb74d;
+    background-color: var(--accent-pressed-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:48 */
+.x-button-fab.x-pressing .x-inner-el .x-icon-el {
+    color: #222;
+    color: var(--accent-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:57 */
+.x-docked-top .x-has-badge .x-badge-el {
+    top: -8px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Button.scss:63 */
+.x-has-badge .x-badge-el {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: center;
+    display: block;
+    overflow: hidden;
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.12), 2px 2px 5px 0 rgba(0, 0, 0, 0.08);
+    z-index: 1;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Toolbar.scss:1 */
+.x-toolbar-body-el {
+    overflow: visible;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Toolbar.scss:6 */
+.x-toolbar-body-el > .x-title {
+    transition: 0.25s padding ease-out;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:3 */
+.x-panelheader .x-field {
+    background-color: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.38);
+    border-bottom-color: var(--reverse-disabled-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:7 */
+.x-panelheader .x-field .x-label-el {
+    color: #ff9800;
+    color: var(--accent-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:11 */
+.x-panelheader .x-field.x-focused {
+    border-bottom-color: #ff9800;
+    border-bottom-color: var(--accent-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:17 */
+.x-panelheader .x-input .x-cleartrigger .x-icon-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:22 */
+.x-panelheader .x-input .x-input-el {
+    -webkit-text-fill-color: #fff;
+    -webkit-text-fill-color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:28 */
+.x-panelheader .x-toggleslider.x-on {
+    background-color: #ffb74d;
+    background-color: var(--accent-pressed-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/Panel.scss:32 */
+.x-panelheader .x-toggleslider.x-on .x-thumb:after {
+    background-color: #ff9800;
+    background-color: var(--accent-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/dataview/ItemHeader.scss:2 */
+.x-itemheader.x-pinned {
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.12), 2px 2px 5px 0 rgba(0, 0, 0, 0.08);
+    z-index: 3;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/dataview/SimpleListItem.scss:1 */
+.x-listitem-disclosure .x-icon-el {
+    transition: background-color 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/dataview/IndexBar.scss:1 */
+.x-indexbar-indicator {
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.18), 2px 2px 5px 0 rgba(0, 0, 0, 0.12);
+    z-index: 2;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/slider/Slider.scss:2 */
+.x-slider .x-thumb {
+    transition: transform 0.15s ease-out;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/slider/Slider.scss:5 */
+.x-slider .x-thumb:active {
+    -webkit-transform: scale(1.5);
+    transform: scale(1.5);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/slider/Slider.scss:9 */
+.x-slider .x-thumb.x-disabled:active {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/slider/Toggle.scss:1 */
+.x-toggleslider .x-thumb {
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.12), 2px 2px 5px 0 rgba(0, 0, 0, 0.08);
+    z-index: 1;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-material/sass/src/slider/Toggle.scss:4 */
+.x-toggleslider .x-thumb:active {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/Component.scss:9 */
+.x-d3 {
+    /**
+ * @class Ext.d3.Component
+ */
+    overflow: hidden;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/svg/Svg.scss:2 */
+.x-d3 svg {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    -ms-user-select: none;
+    display: block;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/svg/Svg.scss:9 */
+.x-d3-invisible {
+    visibility: hidden;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/svg/Svg.scss:13 */
+.x-d3-hidden {
+    display: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:5 */
+.x-d3-hierarchy {
+    /**
+ * @class Ext.d3.hierarchy.Hierarchy
+ */
+    -webkit-tap-highlight-color: transparent;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:8 */
+.x-d3-hierarchy .x-d3-link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:14 */
+.x-d3-hierarchy .x-d3-node {
+    cursor: default;
+    fill: #ddd;
+    stroke: #314b8b;
+    stroke-width: 1px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:21 */
+.x-d3-hierarchy .x-d3-node .x-d3-label {
+    fill: black;
+    stroke: none;
+    font-size: 14px;
+    font-weight: normal;
+    font-family: Roboto, sans-serif;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:30 */
+.x-d3-hierarchy .x-d3-node.x-d3-parent {
+    cursor: pointer;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:33 */
+.x-d3-hierarchy .x-d3-node.x-d3-parent .x-d3-label {
+    fill: #000;
+    stroke: none;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Roboto, sans-serif;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/Hierarchy.scss:49 */
+.x-d3-hierarchy .x-d3-node.x-d3-selected {
+    fill: gold;
+    stroke: red;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/tree/Tree.scss:7 */
+.x-d3-tree .x-d3-node {
+    /**
+ * @class Ext.d3.hierarchy.Tree
+ */
+    stroke-width: 2px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/tree/Tree.scss:13 */
+.x-d3-tree .x-d3-label {
+    dominant-baseline: middle;
+    text-anchor: start;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/tree/Tree.scss:20 */
+.x-d3-tree .x-d3-parent .x-d3-label {
+    text-anchor: end;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/tree/Tree.scss:29 */
+.x-rtl .x-d3-tree .x-d3-label {
+    text-anchor: end;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/hierarchy/tree/Tree.scss:33 */
+.x-rtl .x-d3-tree .x-d3-parent .x-d3-label {
+    text-anchor: start;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:1 */
+.x-d3-scroll {
+    display: none;
+    position: absolute;
+    background: none;
+    z-index: 5;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:8 */
+.x-d3-hscroll {
+    bottom: 0;
+    width: 100%;
+    height: 12px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:14 */
+.x-d3-vscroll {
+    right: 0;
+    width: 12px;
+    height: 100%;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:20 */
+.x-d3-scrollbar {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.25);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:25 */
+.x-d3-hscrollbar {
+    bottom: 4px;
+    width: 100%;
+    height: 4px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:32 */
+.x-d3-vscrollbar {
+    right: 4px;
+    width: 4px;
+    height: 100%;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    -o-border-radius: 2px;
+    border-radius: 2px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:40 */
+.x-rtl .x-d3-vscroll {
+    left: 0;
+    right: auto;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-d3/sass/src/d3/interaction/PanZoom.scss:44 */
+.x-rtl .x-d3-vscrollbar {
+    left: 4px;
+    right: auto;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:1 */
+.x-pivot-grid-group-icon {
+    display: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:5 */
+.x-pivot-grid-group-header-collapsible {
+    cursor: pointer;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:6 */
+.x-pivot-grid-group-header-collapsible .x-body-el,
+.x-pivot-grid-group-header-collapsible .x-text-el {
+    display: flex;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:11 */
+.x-pivot-grid-group-header-collapsible .x-pivot-grid-group-icon {
+    display: flex;
+    margin: 0 6px 0;
+    height: 18px;
+    width: 18px;
+    color: #b0b0b0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:19 */
+.x-big .x-pivot-grid-group-header-collapsible .x-pivot-grid-group-icon {
+    height: 24px;
+    width: 24px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-base/sass/etc/mixins/icon.scss:93 */
+.x-pivot-grid-group-header-collapsible .x-pivot-grid-group-icon:before {
+    content: 'expand_less';
+    font-family: 'Material Icons';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-pivot/modern/sass/src/pivot/Grid.scss:35 */
+.x-pivot-grid-group-title {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-base/sass/etc/mixins/icon.scss:93 */
+.x-pivot-grid-group-header-collapsed .x-pivot-grid-group-icon:before {
+    content: 'expand_more';
+    font-family: 'Material Icons';
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/home/HomeView.scss:2 */
+.homeview {
+    color: #111;
+    color: var(--color);
+    font-size: 18px;
+    background-color: #fff;
+    background-color: var(--base-foreground-color);
+    padding: 15px 0px 0px 15px;
+    border: 1px solid lightgray;
+    box-shadow: 2px 2px 8px 0 rgba(0, 0, 0, 0.4);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:9 */
+.relationshipview > .x-body-el {
+    /**
+* Apply padding to all elements inside body of the relationshipview
+*/
+    padding: 20px 0 0 20px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:16 */
+.relationshipview-item {
+    /**
+* Default settings for all relationshipview items 
+*/
+    margin: 0 20px 20px 0;
+    float: left;
+    width: calc(100% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:27 */
+.relationshipview-item.last-in-row {
+    /** This is a new way of writing called parent selector reference
+    *   its the same as writing a rule as this
+    * @example .relationshipview-item .last-in-row    === &.last-in-row
+    * Last in row class is a class set for Itemms manually in relationshipview.js whenever its the last item in the row
+    */
+    margin-right: 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:31 */
+.small-100 {
+    width: calc(100% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:35 */
+.small-60 {
+    width: calc(60% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:39 */
+.small-50 {
+    width: calc(50% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:43 */
+.small-40 {
+    width: calc(40% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/settings/relationships/RelationshipView.scss:47 */
+.small-20 {
+    width: calc(20% - 20px);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/center/CenterView.scss:1 */
+.centerview {
+    border-left: 0;
+    border-top: 0;
+    padding: 10px 10px 10px 10px;
+    background-color: #fff;
+    background-color: var(--base-foreground-color);
+    color: #22191a;
+    font-size: 24px;
+    background-image: linear-gradient(0deg, #f5f5f5 1.1px, transparent 0), linear-gradient(90deg, #f5f5f5 1.1px, transparent 0);
+    background-size: 20px 20px;
+    background-color: #e8e8e8;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/detail/DetailView.scss:1 */
+.detailview {
+    border-left: 0;
+    border-top: 0;
+    color: #22191a;
+    background-color: #fff;
+    background-color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/footer/FooterView.scss:1 */
+.footerview {
+    border-left: 0;
+    border-top: 0;
+    color: #fff;
+    color: var(--base-foreground-color);
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/footer/FooterView.scss:8 */
+.footerviewtext {
+    font-size: 16px;
+    color: #fff;
+    color: var(--base-foreground-color);
+    padding: 0 0 0 15px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1283 */
+.x-button-footerbutton {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1297 */
+.x-button-footerbutton .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1321 */
+.x-button-footerbutton .x-icon-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1371 */
+.x-button-footerbutton .x-arrow-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1442 */
+.x-button-footerbutton.x-hovered .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1466 */
+.x-button-footerbutton.x-pressing,
+.x-button-footerbutton.x-pressed {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1475 */
+.x-button-footerbutton.x-pressing .x-inner-el,
+.x-keyboard-mode .x-button-footerbutton.x-pressing .x-inner-el,
+.x-button-footerbutton.x-pressed .x-inner-el,
+.x-keyboard-mode .x-button-footerbutton.x-pressed .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1480 */
+.x-button-footerbutton.x-pressing .x-icon-el,
+.x-button-footerbutton.x-pressed .x-icon-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1484 */
+.x-button-footerbutton.x-pressing .x-arrow-el,
+.x-button-footerbutton.x-pressed .x-arrow-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/header/HeaderView.scss:1 */
+.headerview {
+    border-left: 0;
+    border-top: 0;
+    color: #fff;
+    color: var(--base-foreground-color);
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/header/HeaderView.scss:8 */
+.headerviewtext {
+    font-size: 28px;
+    padding: 0 0 0 15px;
+    line-height: 50px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1283 */
+.x-button-headerbutton {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1297 */
+.x-button-headerbutton .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1321 */
+.x-button-headerbutton .x-icon-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1371 */
+.x-button-headerbutton .x-arrow-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1442 */
+.x-button-headerbutton.x-hovered .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1466 */
+.x-button-headerbutton.x-pressing,
+.x-button-headerbutton.x-pressed {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1475 */
+.x-button-headerbutton.x-pressing .x-inner-el,
+.x-keyboard-mode .x-button-headerbutton.x-pressing .x-inner-el,
+.x-button-headerbutton.x-pressed .x-inner-el,
+.x-keyboard-mode .x-button-headerbutton.x-pressed .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1480 */
+.x-button-headerbutton.x-pressing .x-icon-el,
+.x-button-headerbutton.x-pressed .x-icon-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1484 */
+.x-button-headerbutton.x-pressing .x-arrow-el,
+.x-button-headerbutton.x-pressed .x-arrow-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/bottom/BottomView.scss:1 */
+.bottomview {
+    border-left: 0;
+    border-top: 0;
+    padding: 0;
+    color: #fff;
+    color: var(--base-foreground-color);
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1283 */
+.x-button-bottomviewbutton {
+    color: #fff;
+    color: var(--base-foreground-color);
+    font-size: 20px;
+    line-height: 30px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1297 */
+.x-button-bottomviewbutton .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1321 */
+.x-button-bottomviewbutton .x-icon-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-base/sass/etc/mixins/icon.scss:93 */
+.x-button-bottomviewbutton .x-icon-el:before {
+    font-size: 34px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1331 */
+.x-button-bottomviewbutton.x-has-text.x-icon-align-left .x-icon-el {
+    margin-right: 20px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1341 */
+.x-button-bottomviewbutton.x-has-text.x-icon-align-right .x-icon-el {
+    margin-left: 20px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1371 */
+.x-button-bottomviewbutton .x-arrow-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1402 */
+.x-button-bottomviewbutton .x-text-el {
+    min-height: 30px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1442 */
+.x-button-bottomviewbutton.x-hovered .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1466 */
+.x-button-bottomviewbutton.x-pressing,
+.x-button-bottomviewbutton.x-pressed {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1475 */
+.x-button-bottomviewbutton.x-pressing .x-inner-el,
+.x-keyboard-mode .x-button-bottomviewbutton.x-pressing .x-inner-el,
+.x-button-bottomviewbutton.x-pressed .x-inner-el,
+.x-keyboard-mode .x-button-bottomviewbutton.x-pressed .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1480 */
+.x-button-bottomviewbutton.x-pressing .x-icon-el,
+.x-button-bottomviewbutton.x-pressed .x-icon-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1484 */
+.x-button-bottomviewbutton.x-pressing .x-arrow-el,
+.x-button-bottomviewbutton.x-pressed .x-arrow-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/bottom/BottomView.scss:23 */
+.bottomview .x-toolbar-body-el {
+    padding: 6px 5px 2px 1px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/top/TopView.scss:1 */
+.topview {
+    border-left: 0;
+    border-top: 0;
+    padding: 0 0 0 0;
+    color: #fff;
+    color: var(--base-foreground-color);
+    background-color: #0074d9;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/top/TopView.scss:10 */
+.topviewtext {
+    font-size: 28px;
+    padding: 0 0 0 15px;
+    line-height: 50px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1283 */
+.x-button-topviewbutton {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1297 */
+.x-button-topviewbutton .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1321 */
+.x-button-topviewbutton .x-icon-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-base/sass/etc/mixins/icon.scss:93 */
+.x-button-topviewbutton .x-icon-el:before {
+    font-size: 18px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1371 */
+.x-button-topviewbutton .x-arrow-el {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1442 */
+.x-button-topviewbutton.x-hovered .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1466 */
+.x-button-topviewbutton.x-pressing,
+.x-button-topviewbutton.x-pressed {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1475 */
+.x-button-topviewbutton.x-pressing .x-inner-el,
+.x-keyboard-mode .x-button-topviewbutton.x-pressing .x-inner-el,
+.x-button-topviewbutton.x-pressed .x-inner-el,
+.x-keyboard-mode .x-button-topviewbutton.x-pressed .x-inner-el {
+    border-color: transparent;
+    background-color: transparent;
+    background-image: none;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1480 */
+.x-button-topviewbutton.x-pressing .x-icon-el,
+.x-button-topviewbutton.x-pressed .x-icon-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-modern-theme-neptune/sass/var/Button.scss:1484 */
+.x-button-topviewbutton.x-pressing .x-arrow-el,
+.x-button-topviewbutton.x-pressed .x-arrow-el {
+    color: #fff;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/top/TopView.scss:25 */
+.topview .x-toolbar-body-el {
+    padding: 6px 5px 2px 1px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/menu/MenuView.scss:13 */
+.x-treelist-nav .x-treelist-item-icon,
+.x-treelist-nav .x-treelist-item-tool {
+    color: #fff;
+    font-size: 16px;
+    width: 24px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/app/desktop/src/view/main/nav/menu/MenuView.scss:21 */
+.x-treelist-nav .x-treelist-item-selected.x-treelist-item-tool::after {
+    height: 95%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: " ";
+    width: 4px;
+    background-color: #ff9800;
+    background-color: var(--accent-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:495 */
+.x-treelist-nav {
+    background-color: #22191a;
+    background-position: 24px 0%;
+    padding: 5px 0 0 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:103 */
+.x-treelist-nav .x-treelist-toolstrip {
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:112 */
+.x-treelist-nav .x-treelist-item-selected.x-treelist-item-tool {
+    color: #0074d9;
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:134 */
+.x-treelist-nav .x-treelist-item-selected > .x-treelist-row {
+    background-color: #0074d9;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:143 */
+.x-treelist-nav .x-treelist-item-tool {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:150 */
+.x-treelist-nav .x-treelist-item-tool-floated:after {
+    height: 35px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: " ";
+    width: 3px;
+    background-color: #0074d9;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:166 */
+.x-treelist-nav .x-treelist-item-icon:before,
+.x-treelist-nav .x-treelist-item-tool:before,
+.x-treelist-nav .x-treelist-item-expander {
+    line-height: 35px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:178 */
+.x-treelist-nav .x-treelist-item-icon,
+.x-treelist-nav .x-treelist-item-tool,
+.x-treelist-nav .x-treelist-item-expander {
+    text-align: center;
+    background-repeat: no-repeat;
+    background-position: 0 center;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:188 */
+.x-treelist-nav .x-treelist-item-loading .x-treelist-item-icon {
+    background-image: url(images/tree/loading.gif);
+    color: transparent;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:193 */
+.x-treelist-nav .x-treelist-item-icon,
+.x-treelist-nav .x-treelist-item-tool {
+    color: #fff;
+    color: var(--base-foreground-color);
+    font-size: 16px;
+    width: 24px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:206 */
+.x-treelist-nav .x-treelist-item-tool {
+    width: 44px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:216 */
+.x-treelist-nav .x-treelist-item-expander {
+    color: #fff;
+    color: var(--base-foreground-color);
+    font-size: 16px;
+    width: 24px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:253 */
+.x-treelist-nav .x-treelist-item-text {
+    color: #fff;
+    color: var(--base-foreground-color);
+    margin-left: 25px;
+    margin-right: 24px;
+    font-size: 16px;
+    line-height: 35px;
+    text-overflow: initial;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:270 */
+.x-treelist-nav .x-treelist-row {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:276 */
+.x-treelist-nav .x-treelist-row-over:before,
+.x-treelist-nav .x-treelist-item-selected > .x-treelist-row:before {
+    content: " ";
+    position: absolute;
+    display: block;
+    left: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:287 */
+.x-treelist-nav .x-treelist-row-over:before {
+    background-color: #f57c00;
+    background-color: var(--accent-dark-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:291 */
+.x-treelist-nav .x-treelist-item-selected > .x-treelist-row-over:before {
+    background-color: #ffe0b2;
+    background-color: var(--accent-light-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:295 */
+.x-treelist-nav .x-treelist-item-selected > .x-treelist-row:before {
+    background-color: #ff9800;
+    background-color: var(--accent-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:301 */
+.x-treelist-nav .x-treelist-item-floated .x-treelist-container {
+    width: auto;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:304 */
+.x-treelist-nav .x-treelist-item-floated > .x-treelist-row {
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:308 */
+.x-treelist-nav .x-treelist-item-floated > .x-treelist-container {
+    margin-left: -10px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:311 */
+.x-big .x-treelist-nav .x-treelist-item-floated > .x-treelist-container {
+    margin-left: -10px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:317 */
+.x-treelist-nav .x-treelist-item-floated > * > * > .x-treelist-item-text {
+    margin-left: 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:321 */
+.x-treelist-nav .x-treelist-item-floated > * .x-treelist-row {
+    cursor: pointer;
+    padding-left: 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:326 */
+.x-treelist-nav .x-treelist-item-floated .x-treelist-row:before {
+    width: 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:330 */
+.x-treelist-nav .x-treelist-item-floated > .x-treelist-row-over {
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:333 */
+.x-treelist-nav .x-treelist-item-floated > .x-treelist-row-over > * > .x-treelist-item-text {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:339 */
+.x-treelist-nav .x-treelist-item-expanded {
+    background-color: transparent;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:342 */
+.x-treelist-nav .x-treelist-item-expanded .x-treelist-item {
+    background-color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:357 */
+.x-treelist-nav .x-treelist-highlight-path .x-treelist-item-over > * > * > .x-treelist-item-icon {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:361 */
+.x-treelist-nav .x-treelist-highlight-path .x-treelist-item-over > * > * > .x-treelist-item-text {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:365 */
+.x-treelist-nav .x-treelist-highlight-path .x-treelist-item-over > * > * > .x-treelist-item-expander {
+    color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:372 */
+.x-treelist-nav .x-treelist-row-over {
+    background-color: #303030;
+    background-color: var(--reverse-background-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:376 */
+.x-treelist-nav .x-treelist-row-over > * > .x-treelist-item-icon {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:380 */
+.x-treelist-nav .x-treelist-row-over > * > .x-treelist-item-text {
+    color: #fff;
+    color: var(--base-foreground-color);
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:384 */
+.x-treelist-nav .x-treelist-row-over > * > .x-treelist-item-expander {
+    color: #22191a;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:391 */
+.x-treelist-nav .x-treelist-expander-first .x-treelist-item-icon {
+    left: 24px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:400 */
+.x-treelist-nav .x-treelist-expander-first .x-treelist-item-text {
+    margin-left: 49px;
+    margin-right: 0;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:410 */
+.x-treelist-nav .x-treelist-expander-first .x-treelist-item-hide-icon > * > * > .x-treelist-item-text {
+    margin-left: 24.5px;
+}
+/* /home/perbol/devel/go/src/alert/frontend/alert-manager/node_modules/@sencha/ext-core/sass/src/list/TreeItem.scss:420 */
+.x-treelist-nav .x-treelist-item-hide-icon > * > * > .x-treelist-item-text {
+    margin-left: 0.5px;
+}

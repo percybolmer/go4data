@@ -1,110 +1,73 @@
 package workflow
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"errors"
 	"sync"
-	"time"
-
-	"github.com/percybolmer/workflow/flow"
 )
 
-// Application is a container for workflows
+var (
+	//ErrDuplicateName is thrown when trying to add a Workflow to an Application with a name that is already registerd
+	ErrDuplicateName = errors.New("There is already an workflow with that name in the the application")
+	//ErrAlreadyRunning is when trying to start an Processor that is already running
+	ErrAlreadyRunning = errors.New("This processor does not support MultiRun")
+	//ErrNotStarted is when trying to cancel a not started processor
+	ErrNotStarted = errors.New("Cannot stop an processor that is not running")
+	//ErrWorkflowNotFound is when no Workflow with an name is not found
+	ErrWorkflowNotFound = errors.New("No workflow with that given name is found")
+)
+
+// Application is a struct that holds many Workflows.
+// @see Workflow to know what that means
+// THe application is just a container for many Workflows that can be run / stopped
 type Application struct {
-	Name    string      `json:"application"`
-	Flows   []*Workflow `json:"workflows"`
-	APIPort int         `json:"apiport"`
+	Name      string               `json:"name"`
+	Workflows map[string]*Workflow `json:"workflows"`
 	sync.RWMutex
 }
 
-// NewApplication will return a pointer to a freshly inited Application
+// NewApplication will create a new Application with fresh settings and all values needed initialized
 func NewApplication(name string) *Application {
 	return &Application{
-		Name:  name,
-		Flows: make([]*Workflow, 0),
+		Name:      name,
+		Workflows: make(map[string]*Workflow, 0),
 	}
 }
 
-// AddWorkFlow is used to add a workflow into the application
-func (a *Application) AddWorkFlow(w *Workflow) {
+// AddWorkflow is used to add a new Workflow to the Application
+// It will throw an error if you try to add a workflow that already exists inside the Application
+func (a *Application) AddWorkflow(w *Workflow) error {
+	if _, ok := a.Workflows[w.Name]; ok {
+		return ErrDuplicateName
+	}
 	a.Lock()
 	defer a.Unlock()
-	a.Flows = append(a.Flows, w)
-}
-
-// NewApplicationFromFile will return a pointer to a freshly intied application
-// based on a workflow config file, see the
-// exampleflows at percybolmer/workflow/exampleflows
-func NewApplicationFromFile(path string) (*Application, error) {
-	a := &Application{
-		Flows: make([]*Workflow, 0),
-	}
-	err := a.LoadWorkflowFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return a, nil
-
-}
-
-// Run will start an Application and all its Flows
-func (a *Application) Run() {
-	var wg sync.WaitGroup
-	a.RLock()
-	defer a.RUnlock()
-	for _, flow := range a.Flows {
-		flow.Start(&wg)
-	}
-	// Wait until all Flows are upp and Running
-	wg.Wait()
-}
-
-//LoadWorkflowFile is used to get the workflow file and unmarshal it
-// will panic since the workflow file is a needed element to actually run the program
-func (a *Application) LoadWorkflowFile(path string) error {
-	workfile, err := ioutil.ReadFile(path)
-	if err != nil {
-		return err
-	}
-	var config Application
-	err = json.Unmarshal(workfile, &config)
-	if err != nil {
-		return err
-	}
-
-	a.APIPort = config.APIPort
-	// TODO go through all configs properly and add all Flows and Init statistics
-	// Quick and Dirty way to Init all Flows, Loading the Config works fine, but Channels and others are not
-	// correctly inited that way, this way we will create a NewFlow for each flow in the config to correct that
-	for _, configWorkflows := range config.Flows {
-		// See if statistics is configured, if not it will set the default Value as duration
-		// If the processors does not have a Duration config set, it will use the workflows
-		var statDuration time.Duration
-		var url string
-		var port int
-		var promexport bool
-		if configWorkflows.Statistics != nil {
-			if configWorkflows.Statistics.Duration != 0 {
-				// Convert input to seconds
-				statDuration = configWorkflows.Statistics.Duration * time.Second
-			}
-			url = configWorkflows.Statistics.URL
-			port = configWorkflows.Statistics.Port
-			promexport = configWorkflows.Statistics.PromExport
-		}
-		newWorkFlow := NewWorkFlow(configWorkflows.Name, configWorkflows.LogPath, statDuration)
-
-		for _, processor := range configWorkflows.Processors {
-			newFlow := flow.NewFlow(processor.ProcessorName, nil, processor.Configuration, newWorkFlow.Statistics)
-			newWorkFlow.AddFlow(newFlow)
-		}
-
-		if promexport {
-			newWorkFlow.Statistics.ExportToPrometheus(url, port)
-		}
-		a.AddWorkFlow(newWorkFlow)
-
-	}
-
+	a.Workflows[w.Name] = w
 	return nil
+}
+
+// AddProcessor is used to add an Processor to an given Workflow
+func (a *Application) AddProcessor(p Processor, workflowName string) error {
+	if _, ok := a.Workflows[workflowName]; !ok {
+		return ErrWorkflowNotFound
+	}
+	a.Workflows[workflowName].AddProcessor(p)
+	return nil
+}
+
+// Start will trigger the all the Workflows to run Start on all the Processors
+func (a *Application) Start() error {
+	for _, w := range a.Workflows {
+		err := w.Start()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Stop will trigger all worksflows confiugred to be stopped
+func (a *Application) Stop() {
+	for _, w := range a.Workflows {
+		w.Stop()
+	}
 }

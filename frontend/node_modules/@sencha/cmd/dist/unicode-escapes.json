@@ -1,0 +1,16 @@
+/*
+  This file defines a set of characters that will be unicode escaped in string
+  literals during code generation / concatenation.  It is an array of elements
+  where each element has the possible forms:
+
+  Integer - represents the code point to escape
+  String - each character in the string will be a code point to escape
+  Array of 2 Integers - the start and end (inclusive) of a range of code
+                        points to escape
+  Array of 2 Strings  - the start and end (inclusive) of a range of code
+                        points to escape (specified by the first char in the string)
+ */
+[
+  ["\u2000","\u2064"],
+  "\u00a0\u1680\u180e\u3000\ufeff"
+]

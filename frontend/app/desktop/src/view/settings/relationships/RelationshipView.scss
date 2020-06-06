@@ -1,0 +1,49 @@
+/**
+*  Dashboard defaul variables
+*/
+$item-spacing: dynamic(20px);
+
+/**
+* Apply padding to all elements inside body of the relationshipview
+*/
+.relationshipview > .x-body-el {
+    padding: $item-spacing 0 0 $item-spacing;
+    
+}
+/**
+* Default settings for all relationshipview items 
+*/
+.relationshipview-item{
+    margin: 0 $item-spacing $item-spacing 0;
+    float: left;
+
+    // Use calc function to determine 100% width - the spacing 
+    width: calc(100% - #{$item-spacing});
+    /** This is a new way of writing called parent selector reference
+    *   its the same as writing a rule as this
+    * @example .relationshipview-item .last-in-row    === &.last-in-row
+    * Last in row class is a class set for Itemms manually in relationshipview.js whenever its the last item in the row
+    */
+    &.last-in-row{
+        margin-right: 0;
+    }
+}
+.small-100 {
+    width: calc(100% - #{$item-spacing});
+}
+
+.small-60 {
+    width: calc(60% - #{$item-spacing});
+}
+
+.small-50 {
+    width: calc(50% - #{$item-spacing});
+}
+
+.small-40 {
+    width: calc(40% - #{$item-spacing});
+}
+
+.small-20 {
+    width: calc(20% - #{$item-spacing});
+}

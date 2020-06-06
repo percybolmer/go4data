@@ -1,0 +1,276 @@
+'use strict';
+
+var Base = require('orion-core/lib/Base');
+var fs = require('fs');
+var Util = require('orion-core/lib/Util');
+var constants = require('constants');
+var child_process = require('child_process');
+
+class WindowsFileOperations extends Base {
+    static setStuPath (path) {
+        var me = this,
+            prototype = me.prototype;
+
+        me.stuPath = path;
+
+        if (path && !prototype._winHooks) {
+            applyHooks(prototype);
+        }
+    }
+
+    static getStuPath() {
+        return this.stuPath;
+    }
+
+    getStuDirArg () {
+        var path = this.path;
+
+        if (path.lastIndexOf(this.separator) === path.length-1) {
+            return path + "*";
+        } else {
+            return path + "/*";
+        }
+    }
+}
+
+function applyHooks (target) {
+    Object.assign(target, {
+        _winHooks: true,
+
+        getFiles : function(recursive) {
+            var me = this;
+
+            return new Promise(function (resolve, reject) {
+                var promises = [];
+                var files = [];
+
+                me._winSpawnFindFile(me.getStuDirArg()).then(function(lines) {
+                    if (lines) {
+                        lines.forEach(function(line) {
+                            var f = me._winFindFileLineToFile(me, line);
+
+                            if (f) {
+                                files.push(f);
+
+                                if (recursive && f.isDirectory()) {
+                                    promises.push(new Promise(function (resolve, reject) {
+                                        f.getFiles(true).then(function(files) {
+                                            f.items = files;
+                                            resolve(f);
+                                        }, reject);
+                                    }));
+                                }
+                            }
+                        });
+                    }
+
+                    if (promises.length > 0) {
+                        Promise.all(promises).then(function () {
+                            files.sort(me.constructor.fileStatSorter);
+                            resolve(files);
+                        }, reject);
+                    } else {
+                        files.sort(me.constructor.fileStatSorter);
+                        resolve(files);
+                    }
+                }, reject);
+            });
+        },
+
+        getFilesSync : function(recursive) {
+            var me = this;
+
+            var files = [];
+            var lines = me._winSpawnFindFileSync(me.getStuDirArg());
+
+            for (var i=0; i < lines.length; i++) {
+                var f = me._winFindFileLineToFile(me, lines[i]);
+                if (f) {
+                    files.push(f);
+                    if (recursive && f.isDirectory()) { // CRAIG TODO need a global show Hidden or not...
+                        f.items = f.getFilesSync(true);
+                    }
+                }
+            }
+            return files;
+        },
+
+        getStat : function() {
+            var me = this;
+
+            return new Promise(function(resolve, reject) {
+                me._winSpawnFindFile(me.path).then(function(lines) {
+                    var stat = false;
+
+                    if (lines && lines.length == 1) {
+                        stat = me._winFindFileLineToStat(lines[0]);
+                        delete stat.path;
+                    }
+                    resolve(stat);
+                },function(err) {
+                    resolve(false);
+                });
+            });
+        },
+
+        getStatSync : function() {
+            var me = this;
+            var stat = false;
+            var lines = me._winSpawnFindFileSync(me.path);
+
+            if (lines && lines.length == 1) {
+                stat = me._winFindFileLineToStat(lines[0]);
+                delete stat.path;
+            }
+            return stat;
+        },
+
+        isHidden : function() {
+            var me = this;
+
+            if (me.name && me.name[0] === '.') {
+                return true;
+            }
+
+            if (me.stat === undefined) {
+                me.stat = me.getStatSync();
+            }
+
+            return me.stat && me.stat.attrib.indexOf('H') != -1;
+        },
+
+        _winSpawnFindFile : function( path ) {
+            var me = this;
+
+            return new Promise(function(resolve, reject) {
+                var lines = "";
+                var proc = child_process.spawn(
+                    me.constructor.getStuPath(),
+                    ['dir',path],
+                    {encoding: 'utf8'}
+                );
+
+                proc.stdout.on('data', function(data) {
+                    lines += data.toString();
+                });
+
+                proc.on('error', function(err) {
+                    console.log("_winSpawnFindFile() on error, path="+path+", err="+err);
+                });
+
+                proc.on('exit', function(code,signal) {
+                    // console.log("_winSpawnFindFile() on exit, path="+path+", code="+code+", signal="+signal);
+                });
+
+                proc.on('close', function(code,signal) {
+                    // console.log("_winSpawnFindFile() on close, path="+path+", code="+code+", signal="+signal+", raw lines="+lines);
+
+                    lines = lines.trim();
+                    if (proc.exitCode != 0) {
+                        // console.log("_winSpawnFindFile() path="+path+", exitCode="+proc.exitCode+", so resolving false.");
+                        resolve(false);
+                    } else if (lines === "") {
+                        // console.log("_winSpawnFindFile() path="+path+", lines was empty, so resolve with empty list.");
+                        resolve([]);
+                    } else {
+                        // console.log("_winSpawnFindFile() path="+path+", returning lines:",lines.split('\r\n'));
+                        resolve(lines.split('\r\n'));
+                    }
+                });
+            });
+        },
+
+        _winSpawnFindFileSync : function( path ) {
+            var me = this;
+
+            var proc = child_process.spawnSync(
+                me.constructor.getStuPath(),
+                ['dir',path],
+                {encoding:'utf8'}
+            );
+
+            if (proc.error) {
+                throw proc.error;
+            }
+
+            if (proc.status === 1) {
+                return false;
+            }
+
+            if (proc.stdout.toString().trim() === "") {
+                return [];
+            }
+
+            return proc.stdout.toString().trim().split('\r\n');
+        },
+
+        _winFindFileLineToFile : function( parent, line ) {
+            var stat = this._winFindFileLineToStat(line);
+            if (!stat) {
+                return false;
+            }
+
+            var f = this.constructor.get(parent.path).join(stat.path);
+            delete stat.path;
+            f.stat = stat;
+            return f;
+        },
+
+        /**
+         * parse fswin_line to stat
+         * @param line
+         * @returns {*}
+         * @private
+         */
+        _winFindFileLineToStat : function( line ){
+            var stat = new fs.Stats();
+
+            if (line === null || line === undefined) {
+                return false;
+            }
+            var fields = line.split('/');
+            if (fields.length != 6) {
+                return false;
+            }
+            stat.attrib = fields[0];
+            if (stat.attrib.indexOf('D') != -1) {
+                stat.mode |= constants.S_IFDIR;
+            } else {
+                stat.mode |= constants.S_IFREG;
+            }
+
+            // ftCreationTime
+            stat.birthtime = new Date()
+            stat.birthtime.setTime(parseInt(fields[1])*1000);
+            if (isNaN(stat.birthtime.getTime())) {
+                return false;
+            }
+
+            // ftLastAccessTime
+            stat.atime = new Date();
+            stat.atime.setTime(parseInt(fields[2])*1000);
+            if (isNaN(stat.atime.getTime())) {
+                return false;
+            }
+
+            // ftLastWriteTime
+            stat.mtime = new Date();
+            stat.mtime.setTime(parseInt(fields[3])*1000);
+            if (isNaN(stat.mtime.getTime())) {
+                return false;
+            }
+            // Windows doesn't have data on last status change versus modification
+            // so we just duplicate ctime (status change) to mtime (modification).
+            stat.ctime = stat.mtime;
+
+            stat.size = parseInt(fields[4]);
+            if (isNaN(stat.size)) {
+                return false;
+            }
+            stat.path = fields[5]; // temp holding place for filename
+            return stat;
+        }
+    });
+}
+
+module.exports = WindowsFileOperations;

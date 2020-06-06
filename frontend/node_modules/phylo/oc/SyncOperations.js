@@ -1,0 +1,121 @@
+'use strict';
+
+var Base = require('../Base');
+var fs = require('fs');
+var Util = require('orion-core/lib/Util');
+
+// defer loading ProcessUtil due to module circular dependency.
+var ProcessUtil = function() {
+    var module = require('orion-core/lib/process/ProcessUtil');
+    ProcessUtil = function() {
+        return module;
+    }
+    return module;
+}
+
+class SyncOperations extends Base {
+
+    getStatSync () {
+        try {
+            return fs.statSync(this.path);
+        } catch (e) {
+            return false;
+        }
+    }
+
+    existsSync () {
+        try {
+            fs.accessSync(this.path, fs.F_OK);
+            return true;
+        } catch (err) {
+            return false;
+        }
+    }
+
+    writeSync(data, options) {
+        var me = this,
+            parent = me.parent;
+        if (parent) {
+            parent.ensurePathExistsSync();
+        }
+        return fs.writeFileSync(me.getCanonicalPath(), data, Object.assign({
+            encoding: 'utf8'
+        }, options));
+    }
+
+    writeJsonSync (obj, options) {
+        var data = options && options.prettyPrint
+            ? JSON.stringify(obj, null, 4)
+            : JSON.stringify(obj);
+        this.writeSync(data, options);
+        return obj;
+    }
+
+    readSync (options) {
+        return fs.readFileSync(this.getCanonicalPath(), Object.assign({
+            encoding: 'utf8'
+        }, options));
+    }
+
+    readJsonSync (options) {
+        return JSON.parse(this.readSync(options));
+    }
+
+    ensurePathExistsSync() {
+        var me = this,
+            parent = me.parent;
+        if (parent) {
+            parent.ensurePathExistsSync();
+        }
+        if (me.path && !me.existsSync()) {
+            return fs.mkdirSync(me.path);
+        }
+        return null;
+    }
+
+    getFilesSync (recursive) {
+        var me = this;
+
+        return fs.readdirSync(me.path).map(function (item) {
+            var file = new me.constructor(me, item),
+                stat = file.getStatSync();
+            file.stat = stat;
+            if (recursive && stat && stat.isDirectory()) {
+                file.items = file.getFilesSync(true);
+            }
+            return file;
+        });
+    }
+
+    isHidden () {
+        var me = this;
+
+        if (me.name && me.name[0]==='.') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    isFile () {
+        var me = this;
+        if (me.stat === undefined) {
+            me.stat = me.getStatSync();
+        }
+        return me.stat && me.stat.isFile();
+    }
+
+    isDirectory () {
+        var me = this;
+        if (me.stat === undefined) {
+            me.stat = me.getStatSync();
+        }
+        return me.stat && me.stat.isDirectory();
+    }
+
+    removeSync() {
+        fs.unlinkSync(this.path);
+    }
+}
+
+module.exports = SyncOperations;

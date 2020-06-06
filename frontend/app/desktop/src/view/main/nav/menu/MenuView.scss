@@ -1,0 +1,76 @@
+//.x-treelist-nav .x-treelist-item-selected .x-treelist-item-text
+//{
+//  color: $accent-foreground-color;
+//}
+
+// .x-treelist-nav .x-treelist-item-selected.x-treelist-item-tool {
+// 	/* color: #bbdefb; */
+// 	color: var(--base-light-color);
+// 	/* background-color: #bbdefb; */
+// 	background-color: $base-color;
+// }
+
+.x-treelist-nav .x-treelist-item-icon, .x-treelist-nav .x-treelist-item-tool {
+	color: #fff;
+	font-size: 16px;
+	width: 24px;
+  //background-color: #22191a;
+  //background-color: $base-notice-color;
+}
+
+.x-treelist-nav .x-treelist-item-selected.x-treelist-item-tool::after {
+	height: 95%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	content: " ";
+	width: 4px;
+	background-color: #ff9800;
+	background-color: var(--accent-color);
+}
+
+@include treelist-ui(
+  $ui: 'nav',
+  //$background-color: darken($base-color, 20%),
+  $background-color: $base-color,
+  $padding: 5px 10px 0 10px,
+
+  $toolstrip-background-color:  $base-color,
+
+  $tool-float-indicator-color: $base-notice-color,
+  $tool-float-indicator-width: 3px,
+  $tool-selected-color: $base-notice-color,
+  $tool-selected-background-color: $base-color,
+
+  $row-indicator-width: 3px,
+  $row-indicator-selected-color: $accent-color,
+  $row-indicator-selected-over-color: $accent-light-color,
+  $row-indicator-over-color: $accent-dark-color,
+
+  $item-icon-width: 24px,
+  $item-text-icon-gap: 1px,
+  $item-expander-width: 24px,
+
+  $item-icon-font-size: 16px,
+  $item-text-font-size: 16px,
+  $item-expander-font-size: 16px,
+
+  $item-line-height : 35px,
+  $item-text-overflow: initial,
+
+  $item-icon-color: $base-foreground-color,
+  $item-text-color: $base-foreground-color,
+  $item-text-over-color: $base-foreground-color,
+
+  $item-expander-color: $base-foreground-color,
+  $item-icon-over-color: $base-foreground-color,
+
+  $item-expander-over-color: $base-color,
+
+  $item-expanded-child-background-color: $base-color,
+  $item-expanded-background-color: transparent,
+
+  $row-over-background-color: $reverse-background-color,
+
+  $row-selected-background-color: $base-notice-color
+);

@@ -1,0 +1,10 @@
+{
+    "name": "sencha-fashion",
+    "format": "1",
+    "version": "@@CMD_VERSION@@",
+    "creator": "Sencha",
+    "summary": "Cmd Test Suite",
+    "type": "extension",
+    "requires": [
+    ]
+}
