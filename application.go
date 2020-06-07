@@ -14,6 +14,8 @@ var (
 	ErrNotStarted = errors.New("Cannot stop an processor that is not running")
 	//ErrWorkflowNotFound is when no Workflow with an name is not found
 	ErrWorkflowNotFound = errors.New("No workflow with that given name is found")
+	//ErringressRelationshipNeeded is when a processor isnt getting the needed ingress
+	ErringressRelationshipNeeded = errors.New("The processor needs an ingress to properly run")
 )
 
 // Application is a struct that holds many Workflows.

@@ -1,49 +1,62 @@
 package workflow
 
 import (
-	"context"
-	"fmt"
+	"errors"
 	"testing"
 	"time"
 )
 
-type TestProcessor struct {
-	Name    string
-	running bool
-	cancel  context.CancelFunc
-}
+func TestIngressAndEgress(t *testing.T) {
+	w := NewWorkflow("testing")
 
-func (tp *TestProcessor) IsRunning() bool {
-	return tp.running
-}
-
-func (tp *TestProcessor) Start(ctx context.Context) error {
-	if tp.running {
-		return ErrAlreadyRunning
+	tp1 := &TextForwardProcessor{
+		Name: "FirstProcessor",
 	}
-	go func() {
-		tp.running = true
-		c, cancel := context.WithCancel(ctx)
-		tp.cancel = cancel
-		timer := time.NewTicker(2 * time.Second)
-		for {
-			select {
-			case <-timer.C:
-				fmt.Println("Tick from ", tp.Name)
-			case <-c.Done():
-				return
-			}
-		}
-	}()
-	return nil
+	tp2 := &TextPrinterProcessor{
+		Name: "SecondProcessor",
+	}
+
+	w.AddProcessor(tp2)
+	err := w.Start()
+	if !errors.Is(err, ErringressRelationshipNeeded) {
+		t.Fatal("Should have failed to start an Processor that needs an Ingress as a First Processor")
+	}
+
+	w.RemoveProcessor(0)
+	w.AddProcessor(tp1)
+	w.AddProcessor(tp2)
+
+	err = w.Start()
+	if err != nil {
+		t.Fatalf("Error should have been nil: %s", err)
+	}
+
+	time.Sleep(6 * time.Second)
 }
 
-func (tp *TestProcessor) Stop() {
-	if !tp.running {
-		return
+func TestRemoveProcessor(t *testing.T) {
+	w := NewWorkflow("testing")
+
+	tp1 := &TextPrinterProcessor{
+		Name: "First",
 	}
-	tp.running = false
-	tp.cancel()
+	tp2 := &TextPrinterProcessor{
+		Name: "SecondProcessor",
+	}
+	tp3 := &TextPrinterProcessor{
+		Name: "Third",
+	}
+
+	w.AddProcessor(tp1)
+	w.AddProcessor(tp2)
+	w.AddProcessor(tp3)
+
+	length := len(w.processors)
+	w.RemoveProcessor(1)
+	if len(w.processors) != length-1 {
+		t.Fatal("Didnt properly remove the processor")
+	}
+
 }
 func TestStartAndStop(t *testing.T) {
 	w := NewWorkflow("tjottahej")

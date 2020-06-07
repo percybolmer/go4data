@@ -23,26 +23,26 @@ type BasePayload struct {
 }
 
 // GetPayloadLength is used to get the number of bytes in a float
-func (bp *BasePayload) GetPayloadLength() float64 {
+func (bp BasePayload) GetPayloadLength() float64 {
 	return float64(len(bp.Payload))
 }
 
 // GetPayload will return a payload witouth any processing
-func (bp *BasePayload) GetPayload() []byte {
+func (bp BasePayload) GetPayload() []byte {
 	return bp.Payload
 }
 
 // SetPayload changes the payload
-func (bp *BasePayload) SetPayload(p []byte) {
+func (bp BasePayload) SetPayload(p []byte) {
 	bp.Payload = p
 }
 
 // GetSource returns the source of the payload
-func (bp *BasePayload) GetSource() string {
+func (bp BasePayload) GetSource() string {
 	return bp.Source
 }
 
 // SetSource will change the value of the payload osurce
-func (bp *BasePayload) SetSource(s string) {
+func (bp BasePayload) SetSource(s string) {
 	bp.Source = s
 }
