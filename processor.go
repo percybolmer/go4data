@@ -6,8 +6,10 @@ package workflow
 
 import (
 	"context"
+
 	"github.com/percybolmer/workflow/properties"
 )
+
 // Relationship is another word for an PayloadChannel, used to commuicate events between Processors
 type Relationship chan Payload
 

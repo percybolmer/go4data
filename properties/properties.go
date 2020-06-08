@@ -16,22 +16,42 @@ var (
 // PropertyContainer is an interface that can enable Configuration reading for processors
 type PropertyContainer interface {
 	GetProperty(name string) *Property
-	SetProperty(name string, value interface{})
+	SetProperty(name string, value interface{}, requierd bool)
 	RemoveProperty(name string)
+	ValidateProperties() (bool, []string)
 }
 
 // NewPropertyMap is used to initialize a new PropertyMap to avoid Nil Pointers
 func NewPropertyMap() *PropertyMap {
 	return &PropertyMap{
-		Properties: make(map[string]*Property),
+		Properties:   make(map[string]*Property),
+		Requierments: make([]string, 0),
 	}
 }
 
 // PropertyMap is a struct that can be inherited as a pointer by Processors so they dont have to care about Property handeling at all.
 // THe propertyMap fulfills the PropertyContainer interface
 type PropertyMap struct {
-	Properties map[string]*Property
+	Properties   map[string]*Property `json:"properties"`
+	Requierments []string             `json:"requierments"`
 	sync.Mutex
+}
+
+// ValidateProperties will make sure that all properties are actually there that is reqierd
+func (pm *PropertyMap) ValidateProperties() (bool, []string) {
+	missing := make([]string, 0)
+	for _, req := range pm.Requierments {
+		prop := pm.Properties[req]
+
+		if prop == nil {
+			missing = append(missing, req)
+		}
+	}
+
+	if len(missing) != 0 {
+		return false, missing
+	}
+	return true, nil
 }
 
 // GetProperty is used to extract an property from the PropertyMap
@@ -40,7 +60,8 @@ func (pm *PropertyMap) GetProperty(name string) *Property {
 }
 
 // SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil opinters
-func (pm *PropertyMap) SetProperty(name string, value interface{}) {
+// req is used to make sure that PropertyMap fails on Validate if the property does not exist
+func (pm *PropertyMap) SetProperty(name string, value interface{}, requierd bool) {
 	pm.Lock()
 	defer pm.Unlock()
 	if pm.Properties == nil {
@@ -49,6 +70,9 @@ func (pm *PropertyMap) SetProperty(name string, value interface{}) {
 	pm.Properties[name] = &Property{
 		Name:  name,
 		Value: value,
+	}
+	if requierd {
+		pm.Requierments = append(pm.Requierments, name)
 	}
 }
 
@@ -70,10 +94,21 @@ func (p *Property) String() string {
 
 // Int will reutnr the value as int
 func (p *Property) Int() (int, error) {
-	if value, ok := p.Value.(int); !ok {
+	var value int
+	var ok bool
+	if value, ok = p.Value.(int); !ok {
 		return -1, ErrWrongPropertyType
-	} else {
-		return value, nil
 	}
+	return value, nil
 
+}
+
+// Bool is used to return the value as a boolean
+func (p *Property) Bool() (bool, error) {
+	var value bool
+	var ok bool
+	if value, ok = p.Value.(bool); !ok {
+		return false, ErrWrongPropertyType
+	}
+	return value, nil
 }
