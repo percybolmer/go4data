@@ -12,15 +12,20 @@ type Workflow struct {
 	// processors is the array containing all processors that has been added to the Workflow.
 	processors []Processor
 	// ctx is a context passed by the current Application the workflow is added to
-	ctx context.Context
+	ctx            context.Context
+	failures       FailurePipe
+	failureHandler func(f Failure)
+	failureStop    context.CancelFunc
 	sync.Mutex
 }
 
 // NewWorkflow will initiate a new workflow
 func NewWorkflow(name string) *Workflow {
 	return &Workflow{
-		Name:       name,
-		processors: make([]Processor, 0),
+		Name:           name,
+		processors:     make([]Processor, 0),
+		failures:       make(FailurePipe, 1000),
+		failureHandler: PrintFailure,
 	}
 }
 
@@ -39,17 +44,64 @@ func (w *Workflow) RemoveProcessor(i int) {
 	w.processors = append(w.processors[:i], w.processors[i+1:]...)
 }
 
+// SetFailureHandler is used to change the current Error Handler used by the workflow
+// will requier a restart to take action
+func (w *Workflow) SetFailureHandler(f func(f Failure)) {
+	w.Lock()
+	defer w.Unlock()
+	w.failureHandler = f
+}
+
+// startFailureHandler is used to start the currently assigned Failure Handler for that workflow
+func (w *Workflow) startFailureHandler(c context.Context) {
+	if w.failures == nil || w.failureHandler == nil {
+		return
+	}
+	ctx, cancel := context.WithCancel(c)
+	w.failureStop = cancel
+	go func() {
+		for {
+			select {
+			case f := <-w.failures:
+				w.failureHandler(f)
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
+}
+
+// initializeAllProcessors will itterate all current processors and initialize all Unstarted processors
+func (w *Workflow) initializeAllProcessors() error {
+	for _, p := range w.processors {
+		if !p.IsRunning() {
+			err := p.Initialize()
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 // Start will itterate all Processors and start them up
 func (w *Workflow) Start() error {
 	if w.ctx == nil {
 		// Nil context, meaning this is not part of an application
 		w.ctx = context.TODO()
 	}
+	w.startFailureHandler(w.ctx)
+	err := w.initializeAllProcessors()
+	if err != nil {
+		return err
+	}
 	for i, p := range w.processors {
 		// If Processor is already running, skip starting it
 		if p.IsRunning() {
 			continue
 		}
+
+		p.SetFailureChannel(w.failures)
 		// Add the Previous Processors Egress as the Ingress
 		// There is no Previous Processor for Index 0 , so only on bigger than 0
 		if i != 0 {
@@ -64,6 +116,7 @@ func (w *Workflow) Start() error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -73,6 +126,6 @@ func (w *Workflow) Stop() {
 		if p.IsRunning() {
 			p.Stop()
 		}
-
 	}
+	w.failureStop()
 }

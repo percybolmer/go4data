@@ -4,15 +4,23 @@
 // It will also make sure data is cleaned up beteween uses
 package workflow
 
-import "context"
-
+import (
+	"context"
+	"github.com/percybolmer/workflow/properties"
+)
 // Relationship is another word for an PayloadChannel, used to commuicate events between Processors
 type Relationship chan Payload
+
+// FailurePipe is used to send Failures from Processors onto, how they are handled is up the Processor or Workflow, or the user can make their own
+type FailurePipe chan Failure
 
 // Processor is an interface that makes it possible to send data between and in diffreent items running
 // An example processor is a FileReader that digests the content of a file and sends it along to the next Processor
 type Processor interface {
-	// Start will trigger the processor to ingest data
+	// Initialize is responsible to make sure the Processor has everything it needs to run properly and setup needed things before Start
+	Initialize() error
+	// Start will trigger the processor to ingest data,
+	// Remember that LOCKING is not allowed, this wont work correctly at this point, Always spawn processing in a goroutine
 	Start(ctx context.Context) error
 	// Stop will close the processor and cancel all items
 	Stop()
@@ -25,4 +33,8 @@ type Processor interface {
 	SetIngress(i Relationship)
 	// GetEgress is used to get the Success relationship from a processor
 	GetEgress() Relationship
+	// SetFailureChannel is used by an Processor to assign a FailureChannel that can be used when throwing errors
+	SetFailureChannel(fp FailurePipe)
+	// Processors should be Part of the PropertyContainer interface
+	properties.PropertyContainer
 }

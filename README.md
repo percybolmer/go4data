@@ -15,18 +15,8 @@ The data between the workflow processors is shares by sending flows between the 
 
 
 Subpackages needs documentation aswell
-#flow
-Flow is a struct that has everything that is needed to share data between the processors
-To communicate the processors sends flows to eachother.
-
-A flow contains a few channels used to communicate
-IngressChannel is a channel that will be used to get data into the flow.
-The IngressChannel will be set automatically to the previous flows EgressChannel
-The first flow of a workflow will have no Ingress set, thats why its important that the first
-configuerd processor in the workflow is used to collect any data, etc readfile or subscribeRedisQueue
-
-#processors
-
+#processor
+Processor is an interface that is passed between 
 #readers
 Readers are tools to read in from data source, such as a filereader to handle file reading
 #cmd

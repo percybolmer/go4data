@@ -6,6 +6,23 @@ import (
 	"time"
 )
 
+func TestFailingProcessor(t *testing.T) {
+	w := NewWorkflow("testing")
+
+	tp1 := &FailureProcessor{
+		Name: "for testing",
+	}
+
+	w.AddProcessor(tp1)
+
+	err := w.Start()
+	if err != nil {
+		t.Fatalf("Shouldnt have failed running this test start: %s", err.Error())
+	}
+
+	// Should be prints comming
+	time.Sleep(5 * time.Second)
+}
 func TestIngressAndEgress(t *testing.T) {
 	w := NewWorkflow("testing")
 
@@ -19,7 +36,7 @@ func TestIngressAndEgress(t *testing.T) {
 	w.AddProcessor(tp2)
 	err := w.Start()
 	if !errors.Is(err, ErringressRelationshipNeeded) {
-		t.Fatal("Should have failed to start an Processor that needs an Ingress as a First Processor")
+		t.Fatalf("Should have failed to start an Processor that needs an Ingress as a First Processor, %v", err)
 	}
 
 	w.RemoveProcessor(0)
