@@ -1,20 +1,49 @@
-// Package workflow contains processors
+// Package processors contains processors
 // Processor is a interface used to describe what is needed to be Run inside an Workflow
 // It will handle Stopping data flow and Inflow
 // It will also make sure data is cleaned up beteween uses
-package workflow
+package processors
 
 import (
 	"context"
+	"errors"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
 )
+
+var (
+	//ErrProcessorAlreadyExists is when somebody runs RegisterProcessor and gives a name that is already taken
+	ErrProcessorAlreadyExists error = errors.New("A processor named that does already exists")
+	//ErrAlreadyRunning is when trying to start an Processor that is already running
+	ErrAlreadyRunning = errors.New("This processor does not support MultiRun")
+)
+
+// ProcessorMap is a map containing all the given Proccessors and is inited via the init method, add custom functions to this map
+// and they will be possible to configure with Application/Workflows
+var ProcessorMap map[string]Processor
+
+// init is always run, even if somebody only imports our package, so this is a great place to put our processors function
+func init() {
+	ProcessorMap = make(map[string]Processor)
+	// Add default proccessors here
+	/*ProcessorMap["stdout"] = Stdout
+	ProcessorMap["readfile"] = ReadFile
+	ProcessorMap["writefile"] = WriteFile
+	ProcessorMap["monitordirectory"] = MonitorDirectory
+	ProcessorMap["parse_csv"] = ParseCsvFlow
+	ProcessorMap["filtermap"] = FilterStringMap
+	ProcessorMap["elasticoutput"] = ElasticOutput
+	ProcessorMap["cmd"] = Cmd*/
+
+}
 
 // Relationship is another word for an PayloadChannel, used to commuicate events between Processors
 type Relationship chan Payload
 
 // FailurePipe is used to send Failures from Processors onto, how they are handled is up the Processor or Workflow, or the user can make their own
 type FailurePipe chan Failure
+
 
 // Processor is an interface that makes it possible to send data between and in diffreent items running
 // An example processor is a FileReader that digests the content of a file and sends it along to the next Processor
@@ -39,4 +68,6 @@ type Processor interface {
 	SetFailureChannel(fp FailurePipe)
 	// Processors should be Part of the PropertyContainer interface
 	properties.PropertyContainer
+	// MetricProvider is a interface that forces processors to handle metrics
+	metric.MetricProvider
 }

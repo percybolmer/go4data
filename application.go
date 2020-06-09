@@ -3,13 +3,13 @@ package workflow
 import (
 	"errors"
 	"sync"
+
+	"github.com/percybolmer/workflow/processors"
 )
 
 var (
 	//ErrDuplicateName is thrown when trying to add a Workflow to an Application with a name that is already registerd
 	ErrDuplicateName = errors.New("There is already an workflow with that name in the the application")
-	//ErrAlreadyRunning is when trying to start an Processor that is already running
-	ErrAlreadyRunning = errors.New("This processor does not support MultiRun")
 	//ErrNotStarted is when trying to cancel a not started processor
 	ErrNotStarted = errors.New("Cannot stop an processor that is not running")
 	//ErrWorkflowNotFound is when no Workflow with an name is not found
@@ -48,7 +48,7 @@ func (a *Application) AddWorkflow(w *Workflow) error {
 }
 
 // AddProcessor is used to add an Processor to an given Workflow
-func (a *Application) AddProcessor(p Processor, workflowName string) error {
+func (a *Application) AddProcessor(p processors.Processor, workflowName string) error {
 	if _, ok := a.Workflows[workflowName]; !ok {
 		return ErrWorkflowNotFound
 	}

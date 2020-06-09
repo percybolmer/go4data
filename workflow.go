@@ -3,6 +3,8 @@ package workflow
 import (
 	"context"
 	"sync"
+
+	"github.com/percybolmer/workflow/processors"
 )
 
 // Workflow is a chain of processors to run.
@@ -10,11 +12,11 @@ import (
 type Workflow struct {
 	Name string `json:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
-	processors []Processor
+	processors []processors.Processor
 	// ctx is a context passed by the current Application the workflow is added to
 	ctx            context.Context
-	failures       FailurePipe
-	failureHandler func(f Failure)
+	failures       processors.FailurePipe
+	failureHandler func(f processors.Failure)
 	failureStop    context.CancelFunc
 	sync.Mutex
 }
@@ -23,14 +25,14 @@ type Workflow struct {
 func NewWorkflow(name string) *Workflow {
 	return &Workflow{
 		Name:           name,
-		processors:     make([]Processor, 0),
-		failures:       make(FailurePipe, 1000),
-		failureHandler: PrintFailure,
+		processors:     make([]processors.Processor, 0),
+		failures:       make(processors.FailurePipe, 1000),
+		failureHandler: processors.PrintFailure,
 	}
 }
 
 // AddProcessor will append a new processor at the end of the flow
-func (w *Workflow) AddProcessor(p Processor) {
+func (w *Workflow) AddProcessor(p processors.Processor) {
 	w.Lock()
 	defer w.Unlock()
 	w.processors = append(w.processors, p)
@@ -46,7 +48,7 @@ func (w *Workflow) RemoveProcessor(i int) {
 
 // SetFailureHandler is used to change the current Error Handler used by the workflow
 // will requier a restart to take action
-func (w *Workflow) SetFailureHandler(f func(f Failure)) {
+func (w *Workflow) SetFailureHandler(f func(f processors.Failure)) {
 	w.Lock()
 	defer w.Unlock()
 	w.failureHandler = f

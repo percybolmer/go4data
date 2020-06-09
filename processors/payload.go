@@ -1,4 +1,4 @@
-package workflow
+package processors
 
 // Payload is a interface that will allows different Processors to send data between them in a unified fashion
 type Payload interface {
