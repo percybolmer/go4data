@@ -17,6 +17,11 @@ type newProcessor struct {
 	Location string
 }
 
+var processorTemplate *template.Template
+var testTemplate *template.Template
+
+
+
 func main(){
 	var p newProcessor
 	flag.StringVar(&p.PackageName, "package", "", "The name for the generated package")
@@ -40,9 +45,9 @@ func main(){
 	testf, err := os.Create(fmt.Sprintf("%s/%s_test.go", p.Location, p.ProcessorName))
 	checkError(err)
 
-	processor, err := template.ParseFiles("processor.gohtml")
+	processor, err := GetProcessorTemplate()
 	checkError(err)
-	tests, err := template.ParseFiles("processor_test.gohtml")
+	tests, err := GetTestTemplate()
 	checkError(err)
 
 	err = processor.Execute(f, p)
@@ -75,3 +80,17 @@ func checkError(err error) {
 		panic(err)
 	}
 }
+
+func GetProcessorTemplate() (*template.Template,error){
+	return template.New("procesorTemplate").Parse(processorTemplateString)
+}
+
+
+func GetTestTemplate() (*template.Template,error){
+	return template.New("testTemplate").Parse(testTemplateString)
+}
+
+
+
+
+
