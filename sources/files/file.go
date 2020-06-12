@@ -39,7 +39,7 @@ func NewFileSource(removeFile, append bool) FileSource {
 // append setting to check wether to overwrite or append to file
 func (fs FileSource) WriteFile(path string, payload []byte) error {
 	if ok, _ := fs.ValidateProperties(); !ok {
-		return properties.ErrRequierdPropertiesNotFullfilled
+		return properties.ErrRequiredPropertiesNotFulfilled
 	}
 	append, err := fs.GetProperty("append").Bool()
 	// This Error check is uncessesary?? Just a safe guard if somebody creates the fileSource without the NewFileSource function and uses SetProperty to weirrd stuff
@@ -68,7 +68,7 @@ func (fs FileSource) WriteFile(path string, payload []byte) error {
 // Read is used to read a file and return the Byte array of the value
 func (fs FileSource) Read(path string) ([]byte, error) {
 	if ok, _ := fs.ValidateProperties(); !ok {
-		return nil, properties.ErrRequierdPropertiesNotFullfilled
+		return nil, properties.ErrRequiredPropertiesNotFulfilled
 	}
 	remove, err := fs.GetProperty("removefile").Bool()
 	if err != nil {

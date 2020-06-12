@@ -1,3 +1,4 @@
 cmd/app
-sources/files/testfiles/no_permission.txt
+processors/file-processors/testfiles/no_permission.txt
+cmd/tooling/generate-processor/generate-processor
 workflow.code-workspace

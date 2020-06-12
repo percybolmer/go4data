@@ -12,7 +12,7 @@ func TestAddingRemovingProperties(t *testing.T) {
 		t.Fatal("Something is wrong, should be nil")
 	}
 
-	p.SetProperty("someConfig", "123123", false)
+	p.SetProperty("someConfig", "123123")
 
 	something := p.GetProperty("someConfig")
 
@@ -32,9 +32,9 @@ func TestAddingRemovingProperties(t *testing.T) {
 func TestValidation(t *testing.T) {
 	p := NewPropertyMap()
 
-	p.SetProperty("integer", 10, false)
+	p.SetProperty("integer", 10)
 
-	p.SetProperty("string", "HelloWorld", true)
+	p.SetProperty("string", "HelloWorld")
 
 	valid, _ := p.ValidateProperties()
 	if !valid {
@@ -51,9 +51,9 @@ func TestValidation(t *testing.T) {
 func TestReflection(t *testing.T) {
 	p := NewPropertyMap()
 
-	p.SetProperty("integer", 10, false)
+	p.SetProperty("integer", 10)
 
-	p.SetProperty("string", "HelloWorld", false)
+	p.SetProperty("string", "HelloWorld")
 
 	intProp := p.GetProperty("integer")
 	strProp := p.GetProperty("string")

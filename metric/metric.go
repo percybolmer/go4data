@@ -15,19 +15,22 @@ type Metric struct {
 	Value       int64  `json:"value"`
 }
 
-// Metrics is a basic placeholder that fullfills MetricProvider
+// Metrics is a basic placeholder that fulfills MetricProvider
 type Metrics struct {
 	sync.Mutex
 	metric []*Metric
 }
 
 // NewMetrics will generate a new metrics holder
-func NewMetrics() Metrics {
-	return Metrics{
+func NewMetrics() *Metrics {
+	return &Metrics{
 		metric: make([]*Metric, 0),
 	}
 }
-
+// GetAllMetrics is used to extract all metrics from the Metric container
+func (m *Metrics) GetAllMetrics() []*Metric {
+	return m.metric
+}
 // AddMetric is used to add new metrics, or append to old metric
 func (m *Metrics) AddMetric(name, description string, value int64) {
 	if m.metric == nil {

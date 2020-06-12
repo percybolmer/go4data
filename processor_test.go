@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/percybolmer/workflow/failure"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/relationships"
 	"time"
 
 	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/processors"
 	"github.com/percybolmer/workflow/properties"
 )
 
@@ -15,14 +17,14 @@ type TestProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress  processors.Relationship
-	egress   processors.Relationship
-	failures processors.FailurePipe
+	ingress  relationships.PayloadChannel
+	egress   relationships.PayloadChannel
+	failures relationships.FailurePipe
 	*properties.PropertyMap
 }
 
 func (tp *TestProcessor) Initialize() error {
-	tp.egress = make(processors.Relationship, 1000)
+	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
 }
 func (tp *TestProcessor) IsRunning() bool {
@@ -32,12 +34,12 @@ func (tp *TestProcessor) GetMetrics() []*metric.Metric {
 	return nil
 }
 
-func (tp *TestProcessor) SetFailureChannel(fp processors.FailurePipe) {
+func (tp *TestProcessor) SetFailureChannel(fp relationships.FailurePipe) {
 	tp.failures = fp
 }
 func (tp *TestProcessor) Start(ctx context.Context) error {
 	if tp.running {
-		return processors.ErrAlreadyRunning
+		return failure.ErrAlreadyRunning
 	}
 	go func() {
 		tp.running = true
@@ -65,11 +67,11 @@ func (tp *TestProcessor) Stop() {
 	tp.cancel()
 }
 
-func (tp *TestProcessor) SetIngress(i processors.Relationship) {
+func (tp *TestProcessor) SetIngress(i relationships.PayloadChannel) {
 	tp.ingress = i
 }
 
-func (tp *TestProcessor) GetEgress() processors.Relationship {
+func (tp *TestProcessor) GetEgress() relationships.PayloadChannel {
 	return tp.egress
 }
 
@@ -78,14 +80,14 @@ type TextForwardProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress  processors.Relationship
-	egress   processors.Relationship
-	failures processors.FailurePipe
+	ingress relationships.PayloadChannel
+	egress   relationships.PayloadChannel
+	failures relationships.FailurePipe
 	*properties.PropertyMap
 }
 
 func (tp *TextForwardProcessor) Initialize() error {
-	tp.egress = make(processors.Relationship, 1000)
+	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
 }
 
@@ -95,15 +97,15 @@ func (tp *TextForwardProcessor) IsRunning() bool {
 func (tp *TextForwardProcessor) GetMetrics() []*metric.Metric {
 	return nil
 }
-func (tp *TextForwardProcessor) SetFailureChannel(fp processors.FailurePipe) {
+func (tp *TextForwardProcessor) SetFailureChannel(fp relationships.FailurePipe) {
 	tp.failures = fp
 }
 func (tp *TextForwardProcessor) Start(ctx context.Context) error {
 	if tp.running {
-		return processors.ErrAlreadyRunning
+		return failure.ErrAlreadyRunning
 	}
 	if tp.egress == nil {
-		tp.egress = make(chan processors.Payload, 1000)
+		tp.egress = make(chan payload.Payload, 1000)
 	}
 	go func() {
 		tp.running = true
@@ -114,7 +116,7 @@ func (tp *TextForwardProcessor) Start(ctx context.Context) error {
 		for {
 			select {
 			case <-timer.C:
-				tp.egress <- processors.BasePayload{
+				tp.egress <- payload.BasePayload{
 					Source:  "TextForwardProcessor",
 					Payload: []byte("Hello from: " + tp.Name),
 				}
@@ -134,11 +136,11 @@ func (tp *TextForwardProcessor) Stop() {
 	tp.cancel()
 }
 
-func (tp *TextForwardProcessor) SetIngress(i processors.Relationship) {
+func (tp *TextForwardProcessor) SetIngress(i relationships.PayloadChannel) {
 	tp.ingress = i
 }
 
-func (tp *TextForwardProcessor) GetEgress() processors.Relationship {
+func (tp *TextForwardProcessor) GetEgress() relationships.PayloadChannel {
 	return tp.egress
 }
 
@@ -147,14 +149,14 @@ type TextPrinterProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress  processors.Relationship
-	egress   processors.Relationship
-	failures processors.FailurePipe
+	ingress  relationships.PayloadChannel
+	egress   relationships.PayloadChannel
+	failures relationships.FailurePipe
 	*properties.PropertyMap
 }
 
 func (tp *TextPrinterProcessor) Initialize() error {
-	tp.egress = make(processors.Relationship, 1000)
+	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
 }
 
@@ -164,16 +166,16 @@ func (tp *TextPrinterProcessor) IsRunning() bool {
 func (tp *TextPrinterProcessor) GetMetrics() []*metric.Metric {
 	return nil
 }
-func (tp *TextPrinterProcessor) SetFailureChannel(fp processors.FailurePipe) {
+func (tp *TextPrinterProcessor) SetFailureChannel(fp relationships.FailurePipe) {
 	tp.failures = fp
 }
 
 func (tp *TextPrinterProcessor) Start(ctx context.Context) error {
 	if tp.running {
-		return processors.ErrAlreadyRunning
+		return failure.ErrAlreadyRunning
 	}
 	if tp.ingress == nil {
-		return ErringressRelationshipNeeded
+		return failure.ErrIngressRelationshipNeeded
 	}
 	go func() {
 		tp.running = true
@@ -199,11 +201,11 @@ func (tp *TextPrinterProcessor) Stop() {
 	tp.cancel()
 }
 
-func (tp *TextPrinterProcessor) SetIngress(i processors.Relationship) {
+func (tp *TextPrinterProcessor) SetIngress(i relationships.PayloadChannel) {
 	tp.ingress = i
 }
 
-func (tp *TextPrinterProcessor) GetEgress() processors.Relationship {
+func (tp *TextPrinterProcessor) GetEgress() relationships.PayloadChannel {
 	return tp.egress
 }
 
@@ -212,14 +214,14 @@ type FailureProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress  processors.Relationship
-	egress   processors.Relationship
-	failures processors.FailurePipe
+	ingress  relationships.PayloadChannel
+	egress   relationships.PayloadChannel
+	failures relationships.FailurePipe
 	*properties.PropertyMap
 }
 
 func (tp *FailureProcessor) Initialize() error {
-	tp.egress = make(processors.Relationship, 1000)
+	tp.egress = make(relationships.PayloadChannel, 1000)
 	tp.PropertyMap = properties.NewPropertyMap()
 	return nil
 }
@@ -230,16 +232,16 @@ func (tp *FailureProcessor) IsRunning() bool {
 func (tp *FailureProcessor) GetMetrics() []*metric.Metric {
 	return nil
 }
-func (tp *FailureProcessor) SetFailureChannel(fp processors.FailurePipe) {
+func (tp *FailureProcessor) SetFailureChannel(fp relationships.FailurePipe) {
 	tp.failures = fp
 }
 
 func (tp *FailureProcessor) Start(ctx context.Context) error {
 	go func() {
 		for {
-			tp.failures <- processors.Failure{
+			tp.failures <- failure.Failure{
 				Err:       errors.New("This is a new error"),
-				Payload:   processors.BasePayload{Payload: []byte(`hej`)},
+				Payload:   payload.BasePayload{Payload: []byte(`hej`)},
 				Processor: tp.Name,
 			}
 			time.Sleep(1 * time.Second)
@@ -256,10 +258,10 @@ func (tp *FailureProcessor) Stop() {
 	tp.cancel()
 }
 
-func (tp *FailureProcessor) SetIngress(i processors.Relationship) {
+func (tp *FailureProcessor) SetIngress(i relationships.PayloadChannel) {
 	return
 }
 
-func (tp *FailureProcessor) GetEgress() processors.Relationship {
+func (tp *FailureProcessor) GetEgress() relationships.PayloadChannel {
 	return nil
 }

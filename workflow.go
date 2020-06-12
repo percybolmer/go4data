@@ -2,6 +2,8 @@ package workflow
 
 import (
 	"context"
+	"github.com/percybolmer/workflow/failure"
+	"github.com/percybolmer/workflow/relationships"
 	"sync"
 
 	"github.com/percybolmer/workflow/processors"
@@ -15,8 +17,8 @@ type Workflow struct {
 	processors []processors.Processor
 	// ctx is a context passed by the current Application the workflow is added to
 	ctx            context.Context
-	failures       processors.FailurePipe
-	failureHandler func(f processors.Failure)
+	failures       relationships.FailurePipe
+	failureHandler func(f failure.Failure)
 	failureStop    context.CancelFunc
 	sync.Mutex
 }
@@ -26,8 +28,8 @@ func NewWorkflow(name string) *Workflow {
 	return &Workflow{
 		Name:           name,
 		processors:     make([]processors.Processor, 0),
-		failures:       make(processors.FailurePipe, 1000),
-		failureHandler: processors.PrintFailure,
+		failures:       make(relationships.FailurePipe, 1000),
+		failureHandler: failure.PrintFailure,
 	}
 }
 
@@ -48,7 +50,7 @@ func (w *Workflow) RemoveProcessor(i int) {
 
 // SetFailureHandler is used to change the current Error Handler used by the workflow
 // will requier a restart to take action
-func (w *Workflow) SetFailureHandler(f func(f processors.Failure)) {
+func (w *Workflow) SetFailureHandler(f func(f failure.Failure)) {
 	w.Lock()
 	defer w.Unlock()
 	w.failureHandler = f

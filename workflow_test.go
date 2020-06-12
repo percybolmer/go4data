@@ -2,6 +2,7 @@ package workflow
 
 import (
 	"errors"
+	"github.com/percybolmer/workflow/failure"
 	"testing"
 	"time"
 )
@@ -35,7 +36,7 @@ func TestIngressAndEgress(t *testing.T) {
 
 	w.AddProcessor(tp2)
 	err := w.Start()
-	if !errors.Is(err, ErringressRelationshipNeeded) {
+	if !errors.Is(err, failure.ErrIngressRelationshipNeeded) {
 		t.Fatalf("Should have failed to start an Processor that needs an Ingress as a First Processor, %v", err)
 	}
 

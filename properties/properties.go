@@ -7,16 +7,16 @@ import (
 )
 
 var (
-	//ErrRequierdPropertiesNotFullfilled is when trying to start a processor but it needs additonal properties
-	ErrRequierdPropertiesNotFullfilled = errors.New("The processor needs additional properties to work, see the processors documentation")
+	//ErrRequiredPropertiesNotFulfilled is when trying to start a processor but it needs additonal properties
+	ErrRequiredPropertiesNotFulfilled = errors.New("the processor needs additional properties to work, see the processors documentation")
 	//ErrWrongPropertyType is cast when the Property is of another type
-	ErrWrongPropertyType = errors.New("The property is not of this data type")
+	ErrWrongPropertyType = errors.New("the property is not of this data type")
 )
 
 // PropertyContainer is an interface that can enable Configuration reading for processors
 type PropertyContainer interface {
 	GetProperty(name string) *Property
-	SetProperty(name string, value interface{}, requierd bool)
+	SetProperty(name string, value interface{})
 	RemoveProperty(name string)
 	ValidateProperties() (bool, []string)
 }
@@ -25,7 +25,7 @@ type PropertyContainer interface {
 func NewPropertyMap() *PropertyMap {
 	return &PropertyMap{
 		Properties:   make(map[string]*Property),
-		Requierments: make([]string, 0),
+		Requirements: make([]string, 0),
 	}
 }
 
@@ -33,14 +33,14 @@ func NewPropertyMap() *PropertyMap {
 // THe propertyMap fulfills the PropertyContainer interface
 type PropertyMap struct {
 	Properties   map[string]*Property `json:"properties"`
-	Requierments []string             `json:"requierments"`
+	Requirements []string             `json:"requirements"`
 	sync.Mutex
 }
 
-// ValidateProperties will make sure that all properties are actually there that is reqierd
+// ValidateProperties will make sure that all properties are actually there that is required
 func (pm *PropertyMap) ValidateProperties() (bool, []string) {
 	missing := make([]string, 0)
-	for _, req := range pm.Requierments {
+	for _, req := range pm.Requirements {
 		prop := pm.Properties[req]
 
 		if prop == nil {
@@ -53,15 +53,27 @@ func (pm *PropertyMap) ValidateProperties() (bool, []string) {
 	}
 	return true, nil
 }
+// AddRequirement will add a property that will HAVE to exist for ValidateProperties to return true
+// This can be used to force users to have a certain config etc
+func (pm *PropertyMap) AddRequirement(names ...string) {
+	pm.Lock()
+	defer pm.Unlock()
+	if pm.Requirements == nil {
+		pm.Requirements = make([]string,0)
+	}
 
+	for _, name := range names {
+		pm.Requirements = append(pm.Requirements, name)
+	}
+
+}
 // GetProperty is used to extract an property from the PropertyMap
 func (pm *PropertyMap) GetProperty(name string) *Property {
 	return pm.Properties[name]
 }
 
 // SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil opinters
-// req is used to make sure that PropertyMap fails on Validate if the property does not exist
-func (pm *PropertyMap) SetProperty(name string, value interface{}, requierd bool) {
+func (pm *PropertyMap) SetProperty(name string, value interface{}) {
 	pm.Lock()
 	defer pm.Unlock()
 	if pm.Properties == nil {
@@ -70,9 +82,6 @@ func (pm *PropertyMap) SetProperty(name string, value interface{}, requierd bool
 	pm.Properties[name] = &Property{
 		Name:  name,
 		Value: value,
-	}
-	if requierd {
-		pm.Requierments = append(pm.Requierments, name)
 	}
 }
 

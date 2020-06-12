@@ -7,25 +7,26 @@ package processors
 import (
 	"context"
 	"errors"
+	fileprocessors "github.com/percybolmer/workflow/processors/file-processors"
+	"github.com/percybolmer/workflow/relationships"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
 )
 
-var (
-	//ErrProcessorAlreadyExists is when somebody runs RegisterProcessor and gives a name that is already taken
-	ErrProcessorAlreadyExists error = errors.New("A processor named that does already exists")
-	//ErrAlreadyRunning is when trying to start an Processor that is already running
-	ErrAlreadyRunning = errors.New("This processor does not support MultiRun")
-)
+
 
 // ProcessorMap is a map containing all the given Proccessors and is inited via the init method, add custom functions to this map
 // and they will be possible to configure with Application/Workflows
 var ProcessorMap map[string]Processor
-
+var (
+	// ErrProcessorAlreadyRegistered is when trying to add a processor with the same name
+	ErrProcessorAlreadyRegistered = errors.New("a processor with this name is already registered")
+)
 // init is always run, even if somebody only imports our package, so this is a great place to put our processors function
 func init() {
 	ProcessorMap = make(map[string]Processor)
+	ProcessorMap["readfile"] = fileprocessors.NewReadFileProcessor()
 	// Add default proccessors here
 	/*ProcessorMap["stdout"] = Stdout
 	ProcessorMap["readfile"] = ReadFile
@@ -37,12 +38,16 @@ func init() {
 	ProcessorMap["cmd"] = Cmd*/
 
 }
+// RegisterProcessor is use to add processors to the list of available processors in the ProcessorMap
+// If a processor with the same name already exists then it will return an error
+func RegisterProcessor(name string, p Processor) error {
+	if _, ok := ProcessorMap[name]; ok {
+		return ErrProcessorAlreadyRegistered
+	}
+	ProcessorMap[name] = p
+	return nil
+}
 
-// Relationship is another word for an PayloadChannel, used to commuicate events between Processors
-type Relationship chan Payload
-
-// FailurePipe is used to send Failures from Processors onto, how they are handled is up the Processor or Workflow, or the user can make their own
-type FailurePipe chan Failure
 
 
 // Processor is an interface that makes it possible to send data between and in diffreent items running
@@ -61,11 +66,11 @@ type Processor interface {
 	// bool based on if its a MultiRun or Not
 	IsRunning() bool
 	// SetIngress is used to set an ingress Channel to the Processor, can be Nil if the Processor doesnt require a Ingress
-	SetIngress(i Relationship)
+	SetIngress(i relationships.PayloadChannel)
 	// GetEgress is used to get the Success relationship from a processor
-	GetEgress() Relationship
+	GetEgress() relationships.PayloadChannel
 	// SetFailureChannel is used by an Processor to assign a FailureChannel that can be used when throwing errors
-	SetFailureChannel(fp FailurePipe)
+	SetFailureChannel(fp relationships.FailurePipe)
 	// Processors should be Part of the PropertyContainer interface
 	properties.PropertyContainer
 	// MetricProvider is a interface that forces processors to handle metrics

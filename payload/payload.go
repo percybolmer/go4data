@@ -1,4 +1,10 @@
-package processors
+// Package payload contains all the payload related stuff
+// Payload is used to hold data between Processors,
+// Payload is just an interface so each Processor could create its own Struct to handle data
+// as long as it fulfills our interface
+package payload
+
+
 
 // Payload is a interface that will allows different Processors to send data between them in a unified fashion
 type Payload interface {
@@ -27,7 +33,7 @@ func (bp BasePayload) GetPayloadLength() float64 {
 	return float64(len(bp.Payload))
 }
 
-// GetPayload will return a payload witouth any processing
+// GetPayload will return a payload without any processing
 func (bp BasePayload) GetPayload() []byte {
 	return bp.Payload
 }
@@ -42,7 +48,7 @@ func (bp BasePayload) GetSource() string {
 	return bp.Source
 }
 
-// SetSource will change the value of the payload osurce
+// SetSource will change the value of the payload source
 func (bp BasePayload) SetSource(s string) {
 	bp.Source = s
 }

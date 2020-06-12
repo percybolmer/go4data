@@ -1,0 +1,46 @@
+package {{.PackageName}}
+
+import (
+    "testing"
+    "context"
+)
+
+func Test{{.ProcessorName}}_Initialize(t *testing.T) {
+    proc := New{{.ProcessorName}}()
+    // Empty Init should fail
+    proc.AddRequirement("test_prop")
+    err := proc.Initialize()
+    if err == nil {
+        t.Fatal("Should have failed to initialize without proper Properties set")
+    }
+    proc.SetProperty("test_prop", true)
+    err = proc.Initialize()
+    if err != nil {
+        t.Fatalf("Should have passed initialize now that all properties are there: %s", err.Error())
+    }
+
+}
+
+func Test{{.ProcessorName}}_StopStart(t *testing.T){
+    proc := New{{.ProcessorName}}()
+
+
+    if proc.IsRunning(){
+        t.Fatal("proccessor should not be running after creation")
+    }
+
+    err := proc.Start(context.TODO())
+    if err != nil {
+        t.Fatal("processor should not have failed to startup")
+    }
+    err = proc.Start(context.TODO())
+    if !errors.Is(err, failure.ErrAlreadyRunning) {
+        t.Fatal("processor should have reported already running")
+    }
+
+    proc.Stop()
+    err = proc.Start(context.TODO())
+    if err != nil {
+        t.Fatal("a restart should have been able to run")
+    }
+}

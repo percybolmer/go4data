@@ -1,5 +1,17 @@
-package file-processors
+// Package fileprocessors is used to handle Processors related to file based processing
+// such as reading files and writing files
+package fileprocessors
 
+import (
+	"context"
+	"github.com/percybolmer/workflow/failure"
+	"github.com/percybolmer/workflow/metric"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/properties"
+	"github.com/percybolmer/workflow/relationships"
+	"io/ioutil"
+	"os"
+)
 
 
 // ReadFileProcessor is used to read files Locally from disk and output the contents
@@ -7,72 +19,161 @@ type ReadFileProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress  Relationship
-	egress   Relationship
-	failures FailurePipe
+	ingress  relationships.PayloadChannel
+	egress   relationships.PayloadChannel
+	failures relationships.FailurePipe
 	*properties.PropertyMap
 	*metric.Metrics
+
+	// custom settings for rfp
+	ingressNeeded bool
+	filepath string
+	removeafter bool
+}
+// NewReadFileProcessor is used to initialize and generate a new processor
+func NewReadFileProcessor() *ReadFileProcessor {
+	rfp := &ReadFileProcessor{
+		egress: make(relationships.PayloadChannel, 1000),
+		PropertyMap: properties.NewPropertyMap(),
+		Metrics: metric.NewMetrics(),
+	}
+
+	// Add Required Props -- remove_after
+	rfp.AddRequirement("remove_after")
+	return rfp
 }
 // Initialize will make sure all needed Properties and Metrics are generated
-func (tp *ReadFileProcessor) Initialize() error {
-	tp.egress = make(Relationship, 1000)
-	tp.PropertyMap = properties.NewPropertyMap()
-	tp.Metrics = metric.NewMetrics()
-
+func (rfp *ReadFileProcessor) Initialize() error {
+	// Reset values
+	rfp.ingressNeeded = false
+	rfp.filepath = ""
+	rfp.removeafter = false
 	// Make sure Properties are there
+	ok, _ := rfp.ValidateProperties()
+	if !ok {
+		return properties.ErrRequiredPropertiesNotFulfilled
+	}
 	// ReadFile needs either an Ingress of File names OR a property called Filepath
-
-
+	filepathProp := rfp.GetProperty("filepath")
+	if filepathProp == nil {
+		// Set ingress to needed
+		rfp.ingressNeeded = true
+	}else{
+		rfp.filepath = filepathProp.String()
+	}
+	removeafter := rfp.GetProperty("remove_after")
+	ra, err := removeafter.Bool()
+	if err != nil {
+		return err
+	}
+	rfp.removeafter = ra
 	return nil
 }
 // IsRunning will return true or false based on if the processor is currently running
-func (tp *ReadFileProcessor) IsRunning() bool {
-	return tp.running
+func (rfp *ReadFileProcessor) IsRunning() bool {
+	return rfp.running
 }
-// GetMetrics will return a bunch of generated metrics, or nil if there isnt any
-func (tp *ReadFileProcessor) GetMetrics() []*Metric {
-	return tp.Metrics.metric
+// GetMetrics will return a bunch of generated metrics, or nil if there isn't any
+func (rfp *ReadFileProcessor) GetMetrics() []*metric.Metric {
+	return rfp.GetAllMetrics()
 }
 // SetFailureChannel will configure the failure channel of the Processor
-func (tp *ReadFileProcessor) SetFailureChannel(fp FailurePipe) {
-	tp.failures = fp
+func (rfp *ReadFileProcessor) SetFailureChannel(fp relationships.FailurePipe) {
+	rfp.failures = fp
 }
 // Start will spawn a goroutine that reads file and Exits either on Context.Done or When processing is finished
-func (tp *ReadFileProcessor) Start(ctx context.Context) error {
-	if tp.running {
-		return ErrAlreadyRunning
-	}/*
-	if tp.ingress == nil {
-		return ErringressRelationshipNeeded
+func (rfp *ReadFileProcessor) Start(ctx context.Context) error {
+	if rfp.running {
+		return failure.ErrAlreadyRunning
 	}
-	go func() {
-		tp.running = true
-		c, cancel := context.WithCancel(ctx)
-		tp.cancel = cancel
-		for {
-			select {
-			case payload := <-tp.ingress:
-				fmt.Printf("%s", payload.GetPayload())
-			case <-c.Done():
-				return
-			}
+	if rfp.ingressNeeded && rfp.ingress == nil {
+		return failure.ErrIngressRelationshipNeeded
+	}
+
+	// We gotta make a check here, either spawn a goroutine that reads files continually, OR read from Filepath
+	if !rfp.ingressNeeded {
+		rfp.running = true
+		err := rfp.readAndPublish(rfp.filepath)
+		if err != nil {
+			rfp.publishFailure(err, payload.BasePayload{
+				Payload: nil,
+				Source:  rfp.filepath,
+			})
 		}
-	}()*/
+		rfp.running = false
+	} else {
+		rfp.running = true
+		c, cancel := context.WithCancel(ctx)
+		rfp.cancel = cancel
+		go func() {
+			for {
+				select {
+					case payload := <-rfp.ingress:
+						path := payload.GetPayload()
+						err := rfp.readAndPublish(string(path))
+						if err != nil {
+							rfp.publishFailure(err, payload)
+						}
+						case <- c.Done():
+
+							return
+				}
+			}
+		}()
+	}
 	return nil
 }
-// Stop will stop the processing
-func (tp *ReadFileProcessor) Stop() {
-	if !tp.running {
+// readAndPublish will read a file and then publish the payload to the egress,
+func (rfp *ReadFileProcessor) readAndPublish(path string) error {
+	data, err := rfp.read(path)
+	if err != nil {
+		return err
+	}
+	rfp.egress <- payload.BasePayload{
+		Payload: data,
+		Source:  path,
+	}
+	return nil
+}
+// read is used to ingest a file
+func (rfp *ReadFileProcessor) read(path string) ([]byte, error){
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		file.Close()
+		if rfp.removeafter {
+			os.Remove(path)
+		}
+	}()
+	return ioutil.ReadAll(file)
+}
+func (rfp *ReadFileProcessor) publishFailure(err error, payload payload.Payload) {
+	if rfp.failures == nil {
 		return
 	}
-	tp.running = false
-	tp.cancel()
+
+	rfp.failures <- failure.Failure{
+		Err:       err,
+		Payload:   payload,
+		Processor: "ReadFileProcessor",
+	}
 }
-// SetIngress will change the ingress of the processsor, Restart is needed before applied changes
-func (tp *ReadFileProcessor) SetIngress(i Relationship) {
+// Stop will stop the processing
+func (rfp *ReadFileProcessor) Stop() {
+	if !rfp.running {
+		return
+	}
+	rfp.running = false
+	rfp.cancel()
+}
+// SetIngress will change the ingress of the processor, Restart is needed before applied changes
+func (rfp *ReadFileProcessor) SetIngress(i relationships.PayloadChannel) {
+	rfp.ingress = i
 	return
 }
 // GetEgress will return an Egress that is used to output the processed items
-func (tp *ReadFileProcessor) GetEgress() Relationship {
-	return nil
+func (rfp *ReadFileProcessor) GetEgress() relationships.PayloadChannel {
+	return rfp.egress
 }
