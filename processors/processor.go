@@ -7,11 +7,14 @@ package processors
 import (
 	"context"
 	"errors"
-	fileprocessors "github.com/percybolmer/workflow/processors/file-processors"
 	"github.com/percybolmer/workflow/relationships"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
+
+	// Silent imports to trigger init functions
+	_ "github.com/percybolmer/workflow/processors/file-processors"
+
 )
 
 
@@ -26,7 +29,6 @@ var (
 // init is always run, even if somebody only imports our package, so this is a great place to put our processors function
 func init() {
 	ProcessorMap = make(map[string]Processor)
-	ProcessorMap["readfile"] = fileprocessors.NewReadFileProcessor()
 	// Add default proccessors here
 	/*ProcessorMap["stdout"] = Stdout
 	ProcessorMap["readfile"] = ReadFile

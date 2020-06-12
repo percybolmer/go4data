@@ -62,7 +62,7 @@ func (proc *{{.ProcessorName}}) Start(ctx context.Context) error {
         return failure.ErrAlreadyRunning
     }
     // Uncomment if u need to Processor to require an Ingress relationship
-    //if rfp.ingress == nil {
+    //if proc.ingress == nil {
     //    return failure.ErrIngressRelationshipNeeded
     //}
 

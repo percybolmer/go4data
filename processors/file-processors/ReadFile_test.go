@@ -11,7 +11,7 @@ import (
 
 
 func TestReadFileProcessor_read(t *testing.T) {
-	rfp := NewReadFileProcessor()
+	rfp := NewReadFile()
 
 
 	_, err := rfp.read("testfiles/no_permission.txt")
@@ -27,7 +27,7 @@ func TestReadFileProcessor_read(t *testing.T) {
 }
 
 func TestReadFileProcessor_Start(t *testing.T){
-	rfp := NewReadFileProcessor()
+	rfp := NewReadFile()
 
 	rfp.SetProperty("remove_after", true)
 	err := rfp.Initialize()
@@ -48,7 +48,7 @@ func TestReadFileProcessor_Start(t *testing.T){
 	}
 }
 func TestReadFileProcessor_Initialize(t *testing.T) {
-	rfp := NewReadFileProcessor()
+	rfp := NewReadFile()
 	// Empty Init should fail
 	err := rfp.Initialize()
 	if err == nil {
