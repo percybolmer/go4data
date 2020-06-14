@@ -8,7 +8,7 @@ import (
     "github.com/percybolmer/workflow/failure"
     "github.com/percybolmer/workflow/metric"
     "github.com/percybolmer/workflow/payload"
-    "github.com/percybolmer/workflow/processors"
+    "github.com/percybolmer/workflow/processors/processmanager"
     "github.com/percybolmer/workflow/properties"
     "github.com/percybolmer/workflow/relationships"
     "io/ioutil"
@@ -28,17 +28,22 @@ type WriteFile struct{
 
 var (
     //ErrBadWriteData is thrown when the size written to file is not the same as the payload
-    ErrBadWriteData error = errors.New("The size written to file does not match the payload")
+    ErrBadWriteData error = errors.New("the size written to file does not match the payload")
     //ErrFileExists is when trying to write to Files that already exist, but Append is set to false
     ErrFileExists = errors.New("trying to write to file that already exists, but append is false")
 )
-// init is really important since it is used to auto trigger Processor register when u import the generated package
-func init () {
-    err := processors.RegisterProcessor("WriteFile", NewWriteFile())
+
+func init() {
+    err := processmanager.RegisterProcessor("WriteFile", NewWriteFileInterface)
     if err != nil {
         panic(err)
     }
 }
+// NewWriteFileInterface is used to register ReadFile
+func NewWriteFileInterface() interface{}{
+    return NewWriteFile()
+}
+
 
 // NewWriteFile is used to initialize and generate a new processor
 func NewWriteFile() *WriteFile {

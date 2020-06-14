@@ -8,8 +8,8 @@ import (
     "github.com/percybolmer/workflow/failure"
     "github.com/percybolmer/workflow/metric"
     "github.com/percybolmer/workflow/properties"
+    "github.com/percybolmer/workflow/processors/processmanager"
     "github.com/percybolmer/workflow/relationships"
-    "github.com/percybolmer/workflow/processors"
 
 )
 // {{.ProcessorName}} is used to $INSERT DESCRIPTION
@@ -23,12 +23,18 @@ type {{.ProcessorName}} struct{
     *properties.PropertyMap
     *metric.Metrics
 }
-// init is really important since it is used to auto trigger Processor register when u import the generated package
-func init () {
-    err := processors.RegisterProcessor("{{.ProcessorName}}", New{{.ProcessorName}}())
+// init is used to Register the processor to the processmanager
+func init() {
+    err := processmanager.RegisterProcessor("{{.ProcessorName}}", New{{.ProcessorName}}Interface)
     if err != nil {
-        panic(err)
+    panic(err)
     }
+}
+// New{{.ProcessorName}}Interface is used to return the Proccssor as interface
+// This is to avoid Cyclic imports, we are not allowed to return processors.Processor
+// so, let processmanager deal with the type assertion
+func New{{.ProcessorName}}Interface() interface{} {
+    return New{{.ProcessorName}}()
 }
 
 // New{{.ProcessorName}} is used to initialize and generate a new processor

@@ -7,7 +7,8 @@ import (
 	"github.com/percybolmer/workflow/failure"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/processors"
+	"github.com/percybolmer/workflow/processors/processmanager"
+
 	"github.com/percybolmer/workflow/properties"
 	"github.com/percybolmer/workflow/relationships"
 	"io/ioutil"
@@ -31,6 +32,17 @@ type ReadFile struct {
 	filepath string
 	removeafter bool
 }
+
+func init() {
+	err := processmanager.RegisterProcessor("ReadFile", NewReadFileInterface)
+	if err != nil {
+		panic(err)
+	}
+}
+// NewReadFileInterface is used to register ReadFile
+func NewReadFileInterface() interface{}{
+	return NewReadFile()
+}
 // NewReadFile is used to initialize and generate a new processor
 func NewReadFile() *ReadFile {
 	rfp := &ReadFile{
@@ -42,13 +54,6 @@ func NewReadFile() *ReadFile {
 	// Add Required Props -- remove_after
 	rfp.AddRequirement("remove_after")
 	return rfp
-}
-
-func init () {
-	err := processors.RegisterProcessor("ReadFile", NewReadFile())
-	if err != nil {
-		panic(err)
-	}
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

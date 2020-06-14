@@ -6,52 +6,11 @@ package processors
 
 import (
 	"context"
-	"errors"
 	"github.com/percybolmer/workflow/relationships"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
-
-	// Silent imports to trigger init functions
-	_ "github.com/percybolmer/workflow/processors/file-processors"
-
 )
-
-
-
-// ProcessorMap is a map containing all the given Proccessors and is inited via the init method, add custom functions to this map
-// and they will be possible to configure with Application/Workflows
-var ProcessorMap map[string]Processor
-var (
-	// ErrProcessorAlreadyRegistered is when trying to add a processor with the same name
-	ErrProcessorAlreadyRegistered = errors.New("a processor with this name is already registered")
-)
-// init is always run, even if somebody only imports our package, so this is a great place to put our processors function
-func init() {
-	ProcessorMap = make(map[string]Processor)
-	// Add default proccessors here
-	/*ProcessorMap["stdout"] = Stdout
-	ProcessorMap["readfile"] = ReadFile
-	ProcessorMap["writefile"] = WriteFile
-	ProcessorMap["monitordirectory"] = MonitorDirectory
-	ProcessorMap["parse_csv"] = ParseCsvFlow
-	ProcessorMap["filtermap"] = FilterStringMap
-	ProcessorMap["elasticoutput"] = ElasticOutput
-	ProcessorMap["cmd"] = Cmd*/
-
-}
-// RegisterProcessor is use to add processors to the list of available processors in the ProcessorMap
-// If a processor with the same name already exists then it will return an error
-func RegisterProcessor(name string, p Processor) error {
-	if _, ok := ProcessorMap[name]; ok {
-		return ErrProcessorAlreadyRegistered
-	}
-	ProcessorMap[name] = p
-	return nil
-}
-
-
-
 // Processor is an interface that makes it possible to send data between and in diffreent items running
 // An example processor is a FileReader that digests the content of a file and sends it along to the next Processor
 type Processor interface {
