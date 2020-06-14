@@ -13,7 +13,9 @@ func main() {
 
 	go WithProcessMananger()
 
-	go WithoutProcessManager()
+	//go WithoutProcessManager()
+
+	time.Sleep(5 * time.Second)
 
 }
 
@@ -22,11 +24,11 @@ func WithProcessMananger() {
 
 	w := workflow.NewWorkflow("file_mover")
 
-	f, err := os.Create("processManager.txt")
-	if err != nil {
-		panic(err)
-	}
-	f.Write([]byte(`Hello Process Manager\n`))
+	//f, err := os.Create("csv.txt")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//f.Write([]byte(`header,row,is,cool \n data,field,is,cooler\n`))
 	readproc, err := processmanager.GetProcessor("ReadFile")
 	if err != nil {
 		panic(err)
@@ -35,13 +37,19 @@ func WithProcessMananger() {
 	if err != nil {
 		panic(err)
 	}
-	readproc.SetProperty("remove_after", true)
-	readproc.SetProperty("filepath", "processManager.txt")
+	csvproc, err := processmanager.GetProcessor("ParseCsv")
+	if err != nil {
+		panic(err)
+	}
+	readproc.SetProperty("remove_after", false)
+	readproc.SetProperty("filepath", "csv.txt")
 
-	writeproc.SetProperty("path", "here")
+	writeproc.SetProperty("path", "csvAsMap")
 	writeproc.SetProperty("append", true)
 
+
 	w.AddProcessor(readproc)
+	w.AddProcessor(csvproc)
 	w.AddProcessor(writeproc)
 
 	app.AddWorkflow(w)
@@ -49,7 +57,6 @@ func WithProcessMananger() {
 	if err != nil {
 		panic(err)
 	}
-	time.Sleep(2 * time.Second)
 }
 
 func WithoutProcessManager() {

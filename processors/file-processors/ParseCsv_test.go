@@ -4,13 +4,14 @@ import (
     "bytes"
     "errors"
     "github.com/percybolmer/workflow/failure"
+    "github.com/percybolmer/workflow/relationships"
     "testing"
     "context"
 )
 
 
 func TestParseCsv(t *testing.T) {
-    r := NewCsvReader()
+
     badCsv := []string{"this is not csv"}
     concattedHeaders := []string{"this,is, start", "\n", "of, header", "\n", "this, is, the,value"}
     skipRow := []string{"rubbish stuff", "\n", "this,is,header", "\n", "value,is,here"}
@@ -35,17 +36,23 @@ func TestParseCsv(t *testing.T) {
     }
 
     for _, tc := range testcases {
-        r.SetHeaderLength(tc.Headerlength)
-        r.SetSkipRows(tc.SkipRows)
+        r := NewParseCsv()
+        r.SetProperty("headerlength", tc.Headerlength)
+        r.SetProperty("skiprows", tc.SkipRows)
         if tc.Delimiter != "" {
-            r.SetDelimiter(tc.Delimiter)
+            r.SetProperty("delimiter", tc.Delimiter)
         }
+        err := r.Initialize()
+        if err != nil {
+            t.Fatal("Should not have failed initailizing any tests, ", err)
+        }
+
         var d bytes.Buffer
         for _, s := range tc.Data {
             d.WriteString(s)
         }
 
-        results, err := r.ParseCsv(d.Bytes())
+        results, err := r.Parse(d.Bytes())
         if !errors.Is(err, tc.ExpectedError) {
             t.Fatalf("%s:%v", tc.Name, err)
         }
@@ -54,7 +61,9 @@ func TestParseCsv(t *testing.T) {
             if len(results) != tc.ExpectedRecordLength {
                 t.Errorf("%s: Wrong length on the entreies result: %d", tc.Name, len(results))
             } else {
-                t.Log(results)
+                for _, res := range results {
+                    t.Logf("%s: %+v", tc.Name, res)
+                }
             }
         }
     }
@@ -83,10 +92,10 @@ func TestParseCsv_StopStart(t *testing.T){
     if proc.IsRunning(){
         t.Fatal("proccessor should not be running after creation")
     }
-
+    proc.SetIngress(make(relationships.PayloadChannel,0))
     err := proc.Start(context.TODO())
     if err != nil {
-        t.Fatal("processor should not have failed to startup")
+        t.Fatal("processor should not have failed to startup: ", err)
     }
     err = proc.Start(context.TODO())
     if !errors.Is(err, failure.ErrAlreadyRunning) {

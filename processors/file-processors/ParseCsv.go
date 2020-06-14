@@ -24,7 +24,9 @@ var (
     ErrHeaderMismatch error = errors.New("the header is not the same size as the records")
 )
 
-// ParseCsv is used to $INSERT DESCRIPTION
+// ParseCsv is a processor that is used to Read CSV in and
+// Convert it into map[string]string and extract every CSV row into its own object
+// Its generic and can accept any CSV
 type ParseCsv struct{
     Name     string
     running  bool
@@ -116,9 +118,24 @@ func (proc *ParseCsv) Start(ctx context.Context) error {
         for {
             select {
                 case payload := <-proc.ingress:
-                    // Do your processing here
-                    payload.GetPayload()
-
+                    // This here is a tip to increase overall performance
+                    // start ur processing inside a new goroutine, but make sure that i will cancel so
+                    // we dont miss leaking goroutines
+                    go func() {
+                        data := payload.GetPayload()
+                        rows, err := proc.Parse(data)
+                        if err != nil {
+                            proc.failures <- failure.Failure{
+                                Err:       err,
+                                Payload:   payload,
+                                Processor: "ParseCsv",
+                            }
+                        }
+                        // Send each Row, or bulk send em?
+                        for _, row := range rows {
+                            proc.egress <- row
+                        }
+                    }()
                 case <- c.Done():
                     return
             }
