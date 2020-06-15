@@ -12,15 +12,15 @@ import (
 // Workflow is a chain of processors to run.
 // It will run processors created in the order they are set.
 type Workflow struct {
-	Name string `json:"name"`
+	Name string `json:"name" yaml:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
-	processors []processors.Processor
+	processors []processors.Processor `json:"processors" yaml:"processors"`
 	// ctx is a context passed by the current Application the workflow is added to
-	ctx            context.Context
-	failures       relationships.FailurePipe
-	failureHandler func(f failure.Failure)
-	failureStop    context.CancelFunc
-	sync.Mutex
+	ctx            context.Context `json:"-" yaml:"-"`
+	failures       relationships.FailurePipe `json:"-" yaml:"-"`
+	failureHandler func(f failure.Failure) `json:"-" yaml:"-"`
+	failureStop    context.CancelFunc `json:"-" yaml:"-"`
+	sync.Mutex `json:"-" yaml:"-"`
 }
 
 // NewWorkflow will initiate a new workflow
@@ -34,10 +34,11 @@ func NewWorkflow(name string) *Workflow {
 }
 
 // AddProcessor will append a new processor at the end of the flow
-func (w *Workflow) AddProcessor(p processors.Processor) {
+func (w *Workflow) AddProcessor(p ...processors.Processor) {
 	w.Lock()
 	defer w.Unlock()
-	w.processors = append(w.processors, p)
+	w.processors = append(w.processors, p...)
+
 }
 
 // RemoveProcessor will remove an Processor from the Workflow

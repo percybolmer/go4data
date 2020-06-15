@@ -8,16 +8,54 @@ import (
 	"github.com/percybolmer/workflow/processors/processmanager"
 	"os"
 	"time"
+
+	_ "github.com/percybolmer/workflow/processors/terminal-processors"
 )
 
 func main() {
 
-	go WithProcessMananger()
+	go ReadAndPrint()
+	//go WithProcessMananger()
 
 	//go WithoutProcessManager()
 
 	time.Sleep(5 * time.Second)
 
+}
+
+func ReadAndPrint() {
+	app := workflow.NewApplication("example_app")
+	w := workflow.NewWorkflow("file_printer_stdout")
+
+	readproc, err := processmanager.GetProcessor("ReadFile")
+	if err != nil {
+		panic(err)
+	}
+	readproc.SetProperty("remove_after", false)
+	readproc.SetProperty("filepath", "files/csv.txt")
+	stdoutProc, err := processmanager.GetProcessor("Stdout")
+	if err != nil {
+		panic(err)
+	}
+	stdoutProc.SetProperty("forward", true)
+
+	stdoutProc2, err := processmanager.GetProcessor("Stdout")
+	if err != nil {
+		panic(err)
+	}
+
+	w.AddProcessor(readproc, stdoutProc, stdoutProc2)
+	app.AddWorkflow(w)
+
+	err = app.Start()
+	if err != nil {
+		panic(err)
+	}
+	time.Sleep(2 * time.Second)
+	mets := readproc.GetMetrics()
+	for _, m := range mets {
+		fmt.Printf("%s: %v", m.Name, m.Value)
+	}
 }
 
 func WithProcessMananger() {

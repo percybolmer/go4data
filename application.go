@@ -20,9 +20,9 @@ var (
 // @see Workflow to know what that means
 // THe application is just a container for many Workflows that can be run / stopped
 type Application struct {
-	Name      string               `json:"name"`
-	Workflows map[string]*Workflow `json:"workflows"`
-	sync.RWMutex
+	Name      string               `json:"name" yaml:"name"`
+	Workflows map[string]*Workflow `json:"workflows" yaml:"workflows"`
+	sync.RWMutex `json:"-" yaml: "-"`
 }
 
 // NewApplication will create a new Application with fresh settings and all values needed initialized
@@ -71,3 +71,4 @@ func (a *Application) Stop() {
 		w.Stop()
 	}
 }
+

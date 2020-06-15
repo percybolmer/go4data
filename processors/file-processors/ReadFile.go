@@ -18,7 +18,7 @@ import (
 
 // ReadFile is used to read files Locally from disk and output the contents
 type ReadFile struct {
-	Name     string
+	Name     string `json:"name" yaml:"name"`
 	running  bool
 	cancel   context.CancelFunc
 	ingress  relationships.PayloadChannel
