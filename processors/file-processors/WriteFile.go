@@ -96,12 +96,14 @@ func (proc *WriteFile) Start(ctx context.Context) error {
                     // Do your processing here
                     err := proc.Write(path, append, payload)
                     if err != nil {
+                        proc.AddMetric("failures", "the number of failures that occured in the processor", 1)
                         proc.failures <- failure.Failure{
                             Err:       err,
                             Payload:   payload,
                             Processor: "WriteFile",
                         }
                     }
+                    proc.AddMetric("writes", "the number of writes the processor has performed", 1)
 
                 case <- c.Done():
                     return

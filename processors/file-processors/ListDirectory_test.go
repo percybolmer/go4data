@@ -1,14 +1,15 @@
-package {{.PackageName}}
+package fileprocessors
 
 import (
     "testing"
     "context"
     "errors"
     "github.com/percybolmer/workflow/failure"
+    "time"
 )
 
-func Test{{.ProcessorName}}_Initialize(t *testing.T) {
-    proc := New{{.ProcessorName}}()
+func TestListDirectory_Initialize(t *testing.T) {
+    proc := NewListDirectory()
     // Empty Init should fail
     proc.AddRequirement("test_prop")
     err := proc.Initialize()
@@ -23,8 +24,29 @@ func Test{{.ProcessorName}}_Initialize(t *testing.T) {
 
 }
 
-func Test{{.ProcessorName}}_StopStart(t *testing.T){
-    proc := New{{.ProcessorName}}()
+func TestListDirectory_Start(t *testing.T) {
+    proc := NewListDirectory()
+
+    proc.SetProperty("path", "testfiles")
+
+    err := proc.Initialize()
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    endtimer := time.NewTicker(12 * time.Second)
+    for {
+        select {
+        case file := <- proc.egress:
+            t.Log(file)
+        case <- endtimer.C:
+            return
+        }
+    }
+}
+
+func TestListDirectory_StopStart(t *testing.T){
+    proc := NewListDirectory()
 
 
     if proc.IsRunning(){

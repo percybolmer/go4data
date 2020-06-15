@@ -125,14 +125,17 @@ func (proc *ParseCsv) Start(ctx context.Context) error {
                         data := payload.GetPayload()
                         rows, err := proc.Parse(data)
                         if err != nil {
+                            proc.AddMetric("failures", "the number of failures that has occured in the processor", 1)
                             proc.failures <- failure.Failure{
                                 Err:       err,
                                 Payload:   payload,
                                 Processor: "ParseCsv",
                             }
                         }
+                        proc.AddMetric("inputfiles", "the number of input files that has occured", 1)
                         // Send each Row, or bulk send em?
                         for _, row := range rows {
+                            proc.AddMetric("csvrows", "the number of csvrows outputted", 1)
                             proc.egress <- row
                         }
                     }()

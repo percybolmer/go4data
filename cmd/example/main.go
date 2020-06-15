@@ -2,6 +2,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/percybolmer/workflow"
 	fileprocessors "github.com/percybolmer/workflow/processors/file-processors"
 	"github.com/percybolmer/workflow/processors/processmanager"
@@ -24,11 +25,10 @@ func WithProcessMananger() {
 
 	w := workflow.NewWorkflow("file_mover")
 
-	//f, err := os.Create("csv.txt")
-	//if err != nil {
-	//	panic(err)
-	//}
-	//f.Write([]byte(`header,row,is,cool \n data,field,is,cooler\n`))
+	listdirProc, err := processmanager.GetProcessor("ListDirectory")
+	if err != nil {
+		panic(err)
+	}
 	readproc, err := processmanager.GetProcessor("ReadFile")
 	if err != nil {
 		panic(err)
@@ -41,13 +41,14 @@ func WithProcessMananger() {
 	if err != nil {
 		panic(err)
 	}
+
 	readproc.SetProperty("remove_after", false)
-	readproc.SetProperty("filepath", "csv.txt")
 
 	writeproc.SetProperty("path", "csvAsMap")
 	writeproc.SetProperty("append", true)
 
-
+	listdirProc.SetProperty("path", "files/")
+	w.AddProcessor(listdirProc)
 	w.AddProcessor(readproc)
 	w.AddProcessor(csvproc)
 	w.AddProcessor(writeproc)
@@ -56,6 +57,12 @@ func WithProcessMananger() {
 	err = app.Start()
 	if err != nil {
 		panic(err)
+	}
+
+	time.Sleep(3 * time.Second)
+	mets := readproc.GetMetrics()
+	for _, m := range mets {
+		fmt.Printf("%s: %v", m.Name, m.Value)
 	}
 }
 

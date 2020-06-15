@@ -148,6 +148,7 @@ func (rfp *ReadFile) readAndPublish(path string) error {
 		Payload: data,
 		Source:  path,
 	}
+	rfp.AddMetric("files", "the number of files that has been read", 1)
 	return nil
 }
 // read is used to ingest a file
@@ -169,6 +170,7 @@ func (rfp *ReadFile) publishFailure(err error, payload payload.Payload) {
 		return
 	}
 
+	rfp.AddMetric("failures", "the number of failures sent by the processor", 1)
 	rfp.failures <- failure.Failure{
 		Err:       err,
 		Payload:   payload,

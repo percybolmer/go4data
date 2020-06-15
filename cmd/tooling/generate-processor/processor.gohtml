@@ -82,6 +82,8 @@ func (proc *{{.ProcessorName}}) Start(ctx context.Context) error {
                 case payload := <-proc.ingress:
                     // Do your processing here
                     payload.GetPayload()
+                    // Also add any metrics u want
+                    proc.AddMetric("test", "description", 1)
 
                 case <- c.Done():
                     return
