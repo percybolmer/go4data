@@ -21,7 +21,7 @@ type {{.ProcessorName}} struct{
     egress   relationships.PayloadChannel
     failures relationships.FailurePipe
     *properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-    *metric.Metrics `json:"metrics,omitempty" yaml:"metrics,omitempty"`
+    *metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
 }
 // init is used to Register the processor to the processmanager
 func init() {

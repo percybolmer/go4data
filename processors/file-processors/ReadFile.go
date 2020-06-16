@@ -172,7 +172,7 @@ func (rfp *ReadFile) read(path string) ([]byte, error){
 }
 func (rfp *ReadFile) publishFailure(err error, payload payload.Payload) {
 	if rfp.failures == nil {
-		return
+		rfp.failures = make(relationships.FailurePipe,1000)
 	}
 
 	rfp.AddMetric("failures", "the number of failures sent by the processor", 1)

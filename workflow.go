@@ -2,13 +2,22 @@ package workflow
 
 import (
 	"context"
+	"errors"
 	"github.com/percybolmer/workflow/failure"
+	"github.com/percybolmer/workflow/processors/processmanager"
+	"github.com/percybolmer/workflow/properties"
 	"github.com/percybolmer/workflow/relationships"
+	"gopkg.in/yaml.v3"
 	"sync"
 
 	"github.com/percybolmer/workflow/processors"
 )
 
+
+var (
+	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
+	ErrFailedToUnmarshal = errors.New("failed to unmarshal since data provided is not correct")
+)
 // Workflow is a chain of processors to run.
 // It will run processors created in the order they are set.
 type Workflow struct {
@@ -133,4 +142,72 @@ func (w *Workflow) Stop() {
 		}
 	}
 	w.failureStop()
+}
+
+func (w *Workflow) UnmarshalYAML(value *yaml.Node) error {
+	if len(value.Content) < 1 {
+		return ErrFailedToUnmarshal
+	}
+	if value.Content[0].Value != "name" {
+		return ErrFailedToUnmarshal
+	}else {
+		w.Name = value.Content[1].Value
+	}
+	var processorStart bool
+	for _, node := range value.Content{
+		if node.Value == "processors" {
+			processorStart = true
+			continue
+		}
+		if processorStart{
+			for _ , procNode := range node.Content{
+				// These are processor info, so procNode should be unmarshalled Into the correct struct, get the Name of the Processor and use processManager to fetch it
+				// Name should be the Value of the element after the Node with value name
+				var procName string
+				var namenext bool
+				var propnext bool
+				//var metricnext bool
+				var propmap properties.PropertyMap
+				//var metricNode metric.Metrics
+				for _, proc := range procNode.Content{
+					if proc.Value == "name" {
+						namenext = true
+						continue
+					} else if proc.Value == "properties" {
+						propnext = true
+						continue
+					}/* else if proc.Value == "metrics" {
+						metricnext = true
+						continue
+					}*/
+					if namenext{
+						procName = proc.Value
+						namenext = false
+					} else if propnext {
+						err := proc.Decode(&propmap)
+						if err != nil {
+							return err
+						}
+						propnext = false
+					}/*else if metricnext{
+						err := proc.Decode(&metricNode)
+						if err != nil {
+							return err
+						}
+						metricnext = false
+					}*/
+				}
+				p, err := processmanager.GetProcessor(procName)
+				if err != nil {
+					return err
+				}
+				for _, prop := range propmap.Properties {
+					p.SetProperty(prop.Name, prop.Value)
+				}
+				w.AddProcessor(p)
+			}
+
+		}
+	}
+	return nil
 }
