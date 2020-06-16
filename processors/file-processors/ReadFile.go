@@ -24,8 +24,8 @@ type ReadFile struct {
 	ingress  relationships.PayloadChannel
 	egress   relationships.PayloadChannel
 	failures relationships.FailurePipe
-	*properties.PropertyMap
-	*metric.Metrics
+	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
 
 	// custom settings for rfp
 	ingressNeeded bool
@@ -49,11 +49,16 @@ func NewReadFile() *ReadFile {
 		egress: make(relationships.PayloadChannel, 1000),
 		PropertyMap: properties.NewPropertyMap(),
 		Metrics: metric.NewMetrics(),
+		Name: "ReadFile",
 	}
 
 	// Add Required Props -- remove_after
 	rfp.AddRequirement("remove_after")
 	return rfp
+}
+
+func (rfp *ReadFile) SetName(name string) {
+	rfp.Name = name
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

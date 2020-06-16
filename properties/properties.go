@@ -32,9 +32,9 @@ func NewPropertyMap() *PropertyMap {
 // PropertyMap is a struct that can be inherited as a pointer by Processors so they dont have to care about Property handeling at all.
 // THe propertyMap fulfills the PropertyContainer interface
 type PropertyMap struct {
-	Properties   map[string]*Property `json:"properties" yaml:"properties"`
+	Properties   map[string]*Property `yaml:",inline"`
 	Requirements []string             `json:"requirements" yaml:"requirements"`
-	sync.Mutex
+	sync.Mutex `json:"-" yaml:"-"`
 }
 
 // ValidateProperties will make sure that all properties are actually there that is required

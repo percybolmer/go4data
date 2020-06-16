@@ -14,7 +14,7 @@ import (
 type Workflow struct {
 	Name string `json:"name" yaml:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
-	processors []processors.Processor `json:"processors" yaml:"processors"`
+	Processors []processors.Processor `json:"processors" yaml:"processors"`
 	// ctx is a context passed by the current Application the workflow is added to
 	ctx            context.Context `json:"-" yaml:"-"`
 	failures       relationships.FailurePipe `json:"-" yaml:"-"`
@@ -27,7 +27,7 @@ type Workflow struct {
 func NewWorkflow(name string) *Workflow {
 	return &Workflow{
 		Name:           name,
-		processors:     make([]processors.Processor, 0),
+		Processors:     make([]processors.Processor, 0),
 		failures:       make(relationships.FailurePipe, 1000),
 		failureHandler: failure.PrintFailure,
 	}
@@ -37,7 +37,7 @@ func NewWorkflow(name string) *Workflow {
 func (w *Workflow) AddProcessor(p ...processors.Processor) {
 	w.Lock()
 	defer w.Unlock()
-	w.processors = append(w.processors, p...)
+	w.Processors = append(w.Processors, p...)
 
 }
 
@@ -46,7 +46,7 @@ func (w *Workflow) AddProcessor(p ...processors.Processor) {
 func (w *Workflow) RemoveProcessor(i int) {
 	w.Lock()
 	defer w.Unlock()
-	w.processors = append(w.processors[:i], w.processors[i+1:]...)
+	w.Processors = append(w.Processors[:i], w.Processors[i+1:]...)
 }
 
 // SetFailureHandler is used to change the current Error Handler used by the workflow
@@ -78,7 +78,7 @@ func (w *Workflow) startFailureHandler(c context.Context) {
 
 // initializeAllProcessors will itterate all current processors and initialize all Unstarted processors
 func (w *Workflow) initializeAllProcessors() error {
-	for _, p := range w.processors {
+	for _, p := range w.Processors {
 		if !p.IsRunning() {
 			err := p.Initialize()
 			if err != nil {
@@ -100,7 +100,7 @@ func (w *Workflow) Start() error {
 	if err != nil {
 		return err
 	}
-	for i, p := range w.processors {
+	for i, p := range w.Processors {
 		// If Processor is already running, skip starting it
 		if p.IsRunning() {
 			continue
@@ -111,7 +111,7 @@ func (w *Workflow) Start() error {
 		// There is no Previous Processor for Index 0 , so only on bigger than 0
 		if i != 0 {
 			w.Lock()
-			ingress := w.processors[i-1].GetEgress()
+			ingress := w.Processors[i-1].GetEgress()
 			if ingress != nil {
 				p.SetIngress(ingress)
 			}
@@ -127,7 +127,7 @@ func (w *Workflow) Start() error {
 
 // Stop will itterate all Processors and stop them
 func (w *Workflow) Stop() {
-	for _, p := range w.processors {
+	for _, p := range w.Processors {
 		if p.IsRunning() {
 			p.Stop()
 		}

@@ -2,4 +2,19 @@ name: savethis
 workflows:
     unusedflow:
         name: unusedflow
+        processors:
+            - name: ReadFile
+              properties:
+                requirements:
+                    - remove_after
+                filepath:
+                    name: filepath
+                    value: /tmp/doesnotexist.123
+                remove_after:
+                    name: remove_after
+                    value: false
+              metrics:
+                - description: the number of failures sent by the processor
+                  name: failures
+                  value: 1
 rwmutex: {}
