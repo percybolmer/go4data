@@ -14,16 +14,16 @@ import (
     "io/ioutil"
     "os"
 )
-// WriteFile is used to $INSERT DESCRIPTION
+// WriteFile is used to write payloads to file
 type WriteFile struct{
-    Name     string
+    Name     string `json:"name" yaml:"name"`
     running  bool
     cancel   context.CancelFunc
     ingress  relationships.PayloadChannel
     egress   relationships.PayloadChannel
     failures relationships.FailurePipe
-    *properties.PropertyMap
-    *metric.Metrics
+    *properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
+    *metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
 }
 
 var (

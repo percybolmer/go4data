@@ -10,6 +10,29 @@ import (
 	"time"
 )
 
+
+func TestYAML_Load3(t *testing.T) {
+
+		app := workflow.NewApplication("loadintothos")
+		y := YAML{}
+		err := y.Load("test.yaml", app)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		// Test functionallity of App
+		err = app.Start()
+		if err != nil {
+			t.Fatal(err)
+		}
+		time.Sleep(1 * time.Second)
+		for _, p := range app.Workflows["unusedflow"].Processors {
+			for _, m := range  p.GetMetrics() {
+				t.Logf("%s:%d", m.Name, m.Value)
+			}
+
+		}
+}
 func TestYAML_Load2(t *testing.T) {
 	// Test loading a workflow
 	wf := workflow.NewWorkflow("unsued")
@@ -73,26 +96,6 @@ func TestYAML_Load(t *testing.T) {
 			t.Fatal("Should be 2 failures for this proc")
 		}
 	}
-	/*
-	app := workflow.NewApplication("loadintothos")
-	y := YAML{}
-	err := y.Load("test.yaml", app)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// Test functionallity of App
-	err = app.Start()
-	if err != nil {
-		t.Fatal(err)
-	}
-	time.Sleep(1 * time.Second)
-	for _, p := range app.Workflows["unusedflow"].Processors {
-		for _, m := range  p.GetMetrics() {
-			t.Logf("%s:%d", m.Name, m.Value)
-		}
-
-	}*/
 }
 
 func TestYAML_Save(t *testing.T) {

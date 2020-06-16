@@ -28,14 +28,14 @@ var (
 // Convert it into map[string]string and extract every CSV row into its own object
 // Its generic and can accept any CSV
 type ParseCsv struct{
-    Name     string
+    Name     string `json:"name" yaml:"name"`
     running  bool
     cancel   context.CancelFunc
     ingress  relationships.PayloadChannel
     egress   relationships.PayloadChannel
     failures relationships.FailurePipe
-    *properties.PropertyMap
-    *metric.Metrics
+    *properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
+    *metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
 
     delimiter string
     headerlength int

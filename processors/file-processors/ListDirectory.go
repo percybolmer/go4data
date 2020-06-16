@@ -16,16 +16,16 @@ import (
     "path/filepath"
     "strings"
 )
-// ListDirectory is used to $INSERT DESCRIPTION
+// ListDirectory is used to list the content of directories on the filesystem
 type ListDirectory struct{
-    Name     string
+    Name     string `json:"name" yaml:"name"`
     running  bool
     cancel   context.CancelFunc
     ingress  relationships.PayloadChannel
     egress   relationships.PayloadChannel
     failures relationships.FailurePipe
-    *properties.PropertyMap
-    *metric.Metrics
+    *properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
+    *metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
 
     path string
     bufferduration int64
