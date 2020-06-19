@@ -67,7 +67,7 @@ func TestReadFileProcessor_Initialize(t *testing.T) {
 		t.Fatal("No filepath was set, so an ingress req should be true")
 	}
 	// Setting filepath should set ingress needed to true
-	rfp.SetProperty("filepath", "/path/to/file")
+	rfp.SetProperty("path", "/path/to/file")
 	err = rfp.Initialize()
 	if err != nil {
 		t.Fatalf("SHould have passed re-init ")

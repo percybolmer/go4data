@@ -14,7 +14,7 @@ import (
 )
 // {{.ProcessorName}} is used to $INSERT DESCRIPTION
 type {{.ProcessorName}} struct{
-    Name     string
+    Name     string `json:"name,omitempty" yaml:"name,omitempty"`
     running  bool
     cancel   context.CancelFunc
     ingress  relationships.PayloadChannel
@@ -44,7 +44,8 @@ func New{{.ProcessorName}}() *{{.ProcessorName}} {
         PropertyMap: properties.NewPropertyMap(),
         Metrics: metric.NewMetrics(),
     }
-
+    // Add AvailableProperties
+    proc.AddAvailableProperty("your_property_name", "property is used to configure something")
     // Add Required Props -- remove_after
     // proc.AddRequirement("your_property_names")
     return proc

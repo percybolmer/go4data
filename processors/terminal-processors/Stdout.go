@@ -48,6 +48,7 @@ func NewStdout() *Stdout {
         Metrics: metric.NewMetrics(),
     }
 
+    proc.AddAvailableProperty("forward", "Set to true if payload should be sent to the next processor")
     // Add Required Props -- remove_after
     //proc.AddRequirement("your_property_names")
     return proc

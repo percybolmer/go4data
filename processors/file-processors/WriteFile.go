@@ -52,7 +52,9 @@ func NewWriteFile() *WriteFile {
         PropertyMap: properties.NewPropertyMap(),
         Metrics: metric.NewMetrics(),
     }
-
+    // Add AvailableProperties
+    proc.AddAvailableProperty("append", "If set to true it will append content, if false it will overwrite files")
+    proc.AddAvailableProperty("path", "the path on which to write files")
     // Add Required Props
     proc.AddRequirement("append", "path")
     return proc

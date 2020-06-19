@@ -64,6 +64,9 @@ func NewParseCsv() *ParseCsv {
         skiprows: 0,
     }
 
+    proc.AddAvailableProperty("delimiter", "The character or string to use as a Delimiter")
+    proc.AddAvailableProperty("headerlength", "How many rows the header is")
+    proc.AddAvailableProperty("skiprows", "How many rows will be skipped in each file before starting to process")
     return proc
 }
 

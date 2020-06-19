@@ -26,15 +26,41 @@ func NewPropertyMap() *PropertyMap {
 	return &PropertyMap{
 		Properties:   make(map[string]*Property),
 		Requirements: make([]string, 0),
+		Available: make([]*Property,0),
 	}
 }
 
 // PropertyMap is a struct that can be inherited as a pointer by Processors so they dont have to care about Property handeling at all.
 // THe propertyMap fulfills the PropertyContainer interface
 type PropertyMap struct {
+	// Properties contains the currently set properties
 	Properties   map[string]*Property `yaml:",inline"`
+	// Requirements contains the names of each property that is required
 	Requirements []string             `json:"requirements" yaml:"requirements"`
+	// Available is a slice of all properties that exists and is used to affect behaviour
+	Available []*Property  `json:"available" yaml:"available"`
 	sync.Mutex `json:"-" yaml:"-"`
+}
+// AddAvailableProperty is used to add an property to available slice
+// This is purely used for documentation and showing users what properties is available
+// Maybe this list can be used in the future to make sure ppl arnt adding strange properties?
+func (pm *PropertyMap) AddAvailableProperty(name, description string) {
+	for _, p := range pm.Available {
+		if p.Name == name {
+			return
+		}
+	}
+	pm.Available = append(pm.Available, &Property{
+		Name:        name,
+		Value:       nil,
+		Description: description,
+	})
+
+}
+// GetAvailableProperties returns a list of all properties that is available
+// they will have no value, if u want properties that has been added
+func (pm *PropertyMap) GetAvailableProperties() []*Property{
+	return pm.Available
 }
 
 // ValidateProperties will make sure that all properties are actually there that is required
@@ -72,7 +98,7 @@ func (pm *PropertyMap) GetProperty(name string) *Property {
 	return pm.Properties[name]
 }
 
-// SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil opinters
+// SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil pointers
 func (pm *PropertyMap) SetProperty(name string, value interface{}) {
 	pm.Lock()
 	defer pm.Unlock()
@@ -90,10 +116,11 @@ func (pm *PropertyMap) RemoveProperty(name string) {
 	delete(pm.Properties, name)
 }
 
-// Property is a value holdler used by Processors to handle Configs
+// Property is a value holder used by Processors to handle Configs
 type Property struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
+	Name  string      `json:"name" yaml:"name"`
+	Value interface{} `json:"value" yaml:"value"`
+	Description string  `json:"description" yaml:"description"`
 }
 
 // String Will return the Value as string
@@ -120,4 +147,14 @@ func (p *Property) Bool() (bool, error) {
 		return false, ErrWrongPropertyType
 	}
 	return value, nil
+}
+// StringSplice is used to get the value as a stringslice
+func (p *Property) StringSplice() ([]string, error) {
+	var value []string
+	var ok bool
+	if value, ok = p.Value.([]string); !ok {
+		return nil, ErrWrongPropertyType
+	}
+	return value, nil
+
 }

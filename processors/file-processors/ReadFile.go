@@ -52,7 +52,10 @@ func NewReadFile() *ReadFile {
 		Name: "ReadFile",
 	}
 
-	// Add Required Props -- remove_after
+	// Add AvailableProperties
+	rfp.AddAvailableProperty("remove_after", "This property is used to configure if files that are read should be removed after")
+	rfp.AddAvailableProperty("path", "The path of the file that is suppose to be read, if left empty the processor will take the payloads from previous processor")
+	// Add Required Props
 	rfp.AddRequirement("remove_after")
 	return rfp
 }
@@ -74,7 +77,7 @@ func (rfp *ReadFile) Initialize() error {
 		return properties.ErrRequiredPropertiesNotFulfilled
 	}
 	// ReadFile needs either an Ingress of File names OR a property called Filepath
-	filepathProp := rfp.GetProperty("filepath")
+	filepathProp := rfp.GetProperty("path")
 	if filepathProp == nil {
 		// Set ingress to needed
 		rfp.ingressNeeded = true

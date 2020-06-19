@@ -51,7 +51,8 @@ func NewListDirectory() *ListDirectory {
         PropertyMap: properties.NewPropertyMap(),
         Metrics: metric.NewMetrics(),
     }
-
+    proc.AddAvailableProperty("path", "The path to the directory to list contents off")
+    proc.AddAvailableProperty("buffertime", "How long in seconds the processor should remember files, after the buffer runs out, files will be considerd new")
     // Add Required Props -- remove_after
     proc.AddRequirement("path")
     return proc
