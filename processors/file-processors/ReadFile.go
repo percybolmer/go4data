@@ -24,8 +24,8 @@ type ReadFile struct {
 	ingress  relationships.PayloadChannel
 	egress   relationships.PayloadChannel
 	failures relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics `json:",omitempty" yaml:",inline,omitempty"`
 
 	// custom settings for rfp
 	ingressNeeded bool

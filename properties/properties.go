@@ -158,3 +158,12 @@ func (p *Property) StringSplice() ([]string, error) {
 	return value, nil
 
 }
+// StringMap is used to return the value as a map[string]string
+func (p *Property) StringMap() (map[string]string, error) {
+	var value map[string]string
+	var ok bool
+	if value, ok = p.Value.(map[string]string); !ok {
+		return nil, ErrWrongPropertyType
+	}
+	return value, nil
+}

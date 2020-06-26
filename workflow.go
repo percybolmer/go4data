@@ -23,7 +23,7 @@ var (
 type Workflow struct {
 	Name string `json:"name" yaml:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
-	Processors []processors.Processor `json:"processors" yaml:"processors"`
+	Processors []processors.Processor `json:"children" yaml:"processors"`
 	// ctx is a context passed by the current Application the workflow is added to
 	ctx            context.Context `json:"-" yaml:"-"`
 	failures       relationships.FailurePipe `json:"-" yaml:"-"`
