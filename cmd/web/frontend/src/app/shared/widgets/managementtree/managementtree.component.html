@@ -1,0 +1,58 @@
+<mat-toolbar color="primary">
+  <span> Current Applications </span>
+  <!-- This fills the remaining space of the current row -->
+  <span class="fill-remaining-space"></span>
+  <button mat-raised-button (click)="addApplication()"><mat-icon>add</mat-icon>Add Application</button>
+
+</mat-toolbar>
+
+<mat-tree [dataSource]="data" [treeControl]="treeControl" >
+  <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle >
+  <!-- this here nosted node is for nodes that does not contain any childs -->
+      <!-- this here should be property..... -->
+        <li class="fullWidth">
+          <div class="mat-tree-node">
+            <button  mat-button matTreeNodeToggle (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
+                    class="fullWidth" (click)="selectNode(node)"><mat-icon style="right:20px;">memory</mat-icon>{{node.name}} </button>
+          </div>
+        </li>
+  </mat-tree-node>
+
+  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" >
+    <li class="tree-container">
+      <div class="mat-tree-node" (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }">
+        <button mat-icon-button matTreeNodeToggle
+                [attr.aria-label]="'toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+            </button>
+            <button  mat-button matTreeNodeToggle class="fullWidth" (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
+            (click)="selectNode(node)">
+            <mat-icon style="right: 20px;">{{node.icon}}</mat-icon>
+            {{node.name}}
+        </button>
+
+      </div>
+
+
+      <ul class="tree-nested-node">
+        <div  *ngIf="treeControl.isExpanded(node)">
+          <ng-container matTreeNodeOutlet></ng-container>
+        </div>
+      </ul>
+    </li>
+  </mat-nested-tree-node>
+
+<!--
+
+  <div *ngFor="let property of node.available">
+      <li class="fullWidth">
+        <div class="mat-tree-node">
+          {{property.name}}
+        </div>
+      </li>
+    </div>
+  -->
+
+</mat-tree>
