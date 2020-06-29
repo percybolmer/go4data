@@ -2,7 +2,8 @@
   <span> Current Applications </span>
   <!-- This fills the remaining space of the current row -->
   <span class="fill-remaining-space"></span>
-  <button mat-raised-button (click)="addApplication()"><mat-icon>add</mat-icon>Add Application</button>
+  <button class="add-button" mat-raised-button (click)="addApplication()"><mat-icon>add</mat-icon>Add Application</button>
+  <button class="add-button" mat-raised-button (click)="addWorkflow()" [disabled]="disableWorkflowButton"><mat-icon>add</mat-icon>Add Workflow</button>
 
 </mat-toolbar>
 
@@ -13,7 +14,7 @@
         <li class="fullWidth">
           <div class="mat-tree-node">
             <button  mat-button matTreeNodeToggle (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
-                    class="fullWidth" (click)="selectNode(node)"><mat-icon style="right:20px;">memory</mat-icon>{{node.name}} </button>
+                    class="fullWidth" (click)="selectNode(node)"><mat-icon style="right:20px;">{{node.icon}}</mat-icon>{{node.name}} </button>
           </div>
         </li>
   </mat-tree-node>

@@ -1,6 +1,26 @@
 
-    <mat-nav-list>
-      <!--<div class="profile-card">
+    <mat-sidenav #appDrawer mode="rail" [(opened)]="opened">
+        <mat-nav-list>
+            <mat-divider></mat-divider>
+            <a mat-list-item routerLinkActive="list-item-active" routerLink="/">
+                <mat-icon mat-list-icon >account_circle</mat-icon>
+                <p>Dashboard</p>    
+            </a>
+            <mat-divider></mat-divider>
+            <a mat-list-item routerLinkActive="list-item-active" routerLink="/management">
+                <mat-icon mat-list-icon>settings_applications </mat-icon>    
+                Management
+            </a>
+            <mat-divider></mat-divider>
+        </mat-nav-list>
+    </mat-sidenav>
+     <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+   
+
+
+<!--<div class="profile-card">
           <div class="header">
               <h2>Percy Bolmer</h2>
               <h4>percybolmer1@gmail.com</h4>
@@ -9,6 +29,9 @@
       </div>
       <mat-divider></mat-divider>
       -->
+<!--
+      <mat-nav-list>
+
       <h2 matSubHeader> Pages</h2>
       <mat-divider></mat-divider>
       <a mat-list-item routerLinkActive="list-item-active" routerLink="/">Dashboard</a>
@@ -16,3 +39,4 @@
       <a mat-list-item routerLinkActive="list-item-active" routerLink="/management">Management</a>
       <mat-divider></mat-divider>
     </mat-nav-list>
+-->

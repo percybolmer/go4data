@@ -1,11 +1,26 @@
-<app-header (toggleSideBarEvent)="toggleSidebar()"></app-header>
+<mat-sidenav-container class="sidenav-container" >
+    <mat-sidenav class="primary" #appDrawer mode="rail" [(opened)]="sideBarOpen">
+        <mat-nav-list>
+            <mat-divider></mat-divider>
+            <a mat-list-item class="whitesmoke-background" routerLinkActive="list-item-active" routerLink="/">
+                <mat-icon mat-list-icon >account_circle</mat-icon>
+                <p>Dashboard</p>    
+            </a>
+            <mat-divider></mat-divider>
+            <a mat-list-item class="whitesmoke-background" routerLinkActive="list-item-active" routerLink="/management">
+                <mat-icon mat-list-icon>settings_applications </mat-icon>    
+                Management
+            </a>
+            <mat-divider></mat-divider>
+        </mat-nav-list>
+    </mat-sidenav>
+     <mat-sidenav-content>
+        <app-header class="main-header" (toggleSideBarEvent)="toggleSidebar()"></app-header>
+        <div class="container">
+            <router-outlet></router-outlet>
+        </div>
+    </mat-sidenav-content>
 
-<mat-drawer-container>
-    <mat-drawer mode="side" [opened]="sideBarOpen">
-        <app-sidebar></app-sidebar>
-    </mat-drawer>
-    <mat-drawer-content >
-        <router-outlet></router-outlet>
-    </mat-drawer-content>
-</mat-drawer-container>
-<app-footer></app-footer>
+    <app-footer></app-footer>
+</mat-sidenav-container>
+

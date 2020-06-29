@@ -6,14 +6,18 @@ package processors
 
 import (
 	"context"
+
 	"github.com/percybolmer/workflow/relationships"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
 )
+
 // Processor is an interface that makes it possible to send data between and in diffreent items running
 // An example processor is a FileReader that digests the content of a file and sends it along to the next Processor
 type Processor interface {
+	// GetName should return a unique name for a processor that can be used whenever the Processor needs to be referenced
+	GetName() string
 	// Initialize is responsible to make sure the Processor has everything it needs to run properly and setup needed things before Start
 	Initialize() error
 	// Start will trigger the processor to ingest data,

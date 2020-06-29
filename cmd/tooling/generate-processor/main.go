@@ -5,24 +5,22 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
 	"log"
-	"text/template"
+	"os"
 	"os/exec"
+	"text/template"
 )
 
 type newProcessor struct {
-	PackageName string
+	PackageName   string
 	ProcessorName string
-	Location string
+	Location      string
 }
 
 var processorTemplate *template.Template
 var testTemplate *template.Template
 
-
-
-func main(){
+func main() {
 	var p newProcessor
 	flag.StringVar(&p.PackageName, "package", "", "The name for the generated package")
 	flag.StringVar(&p.ProcessorName, "processor", "", "The name of the processor to generate")
@@ -55,10 +53,8 @@ func main(){
 	err = tests.Execute(testf, p)
 	checkError(err)
 
-	cmd := exec.Command("gofmt", "-w", p.Location + "/*")
+	cmd := exec.Command("gofmt", "-w", p.Location+"/*")
 	cmd.Run()
-
-
 
 }
 
@@ -81,16 +77,10 @@ func checkError(err error) {
 	}
 }
 
-func GetProcessorTemplate() (*template.Template,error){
-	return template.New("procesorTemplate").Parse(processorTemplateString)
+func GetProcessorTemplate() (*template.Template, error) {
+	return template.New("procesorTemplate").ParseFiles("processor.gohtml")
 }
 
-
-func GetTestTemplate() (*template.Template,error){
-	return template.New("testTemplate").Parse(testTemplateString)
+func GetTestTemplate() (*template.Template, error) {
+	return template.New("testTemplate").ParseFiles("processor_test.gohtml")
 }
-
-
-
-
-

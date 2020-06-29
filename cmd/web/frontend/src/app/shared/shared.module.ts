@@ -12,10 +12,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatListModule }  from '@angular/material/list';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule} from '@angular/material/paginator';
 import { MatSidenavModule} from "@angular/material/sidenav";
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import { MatTreeModule} from '@angular/material/tree';
+import { MatDialogModule} from '@angular/material/dialog';
 import { FlexLayoutModule } from '@angular/flex-layout'
 import { RouterModule } from '@angular/router';
 import { AreaComponent } from './widgets/area/area.component';
@@ -26,6 +30,7 @@ import { PieComponent } from './widgets/pie/pie.component';
 import { TableComponent } from './widgets/table/table.component';
 import { WorkflowtreeComponent } from './widgets/workflowtree/workflowtree.component';
 import { ManagementtreeComponent } from './widgets/managementtree/managementtree.component';
+import { AddapplicationdialogComponent } from './widgets/addapplicationdialog/addapplicationdialog.component';
 
 import {FormsModule} from '@angular/forms';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -40,6 +45,7 @@ import {ReactiveFormsModule} from '@angular/forms';
     TableComponent,
     WorkflowtreeComponent,
     ManagementtreeComponent,
+    AddapplicationdialogComponent,
   ],
   imports: [
     CommonModule,
@@ -52,12 +58,17 @@ import {ReactiveFormsModule} from '@angular/forms';
     MatListModule,
     MatTableModule,
     MatTreeModule,
+    MatInputModule,
     MatSidenavModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDialogModule,
     MatPaginatorModule,
     RouterModule,
+    FormsModule,
     FlexLayoutModule,
     HighchartsChartModule,
-    DrawerRailModule
+    DrawerRailModule,
   ],
 
   exports: [
@@ -70,6 +81,8 @@ import {ReactiveFormsModule} from '@angular/forms';
     TableComponent,
     WorkflowtreeComponent,
     ManagementtreeComponent,
+    AddapplicationdialogComponent,
+    MatFormFieldModule, MatInputModule,
   ]
 })
 export class SharedModule { }

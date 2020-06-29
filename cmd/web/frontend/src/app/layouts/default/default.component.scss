@@ -4,14 +4,23 @@
     height: 100%;
 }
 
-mat-drawer{
-    width: 350px;
+:host {
+    .mat-icon{
+        vertical-align: middle;
+        margin-right: 20px;
+    }
+  
 }
 
-mat-drawer-container {
+.primary {
+    background-color: #3f51b5;
+}
+.whitesmoke-background {
+    background-color: whitesmoke;
+}
+.sidenav-container {
     height: 100%;
 }
-
-mat-drawer-content {
-    padding: 20px;
+.container {
+    padding: 8px 24px 108px 24px;
 }
