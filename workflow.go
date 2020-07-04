@@ -3,33 +3,35 @@ package workflow
 import (
 	"context"
 	"errors"
+	"sync"
+
 	"github.com/percybolmer/workflow/failure"
 	"github.com/percybolmer/workflow/processors/processmanager"
 	"github.com/percybolmer/workflow/properties"
 	"github.com/percybolmer/workflow/relationships"
 	"gopkg.in/yaml.v3"
-	"sync"
 
 	"github.com/percybolmer/workflow/processors"
 )
-
 
 var (
 	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
 	ErrFailedToUnmarshal = errors.New("failed to unmarshal since data provided is not correct")
 )
+
 // Workflow is a chain of processors to run.
 // It will run processors created in the order they are set.
 type Workflow struct {
 	Name string `json:"name" yaml:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
-	Processors []processors.Processor `json:"children" yaml:"processors"`
+	Processors []processors.Processor `json:"processors" yaml:"processors"`
 	// ctx is a context passed by the current Application the workflow is added to
-	ctx            context.Context `json:"-" yaml:"-"`
+	ctx            context.Context           `json:"-" yaml:"-"`
 	failures       relationships.FailurePipe `json:"-" yaml:"-"`
-	failureHandler func(f failure.Failure) `json:"-" yaml:"-"`
-	failureStop    context.CancelFunc `json:"-" yaml:"-"`
-	sync.Mutex `json:"-" yaml:"-"`
+	failureHandler func(f failure.Failure)   `json:"-" yaml:"-"`
+	failureStop    context.CancelFunc        `json:"-" yaml:"-"`
+	sync.Mutex     `json:"-" yaml:"-"`
+	Type           string `json:"type"`
 }
 
 // NewWorkflow will initiate a new workflow
@@ -39,6 +41,7 @@ func NewWorkflow(name string) *Workflow {
 		Processors:     make([]processors.Processor, 0),
 		failures:       make(relationships.FailurePipe, 1000),
 		failureHandler: failure.PrintFailure,
+		Type:           "workflow",
 	}
 }
 
@@ -150,17 +153,17 @@ func (w *Workflow) UnmarshalYAML(value *yaml.Node) error {
 	}
 	if value.Content[0].Value != "name" {
 		return ErrFailedToUnmarshal
-	}else {
+	} else {
 		w.Name = value.Content[1].Value
 	}
 	var processorStart bool
-	for _, node := range value.Content{
+	for _, node := range value.Content {
 		if node.Value == "processors" {
 			processorStart = true
 			continue
 		}
-		if processorStart{
-			for _ , procNode := range node.Content{
+		if processorStart {
+			for _, procNode := range node.Content {
 				// These are processor info, so procNode should be unmarshalled Into the correct struct, get the Name of the Processor and use processManager to fetch it
 				// Name should be the Value of the element after the Node with value name
 				var procName string
@@ -169,18 +172,18 @@ func (w *Workflow) UnmarshalYAML(value *yaml.Node) error {
 				//var metricnext bool
 				var propmap properties.PropertyMap
 				//var metricNode metric.Metrics
-				for _, proc := range procNode.Content{
+				for _, proc := range procNode.Content {
 					if proc.Value == "name" {
 						namenext = true
 						continue
 					} else if proc.Value == "properties" {
 						propnext = true
 						continue
-					}/* else if proc.Value == "metrics" {
+					} /* else if proc.Value == "metrics" {
 						metricnext = true
 						continue
 					}*/
-					if namenext{
+					if namenext {
 						procName = proc.Value
 						namenext = false
 					} else if propnext {
@@ -189,7 +192,7 @@ func (w *Workflow) UnmarshalYAML(value *yaml.Node) error {
 							return err
 						}
 						propnext = false
-					}/*else if metricnext{
+					} /*else if metricnext{
 						err := proc.Decode(&metricNode)
 						if err != nil {
 							return err

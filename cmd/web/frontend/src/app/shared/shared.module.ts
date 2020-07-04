@@ -8,6 +8,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule, MatTooltip } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,16 +25,20 @@ import { FlexLayoutModule } from '@angular/flex-layout'
 import { RouterModule } from '@angular/router';
 import { AreaComponent } from './widgets/area/area.component';
 import { MatCheckboxModule} from "@angular/material/checkbox";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { CardComponent } from './widgets/card/card.component';
 import { PieComponent } from './widgets/pie/pie.component';
 import { TableComponent } from './widgets/table/table.component';
 import { WorkflowtreeComponent } from './widgets/workflowtree/workflowtree.component';
 import { ManagementtreeComponent } from './widgets/managementtree/managementtree.component';
-import { AddapplicationdialogComponent } from './widgets/addapplicationdialog/addapplicationdialog.component';
 
 import {FormsModule} from '@angular/forms';
 import {ReactiveFormsModule} from '@angular/forms';
+import { Browser } from 'protractor';
+import { AddworkflowComponent } from './widgets/dialogs/addworkflow/addworkflow.component';
+import { AddprocessorComponent } from './widgets/dialogs/addprocessor/addprocessor.component';
+import { ConfigureProcessorComponent } from './widgets/dialogs/configure-processor/configure-processor.component';
 @NgModule({
   declarations: [
     HeaderComponent,
@@ -45,10 +50,13 @@ import {ReactiveFormsModule} from '@angular/forms';
     TableComponent,
     WorkflowtreeComponent,
     ManagementtreeComponent,
-    AddapplicationdialogComponent,
+    AddworkflowComponent,
+    AddprocessorComponent,
+    ConfigureProcessorComponent,
   ],
   imports: [
     CommonModule,
+    BrowserAnimationsModule,
     MatDividerModule,
     MatCheckboxModule,
     MatToolbarModule,
@@ -59,6 +67,7 @@ import {ReactiveFormsModule} from '@angular/forms';
     MatTableModule,
     MatTreeModule,
     MatInputModule,
+    MatTooltipModule,
     MatSidenavModule,
     MatFormFieldModule,
     MatSelectModule,
@@ -81,7 +90,6 @@ import {ReactiveFormsModule} from '@angular/forms';
     TableComponent,
     WorkflowtreeComponent,
     ManagementtreeComponent,
-    AddapplicationdialogComponent,
     MatFormFieldModule, MatInputModule,
   ]
 })

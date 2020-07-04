@@ -10,7 +10,7 @@ import (
 func Test{{.ProcessorName}}_Initialize(t *testing.T) {
     proc := New{{.ProcessorName}}()
     // Empty Init should fail
-    proc.AddRequirement("test_prop")
+    proc.AddProperty("test_prop", "a prop for testing", true)
     err := proc.Initialize()
     if err == nil {
         t.Fatal("Should have failed to initialize without proper Properties set")

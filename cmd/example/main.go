@@ -3,11 +3,12 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/percybolmer/workflow"
 	fileprocessors "github.com/percybolmer/workflow/processors/file-processors"
 	"github.com/percybolmer/workflow/processors/processmanager"
-	"os"
-	"time"
 
 	_ "github.com/percybolmer/workflow/processors/terminal-processors"
 )
@@ -23,8 +24,8 @@ func main() {
 
 }
 
+// ReadAndPrint is a example flow that reads files
 func ReadAndPrint() {
-	app := workflow.NewApplication("example_app")
 	w := workflow.NewWorkflow("file_printer_stdout")
 
 	readproc, err := processmanager.GetProcessor("ReadFile")
@@ -32,7 +33,7 @@ func ReadAndPrint() {
 		panic(err)
 	}
 	readproc.SetProperty("remove_after", false)
-	readproc.SetProperty("filepath", "files/csv.txt")
+	readproc.SetProperty("path", "files/csv.txt")
 	stdoutProc, err := processmanager.GetProcessor("Stdout")
 	if err != nil {
 		panic(err)
@@ -45,9 +46,7 @@ func ReadAndPrint() {
 	}
 
 	w.AddProcessor(readproc, stdoutProc, stdoutProc2)
-	app.AddWorkflow(w)
-
-	err = app.Start()
+	err = w.Start()
 	if err != nil {
 		panic(err)
 	}
@@ -58,9 +57,8 @@ func ReadAndPrint() {
 	}
 }
 
+// WithProcessMananger shows examples of using the processmanager
 func WithProcessMananger() {
-	app := workflow.NewApplication("example_app")
-
 	w := workflow.NewWorkflow("file_mover")
 
 	listdirProc, err := processmanager.GetProcessor("ListDirectory")
@@ -91,8 +89,7 @@ func WithProcessMananger() {
 	w.AddProcessor(csvproc)
 	w.AddProcessor(writeproc)
 
-	app.AddWorkflow(w)
-	err = app.Start()
+	err = w.Start()
 	if err != nil {
 		panic(err)
 	}
@@ -104,9 +101,8 @@ func WithProcessMananger() {
 	}
 }
 
+// WithoutProcessManager shows how u can setup a flow wihtout processmanager related
 func WithoutProcessManager() {
-	app := workflow.NewApplication("example_app")
-
 	w := workflow.NewWorkflow("file_mover")
 
 	f, err := os.Create("thisexample.txt")
@@ -125,9 +121,7 @@ func WithoutProcessManager() {
 	w.AddProcessor(reader)
 	w.AddProcessor(writer)
 
-	app.AddWorkflow(w)
-
-	app.Start()
+	w.Start()
 
 	time.Sleep(2 * time.Second)
 

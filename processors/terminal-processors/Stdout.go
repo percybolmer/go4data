@@ -21,8 +21,8 @@ type Stdout struct {
 	ingress                 relationships.PayloadChannel
 	egress                  relationships.PayloadChannel
 	failures                relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics         `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics         `json:",omitempty" yaml:",inline,omitempty"`
 
 	forward bool
 }
@@ -51,15 +51,18 @@ func NewStdout() *Stdout {
 		Name:        "Stdout",
 	}
 
-	proc.AddAvailableProperty("forward", "Set to true if payload should be sent to the next processor")
-	// Add Required Props -- remove_after
-	//proc.AddRequirement("your_property_names")
+	proc.AddProperty("forward", "Set to true if payload should be sent to the next processor", false)
 	return proc
 }
 
 // GetName returns the unique name of the processor
 func (proc *Stdout) GetName() string {
 	return proc.Name
+}
+
+// GetDescription returns the the description
+func (proc *Stdout) GetDescription() string {
+	return "prints the payload to stdout"
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

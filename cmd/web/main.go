@@ -10,47 +10,38 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/percybolmer/workflow"
-	"github.com/percybolmer/workflow/processors"
 	_ "github.com/percybolmer/workflow/processors/file-processors"
+	_ "github.com/percybolmer/workflow/processors/filter-processors"
 	"github.com/percybolmer/workflow/processors/processmanager"
+	_ "github.com/percybolmer/workflow/processors/terminal-processors"
+	"github.com/percybolmer/workflow/properties"
 	"github.com/rs/cors"
 )
 
 var (
-	// ErrApplicationDoesAlreadyExist is returned by the api when a user tries to add duplicate applications
-	ErrApplicationDoesAlreadyExist = errors.New("an application with that name already exists")
+	// ErrDuplicateAlreadyExist is returned by the api when a user tries to add duplicate /workflows
+	ErrDuplicateAlreadyExist = errors.New("an resource with that name already exists")
 )
 
-type Api struct {
-	Applications []*workflow.Application
-	router       *mux.Router
+// descriptionProcessor is a way of sending processors to the UI thats easier to handle than just parsing processors straight
+type descriptionProcessor struct {
+	Name        string                 `json:"name"`
+	Description string                 `json:"description"`
+	Properties  []*properties.Property `json:"properties"`
 }
 
-type Api_Application struct {
-	Name      string         `json:"name" yaml:"name"`
-	Workflows []Api_Workflow `json:"children" yaml:"workflows"`
-	Icon      string         `json:"icon"`
-}
-
-type Api_Workflow struct {
-	Name string `json:"name"`
-	// processors is the array containing all processors that has been added to the Workflow.
-	Processors []Api_Processor `json:"children"`
-	Icon       string          `json:"icon"`
-}
-
-type Api_Processor struct {
-	Processor processors.Processor `json:"processor"`
-	Icon      string               `json:"icon"`
-	Name      string               `json:"name"`
+// API is handeling our mux and holds our slice of Workflows
+type API struct {
+	Workflows []*workflow.Workflow
+	router    *mux.Router
 }
 
 func main() {
 
 	fmt.Println("Starting the test app")
-	api := &Api{
-		Applications: make([]*workflow.Application, 0),
-		router:       mux.NewRouter(),
+	api := &API{
+		Workflows: make([]*workflow.Workflow, 0),
+		router:    mux.NewRouter(),
 	}
 	generateTestData(api)
 	// Setup CORS
@@ -70,17 +61,16 @@ func main() {
 		},
 	})
 
-	api.router.HandleFunc("/applications", api.GetApplications).Methods("GET")
-	api.router.HandleFunc("/applications", api.AddApplication).Methods("POST")
+	api.router.HandleFunc("/workflows", api.GetWorkflows).Methods("GET")
+	api.router.HandleFunc("/workflows", api.AddWorkflows).Methods("POST")
+	api.router.HandleFunc("/processors", api.GetProcessors).Methods("GET")
+	api.router.HandleFunc("/processors", api.AddProcessor).Methods("POST")
+	api.router.HandleFunc("/processors", api.ConfigureProcessor).Methods("PATCH")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(api.router)))
 	fmt.Println("Exiting")
 }
 
-func generateTestData(api *Api) {
-	app := workflow.NewApplication("test")
-	app2 := workflow.NewApplication("next")
-	api.Applications = append(api.Applications, app)
-	api.Applications = append(api.Applications, app2)
+func generateTestData(api *API) {
 
 	work1 := workflow.NewWorkflow("read-daily-files")
 	work2 := workflow.NewWorkflow("write-daily-files")
@@ -90,69 +80,114 @@ func generateTestData(api *Api) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	proc1.SetProperty("path", "this_example")
 	work1.AddProcessor(proc1)
-	app.AddWorkflow(work1)
-	app.AddWorkflow(work2)
-	app2.AddWorkflow(unrelatedwork)
+
+	api.Workflows = append(api.Workflows, work1, work2, unrelatedwork)
 }
 
-// AddApplication is a handler used to add new Applications
-// It wont accept duplicates
-func (a *Api) AddApplication(w http.ResponseWriter, r *http.Request) {
-	var newApp Api_Application
+// AddWorkflows is handler used to add a new workflow to an application
+// workflows added wont be started
+func (a *API) AddWorkflows(w http.ResponseWriter, r *http.Request) {
+	var newWorkflow workflow.Workflow
 
-	err := json.NewDecoder(r.Body).Decode(&newApp)
+	err := json.NewDecoder(r.Body).Decode(&newWorkflow)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	for _, app := range a.Applications {
-		// See if there is a conflict in the name
-		if app.Name == newApp.Name {
-			http.Error(w, ErrApplicationDoesAlreadyExist.Error(), 500)
+	for _, owf := range a.Workflows {
+		if owf.Name == newWorkflow.Name {
+			http.Error(w, ErrDuplicateAlreadyExist.Error(), 500)
 			return
 		}
 	}
-	new := workflow.NewApplication(newApp.Name)
-	a.Applications = append(a.Applications, new)
-	w.WriteHeader(200)
-	w.Write([]byte(`ok`))
+	a.Workflows = append(a.Workflows,
+		workflow.NewWorkflow(newWorkflow.Name))
 
+	w.WriteHeader(200)
 }
 
-// GetApplications is used to get all the applications currently there
-func (a *Api) GetApplications(w http.ResponseWriter, r *http.Request) {
-
-	newApps := make([]Api_Application, 0)
-	for _, app := range a.Applications {
-		addThis := Api_Application{
-			Name:      app.Name,
-			Workflows: nil,
-			Icon:      "dynamic_feed",
-		}
-		for _, wf := range app.Workflows {
-			addThisWF := Api_Workflow{
-				Name: wf.Name,
-				Icon: "work",
-			}
-
-			for _, p := range wf.Processors {
-				addThisWF.Processors = append(addThisWF.Processors, Api_Processor{
-					Processor: p,
-					Icon:      "memory",
-					Name:      p.GetName(),
-				})
-			}
-
-			addThis.Workflows = append(addThis.Workflows, addThisWF)
-		}
-		newApps = append(newApps, addThis)
+// ConfiugreProcessor is used to add values and Properties to a processor
+func (a *API) ConfigureProcessor(w http.ResponseWriter, r *http.Request) {
+	type configProcessor struct {
+		Workflow  string               `json:"workflow"`
+		Processor descriptionProcessor `json:"processor"`
 	}
-	data, err := json.Marshal(newApps)
+
+	var ap configProcessor
+
+	err := json.NewDecoder(r.Body).Decode(&ap)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	fmt.Println(ap)
+}
+
+// AddProcessor will take a post and add a processor to a workflow
+//
+func (a *API) AddProcessor(w http.ResponseWriter, r *http.Request) {
+	type addprocessor struct {
+		Workflow  string               `json:"workflow"`
+		Processor descriptionProcessor `json:"processor"`
+	}
+
+	var ap addprocessor
+
+	err := json.NewDecoder(r.Body).Decode(&ap)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	p, err := processmanager.GetProcessor(ap.Processor.Name)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	for _, w := range a.Workflows {
+		if w.Name == ap.Workflow {
+			w.AddProcessor(p)
+		}
+	}
+	w.WriteHeader(200)
+}
+
+// GetWorkflows is used to get all the Workflows currently there
+func (a *API) GetWorkflows(w http.ResponseWriter, r *http.Request) {
+
+	data, err := json.Marshal(a.Workflows)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 	w.WriteHeader(200)
 	w.Write(data)
+}
+
+// GetProcessors is used to extract all registerd processors and print them
+func (a *API) GetProcessors(w http.ResponseWriter, r *http.Request) {
+	result := processmanager.GetAllProcessors()
+
+	output := make([]descriptionProcessor, len(result))
+	for i, p := range result {
+		output[i] = descriptionProcessor{
+			Name:        p.GetName(),
+			Description: p.GetDescription(),
+			Properties:  p.GetProperties(),
+		}
+	}
+
+	data, err := json.Marshal(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(200)
+	w.Write(data)
+
 }

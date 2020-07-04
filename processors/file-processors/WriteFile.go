@@ -24,8 +24,8 @@ type WriteFile struct {
 	ingress                 relationships.PayloadChannel
 	egress                  relationships.PayloadChannel
 	failures                relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics         `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics         `json:",omitempty" yaml:",inline,omitempty"`
 }
 
 var (
@@ -55,17 +55,20 @@ func NewWriteFile() *WriteFile {
 		Metrics:     metric.NewMetrics(),
 		Name:        "WriteFile",
 	}
-	// Add AvailableProperties
-	proc.AddAvailableProperty("append", "If set to true it will append content, if false it will overwrite files")
-	proc.AddAvailableProperty("path", "the path on which to write files")
-	// Add Required Props
-	proc.AddRequirement("append", "path")
+	proc.AddProperty("append", "If set to true it will append content, if false it will overwrite files", true)
+	proc.AddProperty("path", "The path on which to write files", true)
+
 	return proc
 }
 
 // GetName returns the unique name of the processor
 func (proc *WriteFile) GetName() string {
 	return proc.Name
+}
+
+// GetDescription returns the the description
+func (proc *WriteFile) GetDescription() string {
+	return "Writes the incomming paylods to a file"
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

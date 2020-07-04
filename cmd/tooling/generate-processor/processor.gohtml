@@ -20,8 +20,8 @@ type {{.ProcessorName}} struct{
     ingress  relationships.PayloadChannel
     egress   relationships.PayloadChannel
     failures relationships.FailurePipe
-    *properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-    *metric.Metrics `json:"metrics,omitempty" yaml:",inline,omitempty"`
+    *properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+    *metric.Metrics `json:",omitempty" yaml:",inline,omitempty"`
 }
 // init is used to Register the processor to the processmanager
 func init() {
@@ -45,10 +45,8 @@ func New{{.ProcessorName}}() *{{.ProcessorName}} {
         Metrics: metric.NewMetrics(),
         Name: {{.ProcessorName}},
     }
-    // Add AvailableProperties
-    proc.AddAvailableProperty("your_property_name", "property is used to configure something")
-    // Add Required Props -- remove_after
-    // proc.AddRequirement("your_property_names")
+    // Add needed Properties here
+    proc.AddProperty("name", "description", "value")
     return proc
 }
 // GetName is used to extract the name for the processor, has to be unique
@@ -56,6 +54,10 @@ func (proc *{{.ProcessorName}}) GetName() string {
     return proc.Name
 }
 
+// GetDescription is used to extract the description for the processor
+func (proc *{{.ProcessorName}}) GetDescription() string {
+    return "this is a generated processor"
+}
 // Initialize will make sure all needed Properties and Metrics are generated
 func (proc *{{.ProcessorName}}) Initialize() error {
 

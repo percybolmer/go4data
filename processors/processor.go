@@ -18,6 +18,8 @@ import (
 type Processor interface {
 	// GetName should return a unique name for a processor that can be used whenever the Processor needs to be referenced
 	GetName() string
+	// GetDescription is used to return a description about the Processor
+	GetDescription() string
 	// Initialize is responsible to make sure the Processor has everything it needs to run properly and setup needed things before Start
 	Initialize() error
 	// Start will trigger the processor to ingest data,

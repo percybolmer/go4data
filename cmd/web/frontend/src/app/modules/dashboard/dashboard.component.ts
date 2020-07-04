@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
   constructor(private DashboardService: ManagementService) { }
 
   ngOnInit(): void {
-    this.DashboardService.loadApplications().subscribe((workflows: Workflow[]) => {
+    this.DashboardService.loadWorkflow().subscribe((workflows: Workflow[]) => {
       this.workflows = workflows;
       this.tabledata = new MatTableDataSource(workflows);
     });

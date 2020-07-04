@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Application } from '../interfaces/workflow';
+import { Workflow, Processor } from '../interfaces/workflow';
 import { HttpClient } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -8,19 +8,46 @@ import { Observable, throwError } from 'rxjs';
 })
 export class ManagementService {
 
-  private applicationURL = 'http://localhost:8080/applications';
+  private workflowURL = "http://localhost:8080/workflows";
+  private processorURL = "http://localhost:8080/processors";
 
   constructor(private http: HttpClient) { }
 
-  loadApplications() {
-    return this.http.get(this.applicationURL);
+  loadWorkflow() {
+    return this.http.get(this.workflowURL);
   }
 
-  addApplication(app: Application){
-    return this.http.post(this.applicationURL, app).subscribe(
+  loadProcessors() {
+    return this.http.get(this.processorURL);
+  }
+
+  addProcessor(workflow: string, p: Processor) {
+    return this.http.post(this.processorURL, {workflow: workflow, processor: p}).subscribe(
       (err : HttpErrorResponse) => {
-        this.handleError(err)
-      } 
+        if (err !== null){
+          this.handleError(err)
+        }
+      }
+    )
+  }
+
+  configureProcessor(workflow: string, p: Processor) {
+    return this.http.patch(this.processorURL, {workflow: workflow, processor: p}).subscribe(
+      (err : HttpErrorResponse) => {
+        if (err !== null){
+          this.handleError(err);
+        }
+      }
+    )
+  }
+
+  addWorkflow(work: Workflow){
+    return this.http.post(this.workflowURL, work).subscribe(
+      (err : HttpErrorResponse) => {
+        if (err !== null){
+          this.handleError(err)
+        }
+      }
     )
   }
 

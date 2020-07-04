@@ -11,12 +11,16 @@ var (
 	ErrRequiredPropertiesNotFulfilled = errors.New("the processor needs additional properties to work, see the processors documentation")
 	//ErrWrongPropertyType is cast when the Property is of another type
 	ErrWrongPropertyType = errors.New("the property is not of this data type")
+	//ErrNoSuchProperty is when trying to assign value to Property that does not exist
+	ErrNoSuchProperty = errors.New("the property ur trying to set the value for does not exist")
 )
 
 // PropertyContainer is an interface that can enable Configuration reading for processors
 type PropertyContainer interface {
 	GetProperty(name string) *Property
-	SetProperty(name string, value interface{})
+	GetProperties() []*Property
+	SetProperty(name string, value interface{}) error
+	AddProperty(name, description string, requierd bool)
 	RemoveProperty(name string)
 	ValidateProperties() (bool, []string)
 }
@@ -24,9 +28,7 @@ type PropertyContainer interface {
 // NewPropertyMap is used to initialize a new PropertyMap to avoid Nil Pointers
 func NewPropertyMap() *PropertyMap {
 	return &PropertyMap{
-		Properties:   make(map[string]*Property),
-		Requirements: make([]string, 0),
-		Available: make([]*Property,0),
+		Properties: make([]*Property, 0, 0),
 	}
 }
 
@@ -34,43 +36,31 @@ func NewPropertyMap() *PropertyMap {
 // THe propertyMap fulfills the PropertyContainer interface
 type PropertyMap struct {
 	// Properties contains the currently set properties
-	Properties   map[string]*Property `yaml:",inline"`
-	// Requirements contains the names of each property that is required
-	Requirements []string             `json:"requirements" yaml:"requirements"`
-	// Available is a slice of all properties that exists and is used to affect behaviour
-	Available []*Property  `json:"available" yaml:"available"`
+	Properties []*Property `json:"properties" yaml:",inline"`
 	sync.Mutex `json:"-" yaml:"-"`
 }
-// AddAvailableProperty is used to add an property to available slice
-// This is purely used for documentation and showing users what properties is available
-// Maybe this list can be used in the future to make sure ppl arnt adding strange properties?
-func (pm *PropertyMap) AddAvailableProperty(name, description string) {
-	for _, p := range pm.Available {
-		if p.Name == name {
-			return
+
+// GetProperties is used to return all the currently configured Properties
+func (pm *PropertyMap) GetProperties() []*Property {
+	return pm.Properties
+}
+
+// GetProperty is used to extract an property from the PropertyMap
+func (pm *PropertyMap) GetProperty(name string) *Property {
+	for _, prop := range pm.Properties {
+		if prop.Name == name {
+			return prop
 		}
 	}
-	pm.Available = append(pm.Available, &Property{
-		Name:        name,
-		Value:       nil,
-		Description: description,
-	})
-
-}
-// GetAvailableProperties returns a list of all properties that is available
-// they will have no value, if u want properties that has been added
-func (pm *PropertyMap) GetAvailableProperties() []*Property{
-	return pm.Available
+	return nil
 }
 
 // ValidateProperties will make sure that all properties are actually there that is required
 func (pm *PropertyMap) ValidateProperties() (bool, []string) {
 	missing := make([]string, 0)
-	for _, req := range pm.Requirements {
-		prop := pm.Properties[req]
-
-		if prop == nil {
-			missing = append(missing, req)
+	for _, prop := range pm.Properties {
+		if !prop.IsValid() {
+			missing = append(missing, prop.Name)
 		}
 	}
 
@@ -79,48 +69,56 @@ func (pm *PropertyMap) ValidateProperties() (bool, []string) {
 	}
 	return true, nil
 }
-// AddRequirement will add a property that will HAVE to exist for ValidateProperties to return true
-// This can be used to force users to have a certain config etc
-func (pm *PropertyMap) AddRequirement(names ...string) {
+
+// AddProperty is used to add an Property to the PropertyContainer
+func (pm *PropertyMap) AddProperty(name, description string, requierd bool) {
 	pm.Lock()
-	defer pm.Unlock()
-	if pm.Requirements == nil {
-		pm.Requirements = make([]string,0)
-	}
-
-	for _, name := range names {
-		pm.Requirements = append(pm.Requirements, name)
-	}
-
-}
-// GetProperty is used to extract an property from the PropertyMap
-func (pm *PropertyMap) GetProperty(name string) *Property {
-	return pm.Properties[name]
+	pm.Properties = append(pm.Properties, &Property{
+		Name:        name,
+		Description: description,
+		Required:    requierd,
+	})
+	pm.Unlock()
 }
 
 // SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil pointers
-func (pm *PropertyMap) SetProperty(name string, value interface{}) {
+func (pm *PropertyMap) SetProperty(name string, value interface{}) error {
+	prop := pm.GetProperty(name)
+	if prop == nil {
+		return ErrNoSuchProperty
+	}
 	pm.Lock()
 	defer pm.Unlock()
-	if pm.Properties == nil {
-		pm.Properties = make(map[string]*Property)
-	}
-	pm.Properties[name] = &Property{
-		Name:  name,
-		Value: value,
-	}
+	prop.Value = value
+	return nil
 }
 
 // RemoveProperty will remove any added properties
 func (pm *PropertyMap) RemoveProperty(name string) {
-	delete(pm.Properties, name)
+	for i, prop := range pm.Properties {
+		if prop.Name == name {
+			pm.Lock()
+			pm.Properties = append(pm.Properties[:i], pm.Properties[i+1:]...)
+			pm.Unlock()
+			return
+		}
+	}
 }
 
 // Property is a value holder used by Processors to handle Configs
 type Property struct {
-	Name  string      `json:"name" yaml:"name"`
-	Value interface{} `json:"value" yaml:"value"`
-	Description string  `json:"description" yaml:"description"`
+	Name        string      `json:"name" yaml:"name"`
+	Value       interface{} `json:"value" yaml:"value"`
+	Description string      `json:"description" yaml:"description"`
+	Required    bool        `json:"required" yaml:"required"`
+}
+
+// IsValid is used to control if Required is true, then Value cannot be nil, if it is it will return False
+func (p *Property) IsValid() bool {
+	if p.Required && p.Value == nil {
+		return false
+	}
+	return true
 }
 
 // String Will return the Value as string
@@ -148,6 +146,7 @@ func (p *Property) Bool() (bool, error) {
 	}
 	return value, nil
 }
+
 // StringSplice is used to get the value as a stringslice
 func (p *Property) StringSplice() ([]string, error) {
 	var value []string
@@ -158,6 +157,7 @@ func (p *Property) StringSplice() ([]string, error) {
 	return value, nil
 
 }
+
 // StringMap is used to return the value as a map[string]string
 func (p *Property) StringMap() (map[string]string, error) {
 	var value map[string]string

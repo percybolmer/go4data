@@ -32,8 +32,8 @@ type ExecCmd struct {
 	ingress                 relationships.PayloadChannel
 	egress                  relationships.PayloadChannel
 	failures                relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics         `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics         `json:",omitempty" yaml:",inline,omitempty"`
 
 	command     string
 	needingress bool
@@ -65,17 +65,21 @@ func NewExecCmd() *ExecCmd {
 		Name:        "ExecCmd",
 	}
 
-	proc.AddAvailableProperty("command", "The command that should be run")
-	proc.AddAvailableProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument")
-	proc.AddAvailableProperty("interval", "How often the command should be run, note this cannot be applied if you have a payload, see Tests for examples")
-	// Add Required Props -- remove_after
-	proc.AddRequirement("command")
+	proc.AddProperty("command", "The command that should be run", true)
+	proc.AddProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument", false)
+	proc.AddProperty("interval", "How often the command should be run, note this cannot be applied if you have a payload, see Tests for examples", false)
+
 	return proc
 }
 
 // GetName returns the unique name of the processor
 func (proc *ExecCmd) GetName() string {
 	return proc.Name
+}
+
+// GetDescription returns the the description
+func (proc *ExecCmd) GetDescription() string {
+	return "executes command lines with our without payload data"
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

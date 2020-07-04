@@ -1,26 +1,20 @@
 
-export interface Application{
+
+export interface Workflow {
   name: string;
-  children?: Array<Workflow>;
-  icon: string;
-}
-export interface Workflow{
-    name: string;
-    children?: Array<Processor>;
-    icon: string;
+  processors?: Array<Processor>;
 }
 
-  export interface Processor{
-    name: string;
-    Properties?: Map<string, Property>;
-    available?: Array<Property>;
-    icon: string;
-  }
+export interface Processor {
+  name: string;
+  description: string;
+  properties?: Array<Property>;
+}
 
-  export interface Property{
-    name: string;
-    description: string;
-    value: string;
-  }
+export interface Property {
+  name: string;
+  description: string;
+  value: string;
+}
 
 

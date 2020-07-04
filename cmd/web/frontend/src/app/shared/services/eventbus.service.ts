@@ -6,15 +6,17 @@ import { BehaviorSubject} from 'rxjs'
 export class EventbusService {
 
 
-  reloadApplicationTree: BehaviorSubject<boolean>;
+  reloadWorkflow: BehaviorSubject<boolean>;
   reload = false;
 
-  constructor() { 
-    this.reloadApplicationTree = new BehaviorSubject(this.reload);
+ 
 
+  constructor() { 
+    this.reloadWorkflow = new BehaviorSubject(this.reload);
   }
 
   triggerApplicationTreeReload() {
-    this.reloadApplicationTree.next(true);
+    this.reloadWorkflow.next(true);
   }
+
 }

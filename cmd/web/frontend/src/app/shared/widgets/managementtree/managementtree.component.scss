@@ -1,12 +1,23 @@
 
 .background-highlight{
-  background: rgb(0, 151, 19);
+  background: #4e65e6;
+}
+
+.background-highlight-processor{
+  background: #919ddd;
 }
 .fullWidth {
   width: 100% !important;
   text-align: left;
 }
 
+.processor-option {
+  float: right;
+}
+.tree-actions{
+  width: 10% !important;
+
+}
 .add-button {
   margin: 5px;
 }
@@ -14,6 +25,11 @@
   /* This fills the remaining space, by using flexbox.
      Every toolbar row uses a flexbox row layout. */
   flex: 1 1 auto;
+}
+.tree-node-button {
+  margin: 5px;
+  float: right;
+  top: -3px;
 }
 
 /* Remove dots and numbers */
@@ -26,10 +42,6 @@ ul, li {
 ul {
   padding-left: 40px;
 }
-/* Push whole mat tree ---> to make space for our Dotted border */
-mat-tree {
-  margin-left: 40px;
-}
 /* Remove bottom border */
 li.tree-container {
   border-bottom: 0;
@@ -39,9 +51,6 @@ li.tree-container {
 .tree-nested-node {
   padding-left: 30px;
 }
-.mat-nested-tree-node {
-  top: -24px;
-}
 .mat-tree-node {
   padding: 0;
   background-color: white;
@@ -50,26 +59,22 @@ li.tree-container {
 /* Add Border to list */
 li {
   padding-left: 40px;
-  border: 1px dotted grey;
-  border-width: 0 0 1px 1px;
   position: relative;
-  top: -24px;
+
 }
 li.mat-tree-node,
 li div {
   margin: 0;
   position: relative;
-  top: 24px;
+
 }
 
 li ul {
-  border-top: 1px dotted grey;
   margin-left: -40px;
   padding-left: 60px;
 }
 
 .mat-nested-tree-node:last-child ul {
-  border-left: 1px solid white;
   margin-left: -41px;
 }
 

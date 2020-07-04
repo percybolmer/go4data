@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>{{data.name}}</h1>
+
+<div mat-dialog-content *ngFor="let config of data.properties;">
+    <mat-form-field matTooltip={{config.description}}>
+        <mat-label >{{config.name}}</mat-label>
+        <input matInput placeholder="value" [(ngModel)]="config.value" />
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="data" cdkFocusInitial>Ok</button>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+</div>

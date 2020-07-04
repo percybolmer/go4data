@@ -34,8 +34,8 @@ type ParseCsv struct {
 	ingress                 relationships.PayloadChannel
 	egress                  relationships.PayloadChannel
 	failures                relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics         `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics         `json:",omitempty" yaml:",inline,omitempty"`
 
 	delimiter    string
 	headerlength int
@@ -66,15 +66,21 @@ func NewParseCsv() *ParseCsv {
 		Name:         "ParseCsv",
 	}
 
-	proc.AddAvailableProperty("delimiter", "The character or string to use as a Delimiter")
-	proc.AddAvailableProperty("headerlength", "How many rows the header is")
-	proc.AddAvailableProperty("skiprows", "How many rows will be skipped in each file before starting to process")
+	proc.AddProperty("delimiter", "The character or string to use as a Delimiter", false)
+	proc.AddProperty("headerlength", "How many rows the header is", false)
+	proc.AddProperty("skiprows", "How many rows will be skipped in each file before starting to process", false)
+
 	return proc
 }
 
 // GetName returns the unique name of the processor
 func (proc *ParseCsv) GetName() string {
 	return proc.Name
+}
+
+// GetDescription returns the the description
+func (proc *ParseCsv) GetDescription() string {
+	return "Reads CSV rows and outputs them as a map[string]string"
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

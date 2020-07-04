@@ -12,7 +12,7 @@ export class WorkflowtreeComponent implements OnInit {
 
   @Input() data: [];
   dataSource = new MatTreeNestedDataSource<Workflow>();
-  treeControl = new NestedTreeControl<Workflow>(node => node.children);
+  treeControl = new NestedTreeControl<Workflow>(node => node.processors);
 
   constructor() { }
 
@@ -20,6 +20,6 @@ export class WorkflowtreeComponent implements OnInit {
     this.dataSource.data = this.data;
   }
 
-  hasChild = (_: number, node: Workflow) => !!node.children && node.children.length > 0 ;
+  hasChild = (_: number, node: Workflow) => !!node.processors && node.processors.length > 0 ;
 
 }

@@ -25,8 +25,8 @@ type ListDirectory struct {
 	ingress                 relationships.PayloadChannel
 	egress                  relationships.PayloadChannel
 	failures                relationships.FailurePipe
-	*properties.PropertyMap `json:"properties,omitempty" yaml:"properties,omitempty"`
-	*metric.Metrics         `json:"metrics,omitempty" yaml:",inline,omitempty"`
+	*properties.PropertyMap `json:",omitempty" yaml:"properties,omitempty"`
+	*metric.Metrics         `json:",omitempty" yaml:",inline,omitempty"`
 
 	path           string
 	bufferduration int64
@@ -55,16 +55,19 @@ func NewListDirectory() *ListDirectory {
 		Metrics:     metric.NewMetrics(),
 		Name:        "ListDirectory",
 	}
-	proc.AddAvailableProperty("path", "The path to the directory to list contents off")
-	proc.AddAvailableProperty("buffertime", "How long in seconds the processor should remember files, after the buffer runs out, files will be considerd new")
-	// Add Required Props -- remove_after
-	proc.AddRequirement("path")
+	proc.AddProperty("path", "The path to the directory to list contents off", true)
+	proc.AddProperty("buffertime", "How long in seconds the processor should remember files, after the buffer runs out, files will be considerd new", false)
 	return proc
 }
 
 // GetName returns the unique name of the processor
 func (proc *ListDirectory) GetName() string {
 	return proc.Name
+}
+
+// GetDescription returns the the description
+func (proc *ListDirectory) GetDescription() string {
+	return "Monitors a directory on filesystem for new files"
 }
 
 // Initialize will make sure all needed Properties and Metrics are generated

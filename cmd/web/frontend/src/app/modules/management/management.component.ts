@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ManagementService } from  '../../shared/services/managementservice.service'
-import {Application} from "../../shared/interfaces/workflow";
+import {Workflow, Processor} from "../../shared/interfaces/workflow";
 import {MatTableDataSource} from "@angular/material/table";
 import { EventbusService } from 'src/app/shared/services/eventbus.service';
 
@@ -13,24 +13,31 @@ import { EventbusService } from 'src/app/shared/services/eventbus.service';
 export class ManagementComponent implements OnInit {
 
   management_tree_data;
-  applications: Application[];
+  workflows: Workflow[];
+  processors: Processor[];
   constructor(private ManagementService: ManagementService, private EventBusService: EventbusService) { }
 
   ngOnInit(): void {
-    this.loadApplicationTree();
+    this.loadWorkflow();
+    this.loadProcessors();
 
-    this.EventBusService.reloadApplicationTree.subscribe(data => {
-        this.loadApplicationTree();
+    this.EventBusService.reloadWorkflow.subscribe(data => {
+        this.loadWorkflow();
     })
-
 
 
   }
 
-  loadApplicationTree() {
-    this.ManagementService.loadApplications().subscribe((workflows: Application[]) => {
-      this.applications = workflows;
+  loadWorkflow() {
+    this.ManagementService.loadWorkflow().subscribe((workflows: Workflow[]) => {
+      this.workflows = workflows;
       this.management_tree_data = new MatTableDataSource(workflows);
+    });
+  }
+
+  loadProcessors() {
+    this.ManagementService.loadProcessors().subscribe((processors: Processor[]) => {
+      this.processors = processors;
     });
   }
 
