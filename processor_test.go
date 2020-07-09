@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/percybolmer/workflow/failure"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/relationships"
-	"time"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/properties"
@@ -26,12 +27,19 @@ type TestProcessor struct {
 func (tp *TestProcessor) Initialize() error {
 	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
+
 }
 func (tp *TestProcessor) IsRunning() bool {
 	return tp.running
 }
 func (tp *TestProcessor) GetMetrics() []*metric.Metric {
 	return nil
+}
+func (tp *TestProcessor) GetName() string {
+	return "this is the name"
+}
+func (tp *TestProcessor) GetDescription() string {
+	return "this is a test processor"
 }
 
 func (tp *TestProcessor) SetFailureChannel(fp relationships.FailurePipe) {
@@ -80,7 +88,7 @@ type TextForwardProcessor struct {
 	Name     string
 	running  bool
 	cancel   context.CancelFunc
-	ingress relationships.PayloadChannel
+	ingress  relationships.PayloadChannel
 	egress   relationships.PayloadChannel
 	failures relationships.FailurePipe
 	*properties.PropertyMap
@@ -89,6 +97,13 @@ type TextForwardProcessor struct {
 func (tp *TextForwardProcessor) Initialize() error {
 	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
+}
+
+func (tp *TextForwardProcessor) GetName() string {
+	return "this is the name"
+}
+func (tp *TextForwardProcessor) GetDescription() string {
+	return "this is a failing processor"
 }
 
 func (tp *TextForwardProcessor) IsRunning() bool {
@@ -159,6 +174,12 @@ func (tp *TextPrinterProcessor) Initialize() error {
 	tp.egress = make(relationships.PayloadChannel, 1000)
 	return nil
 }
+func (tp *TextPrinterProcessor) GetName() string {
+	return "this is the name"
+}
+func (tp *TextPrinterProcessor) GetDescription() string {
+	return "this is a failing processor"
+}
 
 func (tp *TextPrinterProcessor) IsRunning() bool {
 	return tp.running
@@ -224,6 +245,13 @@ func (tp *FailureProcessor) Initialize() error {
 	tp.egress = make(relationships.PayloadChannel, 1000)
 	tp.PropertyMap = properties.NewPropertyMap()
 	return nil
+}
+
+func (tp *FailureProcessor) GetName() string {
+	return "this is the name"
+}
+func (tp *FailureProcessor) GetDescription() string {
+	return "this is a failing processor"
 }
 
 func (tp *FailureProcessor) IsRunning() bool {

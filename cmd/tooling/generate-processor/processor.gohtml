@@ -120,7 +120,9 @@ func (proc *{{.ProcessorName}}) Stop() {
         return
     }
     proc.running = false
-    proc.cancel()
+    if proc.cancel != nil {
+        proc.cancel()        
+    }
 }
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes
 func (proc *{{.ProcessorName}}) SetIngress(i relationships.PayloadChannel) {

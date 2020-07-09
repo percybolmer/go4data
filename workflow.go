@@ -3,6 +3,7 @@ package workflow
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sync"
 
 	"github.com/percybolmer/workflow/failure"
@@ -25,13 +26,13 @@ type Workflow struct {
 	Name string `json:"name" yaml:"name"`
 	// processors is the array containing all processors that has been added to the Workflow.
 	Processors []processors.Processor `json:"processors" yaml:"processors"`
+	IsRunning  bool                   `json:"running" yaml:"-"`
 	// ctx is a context passed by the current Application the workflow is added to
-	ctx            context.Context           `json:"-" yaml:"-"`
-	failures       relationships.FailurePipe `json:"-" yaml:"-"`
-	failureHandler func(f failure.Failure)   `json:"-" yaml:"-"`
-	failureStop    context.CancelFunc        `json:"-" yaml:"-"`
-	sync.Mutex     `json:"-" yaml:"-"`
-	Type           string `json:"type"`
+	Ctx            context.Context `json:"-" yaml:"-"`
+	failures       relationships.FailurePipe
+	failureHandler func(f failure.Failure)
+	failureStop    context.CancelFunc
+	sync.Mutex
 }
 
 // NewWorkflow will initiate a new workflow
@@ -41,7 +42,8 @@ func NewWorkflow(name string) *Workflow {
 		Processors:     make([]processors.Processor, 0),
 		failures:       make(relationships.FailurePipe, 1000),
 		failureHandler: failure.PrintFailure,
-		Type:           "workflow",
+		IsRunning:      false,
+		Ctx:            context.TODO(),
 	}
 }
 
@@ -94,7 +96,7 @@ func (w *Workflow) initializeAllProcessors() error {
 		if !p.IsRunning() {
 			err := p.Initialize()
 			if err != nil {
-				return err
+				return fmt.Errorf("%s:%w", p.GetName(), err)
 			}
 		}
 	}
@@ -103,11 +105,11 @@ func (w *Workflow) initializeAllProcessors() error {
 
 // Start will itterate all Processors and start them up
 func (w *Workflow) Start() error {
-	if w.ctx == nil {
+	if w.Ctx == nil {
 		// Nil context, meaning this is not part of an application
-		w.ctx = context.TODO()
+		w.Ctx = context.TODO()
 	}
-	w.startFailureHandler(w.ctx)
+	w.startFailureHandler(w.Ctx)
 	err := w.initializeAllProcessors()
 	if err != nil {
 		return err
@@ -129,11 +131,11 @@ func (w *Workflow) Start() error {
 			}
 			w.Unlock()
 		}
-		if err := p.Start(w.ctx); err != nil {
+		if err := p.Start(w.Ctx); err != nil {
 			return err
 		}
 	}
-
+	w.IsRunning = true
 	return nil
 }
 
@@ -144,18 +146,20 @@ func (w *Workflow) Stop() {
 			p.Stop()
 		}
 	}
+	w.IsRunning = false
 	w.failureStop()
 }
 
+// UnmarshalYAML is used to customize the unmarshalling of the processors
 func (w *Workflow) UnmarshalYAML(value *yaml.Node) error {
 	if len(value.Content) < 1 {
 		return ErrFailedToUnmarshal
 	}
 	if value.Content[0].Value != "name" {
 		return ErrFailedToUnmarshal
-	} else {
-		w.Name = value.Content[1].Value
 	}
+
+	w.Name = value.Content[1].Value
 	var processorStart bool
 	for _, node := range value.Content {
 		if node.Value == "processors" {

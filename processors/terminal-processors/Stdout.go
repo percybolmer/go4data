@@ -76,7 +76,7 @@ func (proc *Stdout) Initialize() error {
 
 	// See if the Payloads that is sendt here should be forwarded
 	forProp := proc.GetProperty("forward")
-	if forProp != nil {
+	if forProp.Value != nil {
 		b, err := forProp.Bool()
 		if err != nil {
 			return err
@@ -140,7 +140,9 @@ func (proc *Stdout) Stop() {
 		return
 	}
 	proc.running = false
-	proc.cancel()
+	if proc.cancel != nil {
+		proc.cancel()
+	}
 }
 
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes

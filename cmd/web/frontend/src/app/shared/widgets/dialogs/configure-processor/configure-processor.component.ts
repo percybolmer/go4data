@@ -10,9 +10,12 @@ export class ConfigureProcessorComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ConfigureProcessorComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: Processor) { }
+    @Inject(MAT_DIALOG_DATA) public data: { processor: Processor, workflow: string}) { }
 
 
+    onDeleteClick(): void {
+      this.dialogRef.close({delete: true, processor: this.data.processor, workflow: this.data.workflow});
+    }
   onNoClick(): void {
     this.dialogRef.close();
   }

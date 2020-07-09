@@ -2,9 +2,15 @@ package workflow
 
 import (
 	"errors"
-	"github.com/percybolmer/workflow/failure"
+	"io/ioutil"
+	"os"
 	"testing"
 	"time"
+
+	"github.com/percybolmer/workflow/failure"
+	fileprocessors "github.com/percybolmer/workflow/processors/file-processors"
+	"github.com/percybolmer/workflow/processors/processmanager"
+	_ "github.com/percybolmer/workflow/processors/terminal-processors"
 )
 
 func TestFailingProcessor(t *testing.T) {
@@ -69,9 +75,9 @@ func TestRemoveProcessor(t *testing.T) {
 	w.AddProcessor(tp2)
 	w.AddProcessor(tp3)
 
-	length := len(w.processors)
+	length := len(w.Processors)
 	w.RemoveProcessor(1)
-	if len(w.processors) != length-1 {
+	if len(w.Processors) != length-1 {
 		t.Fatal("Didnt properly remove the processor")
 	}
 
@@ -104,4 +110,89 @@ func TestStartAndStop(t *testing.T) {
 	}
 
 	time.Sleep(6 * time.Second)
+}
+
+func BenchmarkOverheadRaw(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		readparsewrite()
+	}
+}
+
+func readparsewrite() error {
+	file, err := os.Open("cmd/example/files/csv.txt")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return err
+	}
+	// steal parseCSV from processor since its completly clean from any workflow stuff
+	proc := fileprocessors.NewParseCsv()
+
+	csvrows, err := proc.Parse(data)
+	if err != nil {
+		return err
+	}
+
+	outputfile, err := os.OpenFile("/tmp/workflow-test.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer outputfile.Close()
+
+	for _, row := range csvrows {
+		_, err := outputfile.Write(row.GetPayload())
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func BenchmarkOverheadWorkflow(b *testing.B) {
+
+	// Each item should return 2 rows so reset and finish after 2
+
+	for n := 0; n < b.N; n++ {
+		w := NewWorkflow("benchmark")
+
+		readfile, err := processmanager.GetProcessor("ReadFile")
+		if err != nil {
+			b.Fatal(err)
+		}
+		readfile.SetProperty("path", "cmd/example/files/csv.txt")
+		readfile.SetProperty("remove_after", false)
+		parsecsv, err := processmanager.GetProcessor("ParseCsv")
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		writefile, err := processmanager.GetProcessor("WriteFile")
+		if err != nil {
+			b.Fatal(err)
+		}
+		writefile.SetProperty("path", "/tmp/workflow-test.txt")
+		writefile.SetProperty("append", true)
+		w.AddProcessor(readfile, parsecsv, writefile)
+		w.Start()
+		for {
+			for _, met := range writefile.GetMetrics() {
+				if met.Name == "writes" {
+					if met.Value == 2 {
+						w.Stop()
+						goto end
+					}
+				}
+			}
+		}
+
+	end:
+		break
+	}
+
+	os.Remove("/tmp/workflow-test.txt")
+
 }

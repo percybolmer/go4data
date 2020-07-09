@@ -10,7 +10,8 @@ export class ManagementService {
 
   private workflowURL = "http://localhost:8080/workflows";
   private processorURL = "http://localhost:8080/processors";
-
+  private toggleProcessorRunURL = "http://localhost:8080/processors/run";
+  private deleteProcessorURL = "http://localhost:8080/processors/delete";
   constructor(private http: HttpClient) { }
 
   loadWorkflow() {
@@ -36,6 +37,36 @@ export class ManagementService {
       (err : HttpErrorResponse) => {
         if (err !== null){
           this.handleError(err);
+        }
+      }
+    )
+  }
+
+  startWorkflow(work: Workflow) {
+    return this.http.patch(this.workflowURL, work).subscribe(
+      (err : HttpErrorResponse) => {
+        if (err !== null){
+          this.handleError(err)
+        }
+      }
+    )
+  }
+  // Startprocessor will send the workflow name and a processor to start 
+  startProcessor(workflow: Workflow, proc: Processor) {
+    return this.http.post(this.toggleProcessorRunURL, { workflow: workflow.name, processor: proc } ).subscribe(
+      (err : HttpErrorResponse) => {
+        if (err !== null) {
+          this.handleError(err)
+        }
+      }
+    )
+  }
+
+  deleteProcessor(workflow: Workflow, proc: Processor) {
+    return this.http.post(this.deleteProcessorURL, {workflow: workflow, processor: proc }).subscribe(
+      (err : HttpErrorResponse) => {
+        if (err !== null) {
+          this.handleError(err)
         }
       }
     )

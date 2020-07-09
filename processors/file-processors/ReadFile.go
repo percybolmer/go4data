@@ -90,18 +90,23 @@ func (proc *ReadFile) Initialize() error {
 	}
 	// ReadFile needs either an Ingress of File names OR a property called Filepath
 	filepathProp := proc.GetProperty("path")
-	if filepathProp == nil {
+	if filepathProp.Value == nil {
 		// Set ingress to needed
 		proc.ingressNeeded = true
 	} else {
 		proc.filepath = filepathProp.String()
 	}
 	removeafter := proc.GetProperty("remove_after")
-	ra, err := removeafter.Bool()
-	if err != nil {
-		return err
+	if removeafter.Value == nil {
+		proc.removeafter = false
+	} else {
+		ra, err := removeafter.Bool()
+		if err != nil {
+			return err
+		}
+		proc.removeafter = ra
+
 	}
-	proc.removeafter = ra
 	return nil
 }
 
@@ -139,7 +144,6 @@ func (proc *ReadFile) Start(ctx context.Context) error {
 				Source:  proc.filepath,
 			})
 		}
-		proc.running = false
 	} else {
 		proc.running = true
 		c, cancel := context.WithCancel(ctx)
@@ -210,7 +214,9 @@ func (proc *ReadFile) Stop() {
 		return
 	}
 	proc.running = false
-	proc.cancel()
+	if proc.cancel != nil {
+		proc.cancel()
+	}
 }
 
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes

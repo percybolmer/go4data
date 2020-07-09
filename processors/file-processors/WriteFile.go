@@ -56,6 +56,7 @@ func NewWriteFile() *WriteFile {
 		Name:        "WriteFile",
 	}
 	proc.AddProperty("append", "If set to true it will append content, if false it will overwrite files", true)
+	proc.AddProperty("forward", "if the written payload should be sent to the next processor", false)
 	proc.AddProperty("path", "The path on which to write files", true)
 
 	return proc
@@ -99,6 +100,7 @@ func (proc *WriteFile) Start(ctx context.Context) error {
 		return err
 	}
 	path := proc.GetProperty("path").String()
+	forward, _ := proc.GetProperty("forward").Bool()
 	// context will be used to spawn a Cancel func
 	c, cancel := context.WithCancel(ctx)
 	proc.cancel = cancel
@@ -117,7 +119,10 @@ func (proc *WriteFile) Start(ctx context.Context) error {
 					}
 				}
 				proc.AddMetric("writes", "the number of writes the processor has performed", 1)
-
+				// If property Forward---> then send payload on egress
+				if forward {
+					proc.egress <- payload
+				}
 			case <-c.Done():
 				return
 			}
@@ -196,7 +201,9 @@ func (proc *WriteFile) Stop() {
 		return
 	}
 	proc.running = false
-	proc.cancel()
+	if proc.cancel != nil {
+		proc.cancel()
+	}
 }
 
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes

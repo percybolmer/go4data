@@ -218,7 +218,9 @@ func (proc *MapFilter) Stop() {
 		return
 	}
 	proc.running = false
-	proc.cancel()
+	if proc.cancel != nil {
+		proc.cancel()
+	}
 }
 
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes

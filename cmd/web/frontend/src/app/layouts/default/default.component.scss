@@ -8,12 +8,22 @@
     .mat-icon{
         vertical-align: middle;
         margin-right: 20px;
+        top: -5px;
     }
   
 }
 
+.logo-item {
+    background-color: #35baf6;
+    top: -10px;
+    height: 65px !important;
+    pointer-events: none;
+}
+.active-list-item {
+    color: green !important; /* Note: You could also use a custom theme */
+  }
 .primary {
-    background-color: #263cb5;
+    background-color: #101844;
 }
 .whitesmoke-background {
     background-color: whitesmoke;

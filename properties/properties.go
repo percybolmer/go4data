@@ -111,13 +111,16 @@ type Property struct {
 	Value       interface{} `json:"value" yaml:"value"`
 	Description string      `json:"description" yaml:"description"`
 	Required    bool        `json:"required" yaml:"required"`
+	Valid       bool        `json:"valid" yaml:"valid"`
 }
 
 // IsValid is used to control if Required is true, then Value cannot be nil, if it is it will return False
 func (p *Property) IsValid() bool {
 	if p.Required && p.Value == nil {
+		p.Valid = false
 		return false
 	}
+	p.Valid = true
 	return true
 }
 

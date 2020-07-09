@@ -97,7 +97,7 @@ func (proc *ParseCsv) Initialize() error {
 		proc.delimiter = delim.String()
 	}
 	headerlen := proc.GetProperty("headerlength")
-	if headerlen != nil {
+	if headerlen.Value != nil {
 		newlen, err := headerlen.Int()
 		if err != nil {
 			return err
@@ -105,7 +105,7 @@ func (proc *ParseCsv) Initialize() error {
 		proc.headerlength = newlen
 	}
 	skiprow := proc.GetProperty("skiprows")
-	if skiprow != nil {
+	if skiprow.Value != nil {
 		rows, err := skiprow.Int()
 		if err != nil {
 			return err
@@ -184,7 +184,7 @@ func (proc *ParseCsv) Parse(payload []byte) ([]*CsvRow, error) {
 
 		// Handle header rows
 		values := strings.Split(line, proc.delimiter)
-		if len(values) <= 1 {
+		if len(values) < 1 {
 			return nil, ErrNotCsv
 		}
 		// handle unique cases of multiline headers
@@ -234,7 +234,9 @@ func (proc *ParseCsv) Stop() {
 		return
 	}
 	proc.running = false
-	proc.cancel()
+	if proc.cancel != nil {
+		proc.cancel()
+	}
 }
 
 // SetIngress will change the ingress of the processor, Restart is needed before applied changes

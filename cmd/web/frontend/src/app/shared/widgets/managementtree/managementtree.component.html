@@ -14,6 +14,12 @@
       Add Processor
     </button>
   </div>
+  <div matTooltip="Start workflow">
+    <button [disabled]="disableStart" class="add-button" mat-raised-button (click)="startWorkflow()">
+      <mat-icon>{{StartStopButtonIcon}}</mat-icon>
+      {{StartStopButtonText}}
+    </button>
+  </div>
   
   
 </mat-toolbar>
@@ -24,8 +30,8 @@
         <!-- this here should be property..... -->
           <li class="fullWidth">
             <div class="mat-tree-node">
-              <button  mat-button matTreeNodeToggle (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
-                      class="fullWidth" (click)="selectNode(node)" ><mat-icon style="right:20px;">list</mat-icon>{{node.name}} </button>
+              <button  mat-button (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
+                      class="fullWidth" (click)="selectNode(node)" ><mat-icon style="right:20px;">subscriptions</mat-icon>{{node.name}} </button>
             </div>
           </li>
     </mat-tree-node>
@@ -35,10 +41,15 @@
         <!-- this here should be property..... -->
           <li class="fullWidth">
             <div class="mat-tree-node">
-              <button  mat-button matTreeNodeToggle (click)="activeNode = node" [ngClass]="{ 'background-highlight-processor': activeNode === node }"
-                      class="fullWidth" (click)="selectNode(node)" ><mat-icon style="right:20px;">memory</mat-icon>{{node.name}}
-                      
-                      <button mat-button class="processor-option" (click)="configureProcessor(node)"> <mat-icon>settings</mat-icon></button>      
+              <button  mat-button (click)="activeNode = node" [ngClass]="{ 'background-highlight-processor': activeNode === node }"
+                      class="fullWidth" (click)="selectNode(node)" [ngClass]="{ 'bad-property-validation': node.settingsValidated !== true}" ><mat-icon style="right:20px;">memory</mat-icon>{{node.name}}
+                      <button mat-button class="processor-option" (click)="startProcessor(node)" matTooltip="Toggle Start/Stop for processor"> 
+                        <mat-icon *ngIf="!node.running">play_arrow</mat-icon>
+                        <mat-icon *ngIf="node.running">stop</mat-icon>
+                      </button>
+                      <button mat-button class="processor-option" (click)="configureProcessor(node)" matTooltip="Configure processor">
+                         <mat-icon [ngClass]="{ 'bad-property-validation': node.settingsValidated !== true}">settings</mat-icon>
+                      </button>      
               </button>
               
             </div>
@@ -47,7 +58,7 @@
 
   <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" >
     <li class="tree-container">
-      <div class="mat-tree-node" matTreeNodeToggle class="fullWidth" (click)="selectNode(node)" (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }">
+      <div class="mat-tree-node" class="fullWidth" (click)="selectNode(node)" (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }">
         <button mat-icon-button matTreeNodeToggle
                 [attr.aria-label]="'toggle ' + node.name">
           <mat-icon class="mat-icon-rtl-mirror">
@@ -57,8 +68,9 @@
        
         <button  mat-button matTreeNodeToggle (click)="activeNode = node" [ngClass]="{ 'background-highlight': activeNode === node }"
             (click)="selectNode(node)">
-            <mat-icon style="right: 20px;">list</mat-icon>
+            <mat-icon style="right: 20px;">subscriptions</mat-icon>
             {{node.name}}
+
         </button>
       </div>
 

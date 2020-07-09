@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/percybolmer/workflow"
@@ -25,9 +27,17 @@ var (
 
 // descriptionProcessor is a way of sending processors to the UI thats easier to handle than just parsing processors straight
 type descriptionProcessor struct {
-	Name        string                 `json:"name"`
-	Description string                 `json:"description"`
-	Properties  []*properties.Property `json:"properties"`
+	Name              string                 `json:"name"`
+	Description       string                 `json:"description"`
+	Properties        []*properties.Property `json:"properties"`
+	SettingsValidated bool                   `json:"settingsValidated"`
+	Running           bool                   `json:"running"`
+}
+
+type descriptionWorkflow struct {
+	Name       string                 `json:"name"`
+	Running    bool                   `json:"running"`
+	Processors []descriptionProcessor `json:"processors"`
 }
 
 // API is handeling our mux and holds our slice of Workflows
@@ -63,8 +73,11 @@ func main() {
 
 	api.router.HandleFunc("/workflows", api.GetWorkflows).Methods("GET")
 	api.router.HandleFunc("/workflows", api.AddWorkflows).Methods("POST")
+	api.router.HandleFunc("/workflows", api.StartWorkflow).Methods("PATCH")
 	api.router.HandleFunc("/processors", api.GetProcessors).Methods("GET")
 	api.router.HandleFunc("/processors", api.AddProcessor).Methods("POST")
+	api.router.HandleFunc("/processors/delete", api.DeleteProcessor).Methods("POST")
+	api.router.HandleFunc("/processors/run", api.StartStopProcessor).Methods("POST")
 	api.router.HandleFunc("/processors", api.ConfigureProcessor).Methods("PATCH")
 	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(api.router)))
 	fmt.Println("Exiting")
@@ -80,7 +93,7 @@ func generateTestData(api *API) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	proc1.SetProperty("path", "this_example")
+	proc1.SetProperty("path", "/home/perbol/development/workflow/cmd/example/files/csv.txt")
 	work1.AddProcessor(proc1)
 
 	api.Workflows = append(api.Workflows, work1, work2, unrelatedwork)
@@ -109,7 +122,36 @@ func (a *API) AddWorkflows(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
-// ConfiugreProcessor is used to add values and Properties to a processor
+// StartWorkflow will listen on PATCH requests that contains a workflow, it will then run Start on that workflow
+// And return errors if they occur
+// If the workflow is running it will stop instead
+func (a *API) StartWorkflow(w http.ResponseWriter, r *http.Request) {
+	var newWorkflow workflow.Workflow
+
+	err := json.NewDecoder(r.Body).Decode(&newWorkflow)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	for _, work := range a.Workflows {
+		if work.Name == newWorkflow.Name {
+			if work.IsRunning {
+				work.Stop()
+			} else {
+				err := work.Start()
+				if err != nil {
+					http.Error(w, err.Error(), 500)
+					return
+				}
+			}
+		}
+	}
+
+	w.WriteHeader(200)
+}
+
+// ConfigureProcessor is used to add values and Properties to a processor
 func (a *API) ConfigureProcessor(w http.ResponseWriter, r *http.Request) {
 	type configProcessor struct {
 		Workflow  string               `json:"workflow"`
@@ -117,14 +159,50 @@ func (a *API) ConfigureProcessor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ap configProcessor
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer r.Body.Close()
 
-	err := json.NewDecoder(r.Body).Decode(&ap)
+	err = json.Unmarshal(data, &ap)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
 	}
 
-	fmt.Println(ap)
+	for _, work := range a.Workflows {
+		if work.Name == ap.Workflow {
+			for _, processor := range work.Processors {
+				if processor.GetName() == ap.Processor.Name {
+					for _, prop := range ap.Processor.Properties {
+						if prop.Value == nil {
+							continue
+						}
+						// Make sure to Convert into the correct type here, seems like false is considerd a string etcetc,
+						if prop.Value == "false" || prop.Value == "true" {
+							b, _ := strconv.ParseBool(prop.Value.(string))
+							prop.Value = b
+						} else {
+							// Take care of INts
+							v, err := strconv.Atoi(prop.Value.(string))
+							if err == nil {
+								prop.Value = v
+							}
+						}
+						err = processor.SetProperty(prop.Name, prop.Value)
+						if err != nil {
+							http.Error(w, err.Error(), 500)
+							return
+						}
+					}
+				}
+			}
+		}
+	}
+	w.WriteHeader(200)
+
 }
 
 // AddProcessor will take a post and add a processor to a workflow
@@ -142,6 +220,7 @@ func (a *API) AddProcessor(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), 500)
 		return
 	}
+	defer r.Body.Close()
 
 	p, err := processmanager.GetProcessor(ap.Processor.Name)
 	if err != nil {
@@ -157,10 +236,101 @@ func (a *API) AddProcessor(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 }
 
+// DeleteProcessor will close a processor and then delete it from workflow
+func (a *API) DeleteProcessor(w http.ResponseWriter, r *http.Request) {
+	type addprocessor struct {
+		Workflow  string               `json:"workflow"`
+		Processor descriptionProcessor `json:"processor"`
+	}
+
+	var ap addprocessor
+
+	err := json.NewDecoder(r.Body).Decode(&ap)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer r.Body.Close()
+
+	// STOP PROCESSOR, THEN DELETE
+	var found bool
+	for _, w := range a.Workflows {
+		for i, p := range w.Processors {
+			if p.GetName() == ap.Processor.Name {
+				p.Stop()
+				w.RemoveProcessor(i)
+				found = true
+			}
+		}
+	}
+
+	if found {
+		w.WriteHeader(200)
+		return
+	}
+	http.Error(w, "did not find the asked processor", 500)
+
+}
+
+// StartStopProcessor is used to start processors thats not running, or stop them if they ares
+func (a *API) StartStopProcessor(w http.ResponseWriter, r *http.Request) {
+	type addprocessor struct {
+		Workflow  string               `json:"workflow"`
+		Processor descriptionProcessor `json:"processor"`
+	}
+
+	var ap addprocessor
+
+	err := json.NewDecoder(r.Body).Decode(&ap)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+	defer r.Body.Close()
+	for _, wf := range a.Workflows {
+		if wf.Name == ap.Workflow {
+			for _, p := range wf.Processors {
+				if p.GetName() == ap.Processor.Name {
+					// If is running, then stop, if started, then stop
+					if p.IsRunning() {
+						p.Stop()
+					} else {
+						err := p.Start(wf.Ctx)
+						if err != nil {
+							http.Error(w, err.Error(), 500)
+							return
+						}
+					}
+				}
+			}
+		}
+	}
+	w.WriteHeader(200)
+}
+
 // GetWorkflows is used to get all the Workflows currently there
 func (a *API) GetWorkflows(w http.ResponseWriter, r *http.Request) {
+	var output []descriptionWorkflow
+	// Validate all Workflows so that we can show users if a processor is missing any needed values
+	for _, wf := range a.Workflows {
+		descWf := descriptionWorkflow{
+			Name:    wf.Name,
+			Running: wf.IsRunning,
+		}
+		for _, p := range wf.Processors {
+			valid, _ := p.ValidateProperties()
+			descWf.Processors = append(descWf.Processors, descriptionProcessor{
+				Name:              p.GetName(),
+				Description:       p.GetDescription(),
+				SettingsValidated: valid,
+				Properties:        p.GetProperties(),
+				Running:           p.IsRunning(),
+			})
 
-	data, err := json.Marshal(a.Workflows)
+		}
+		output = append(output, descWf)
+	}
+	data, err := json.Marshal(output)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
