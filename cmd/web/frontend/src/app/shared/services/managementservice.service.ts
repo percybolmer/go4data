@@ -8,10 +8,10 @@ import { Observable, throwError } from 'rxjs';
 })
 export class ManagementService {
 
-  private workflowURL = "http://localhost:8080/workflows";
-  private processorURL = "http://localhost:8080/processors";
-  private toggleProcessorRunURL = "http://localhost:8080/processors/run";
-  private deleteProcessorURL = "http://localhost:8080/processors/delete";
+  private workflowURL = "https://localhost:8080/workflows";
+  private processorURL = "https://localhost:8080/processors";
+  private toggleProcessorRunURL = "https://localhost:8080/processors/run";
+  private deleteProcessorURL = "https://localhost:8080/processors/delete";
   constructor(private http: HttpClient) { }
 
   loadWorkflow() {

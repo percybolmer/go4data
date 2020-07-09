@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/percybolmer/workflow"
@@ -46,9 +48,23 @@ type API struct {
 	router    *mux.Router
 }
 
+type cfg struct {
+	Port        int
+	CertPath    string
+	CertKeyPath string
+	Origins     []string
+}
+
 func main() {
 
-	fmt.Println("Starting the test app")
+	// Extract needed Configs
+	cfg := extractConfig()
+
+	if cfg == nil {
+		log.Fatal("Config cannot be nil")
+	}
+
+	log.Println("Starting the API on port: ", cfg.Port)
 	api := &API{
 		Workflows: make([]*workflow.Workflow, 0),
 		router:    mux.NewRouter(),
@@ -56,7 +72,8 @@ func main() {
 	generateTestData(api)
 	// Setup CORS
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"http://localhost:4200"},
+
+		AllowedOrigins: cfg.Origins,
 		AllowedMethods: []string{
 			http.MethodGet, //http methods for your app
 			http.MethodPost,
@@ -79,10 +96,40 @@ func main() {
 	api.router.HandleFunc("/processors/delete", api.DeleteProcessor).Methods("POST")
 	api.router.HandleFunc("/processors/run", api.StartStopProcessor).Methods("POST")
 	api.router.HandleFunc("/processors", api.ConfigureProcessor).Methods("PATCH")
-	log.Fatal(http.ListenAndServe(":8080", corsHandler.Handler(api.router)))
-	fmt.Println("Exiting")
+	handler := corsHandler.Handler(api.router)
+	err := http.ListenAndServeTLS(fmt.Sprintf(":%d", cfg.Port), cfg.CertPath, cfg.CertKeyPath, handler)
+	//err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), handler)
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }
 
+func extractConfig() *cfg {
+	certPath := os.Getenv("WORKFLOW_CERT")
+	certKey := os.Getenv("WORKFLOW_KEY")
+	certPort := os.Getenv("WORKFLOW_PORT")
+	origins := os.Getenv("WORKFLOW_ORIGINS")
+	if certPath == "" || certKey == "" || certPort == "" || origins == "" {
+		log.Fatal("Please make sure that all the following environmental variables are set \n",
+			"WORKFLOW_CERT should point to a certificate file to be used to host Https \n",
+			"WORKFLOW_KEY should point to the server key to use \n",
+			"WORKFLOW_PORT should be the port to host on \n",
+			"WORKFLOW_ORIGINS should be full https addresses, comma seperated,  of origins to allow the API requests from \n")
+		return nil
+	}
+
+	port, err := strconv.Atoi(certPort)
+	if err != nil {
+		log.Fatal(err)
+		return nil
+	}
+	return &cfg{
+		Port:        port,
+		CertKeyPath: certKey,
+		CertPath:    certPath,
+		Origins:     strings.Split(origins, ","),
+	}
+}
 func generateTestData(api *API) {
 
 	work1 := workflow.NewWorkflow("read-daily-files")

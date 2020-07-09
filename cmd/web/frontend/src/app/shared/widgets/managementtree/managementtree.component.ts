@@ -147,6 +147,7 @@ export class ManagementtreeComponent implements OnInit {
       // Send to backend
       if (result !== undefined ) {
         if (result.delete === true){
+
           this.ManagementService.deleteProcessor(result.workflow, result.processor);
           this.EventService.triggerApplicationTreeReload();
           // delete
