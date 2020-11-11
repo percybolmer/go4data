@@ -1,0 +1,3 @@
+this,is,a,freaking,cool,csv
+with,some,amazing,data,in,it
+but,its,splitted,on,many,lines

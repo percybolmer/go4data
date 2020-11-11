@@ -1,0 +1,40 @@
+- id: 1
+  name: listdir
+  running: false
+  action:
+    configs:
+        properties:
+            - name: path
+              value: testing
+              description: the path to search for
+              required: true
+              valid: false
+            - name: buffertime
+              value: 2
+              description: the time in seconds for how long a found file should be rememberd and not relisted
+              required: false
+              valid: false
+        mutex: {}
+    name: ListDirectory
+    mutex: {}
+  topics:
+    - found_files
+  executioninterval: 10s
+  queuesize: 1000
+- id: 2
+  name: readfile
+  running: false
+  action:
+    configs:
+        properties:
+            - name: remove_after
+              value: null
+              description: This property is used to configure if files that are read should be removed after
+              required: true
+              valid: false
+        mutex: {}
+    name: ReadFile
+  topics:
+    - file_data
+  executioninterval: 10s
+  queuesize: 1000
