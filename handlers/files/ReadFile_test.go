@@ -26,7 +26,7 @@ func TestReadFileValidateConfiguration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewReadFileAction()
+		rfg := NewReadFileHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)

@@ -6,14 +6,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/perbol/workflow/actions/files"
+	"github.com/perbol/workflow/handlers/files"
 )
 
 func generateProcs(t *testing.T) []*Processor {
 	listDirProc := NewProcessor("listdir", "found_files")
 	readFileProc := NewProcessor("readfile", "file_data")
-	listDirProc.SetAction(files.NewListDirectoryAction())
-	readFileProc.SetAction(files.NewReadFileAction())
+	listDirProc.SetHandler(files.NewListDirectoryHandler())
+	readFileProc.SetHandler(files.NewReadFileHandler())
 
 	cfg := listDirProc.GetConfiguration()
 	err := cfg.SetProperty("path", "testing")

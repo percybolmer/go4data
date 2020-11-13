@@ -8,7 +8,7 @@ import (
 )
 
 func TestExecCMDHandle(t *testing.T) {
-	rfg := NewExecCMDAction()
+	rfg := NewExecCMDHandler()
 
 	rfg.Cfg.SetProperty("command", "echo")
 	//rfg.Cfg.SetProperty("arguments", map[string]interface{}{"hello": "world"})
@@ -53,7 +53,7 @@ func TestExecCMDValidateConfiguration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewExecCMDAction()
+		rfg := NewExecCMDHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)

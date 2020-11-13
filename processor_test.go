@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/perbol/workflow/actions/files"
-	"github.com/perbol/workflow/actions/filters"
-	"github.com/perbol/workflow/actions/parsers"
-	"github.com/perbol/workflow/actions/terminal"
+	"github.com/perbol/workflow/handlers/files"
+	"github.com/perbol/workflow/handlers/filters"
+	"github.com/perbol/workflow/handlers/parsers"
+	"github.com/perbol/workflow/handlers/terminal"
 	"github.com/perbol/workflow/pubsub"
 	"github.com/percybolmer/workflow/payload"
 )
@@ -32,17 +32,17 @@ func TestNewProcessor(t *testing.T) {
 func TestStart(t *testing.T) {
 	// Register Printer
 	// Reset Register
-	testf := terminal.NewStdoutAction()
+	testf := terminal.NewStdoutHandler()
 	cfg := testf.GetConfiguration()
 	// Add Properties here to test failure of them
 	cfg.AddProperty("test", "testing", true)
 	p := NewProcessor("test")
 
 	err := p.Start(nil)
-	if !errors.Is(err, ErrProcessorHasNoActionApplied) {
+	if !errors.Is(err, ErrProcessorHasNoHandlerApplied) {
 		t.Fatal(err)
 	}
-	p.SetAction(testf)
+	p.SetHandler(testf)
 	err = p.Start(nil)
 	if !errors.Is(err, ErrNilContext) {
 		t.Fatal(err)
@@ -62,9 +62,9 @@ func TestStart(t *testing.T) {
 
 func TestPubSub(t *testing.T) {
 
-	testf := terminal.NewStdoutAction()
+	testf := terminal.NewStdoutHandler()
 	printer := NewProcessor("testf")
-	printer.SetAction(testf)
+	printer.SetHandler(testf)
 	printer.Subscribe("testtopic")
 	err := printer.Start(context.Background())
 	if err != nil {
@@ -85,7 +85,7 @@ func TestPubSub(t *testing.T) {
 	}
 
 	printer2 := NewProcessor("bufferProcessor")
-	printer2.SetAction(testf)
+	printer2.SetHandler(testf)
 	printer2.Subscribe("topicthatbuffers")
 
 	printer2.Start(context.Background())
@@ -110,12 +110,12 @@ func TestRealLifeCase(t *testing.T) {
 	MapFilter := NewProcessor("mapfilter", "print_stdout")
 	printerProc := NewProcessor("printer", "printer_output")
 	printer2Proc := NewProcessor("printer2")
-	listDirProc.SetAction(files.NewListDirectoryAction())
-	printerProc.SetAction(terminal.NewStdoutAction())
-	printer2Proc.SetAction(terminal.NewStdoutAction())
-	readFileProc.SetAction(files.NewReadFileAction())
-	csvReader.SetAction(parsers.NewParseCSVAction())
-	MapFilter.SetAction(filters.NewMapFilterAction())
+	listDirProc.SetHandler(files.NewListDirectoryHandler())
+	printerProc.SetHandler(terminal.NewStdoutHandler())
+	printer2Proc.SetHandler(terminal.NewStdoutHandler())
+	readFileProc.SetHandler(files.NewReadFileHandler())
+	csvReader.SetHandler(parsers.NewParseCSVHandler())
+	MapFilter.SetHandler(filters.NewMapFilterHandler())
 	// Setup configurations - still a bit clonky, but LoadConfig should be impl soon
 	cfg := listDirProc.GetConfiguration()
 	err := cfg.SetProperty("path", "testing")

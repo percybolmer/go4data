@@ -1,4 +1,4 @@
-// Package terminal contains actions related to STDOUT
+// Package terminal contains Handlers related to STDOUT
 package terminal
 
 import (
@@ -9,25 +9,25 @@ import (
 	"github.com/perbol/workflow/register"
 )
 
-// StdoutAction is used to print payloads to stdout, great for debugging
-type StdoutAction struct {
+// StdoutHandler is used to print payloads to stdout, great for debugging
+type StdoutHandler struct {
 	// Cfg is values needed to properly run the Handler
 	Cfg  *property.Configuration `json:"configs" yaml:"configs"`
-	Name string                  `json:"name" yaml:"name"`
+	Name string                  `json:"handler_name" yaml:"handler_name"`
 	// forward will forward payloads printed if true
 	forward bool
-	// Metric is a metric container to publish Metrics from an Action
-	// subscriptionless is used to say if the action is subscriptionless
+	// Metric is a metric container to publish Metrics from an Handler
+	// subscriptionless is used to say if the Handler is subscriptionless
 	subscriptionless bool
 }
 
 func init() {
-	register.Register("Stdout", NewStdoutAction())
+	register.Register("Stdout", NewStdoutHandler())
 }
 
-// NewStdoutAction generates a new Stdout action
-func NewStdoutAction() *StdoutAction {
-	act := &StdoutAction{
+// NewStdoutHandler generates a new Stdout Handler
+func NewStdoutHandler() *StdoutHandler {
+	act := &StdoutHandler{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
@@ -38,13 +38,13 @@ func NewStdoutAction() *StdoutAction {
 	return act
 }
 
-// GetActionName is used to retrun a unqiue string name
-func (a *StdoutAction) GetActionName() string {
+// GetHandlerName is used to retrun a unqiue string name
+func (a *StdoutHandler) GetHandlerName() string {
 	return a.Name
 }
 
 // Handle is used to print payloads to stdout
-func (a *StdoutAction) Handle(data payload.Payload) ([]payload.Payload, error) {
+func (a *StdoutHandler) Handle(data payload.Payload) ([]payload.Payload, error) {
 	fmt.Println(string(data.GetPayload()))
 	output := make([]payload.Payload, 0)
 	if a.forward {
@@ -55,7 +55,7 @@ func (a *StdoutAction) Handle(data payload.Payload) ([]payload.Payload, error) {
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
-func (a *StdoutAction) ValidateConfiguration() (bool, []string) {
+func (a *StdoutHandler) ValidateConfiguration() (bool, []string) {
 	// Check if Proxy forward is true
 
 	valid, miss := a.Cfg.ValidateProperties()
@@ -75,12 +75,12 @@ func (a *StdoutAction) ValidateConfiguration() (bool, []string) {
 	return true, nil
 }
 
-// GetConfiguration will return the CFG for the action
-func (a *StdoutAction) GetConfiguration() *property.Configuration {
+// GetConfiguration will return the CFG for the Handler
+func (a *StdoutHandler) GetConfiguration() *property.Configuration {
 	return a.Cfg
 }
 
-// Subscriptionless will return false since this action needs publishers
-func (a *StdoutAction) Subscriptionless() bool {
+// Subscriptionless will return false since this Handler needs publishers
+func (a *StdoutHandler) Subscriptionless() bool {
 	return a.subscriptionless
 }

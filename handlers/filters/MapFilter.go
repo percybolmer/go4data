@@ -1,5 +1,5 @@
-// Package filters is a action group that has actions that are related to filtering data
-// This particular action is used to filter out Map[string]string that contains certian values
+// Package filters is a Handler group that has Handlers that are related to filtering data
+// This particular Handler is used to filter out Map[string]string that contains certian values
 package filters
 
 import (
@@ -15,7 +15,7 @@ import (
 
 var (
 	//ErrNotJSONMapInput is thrown when the input payload is of the wrong type
-	ErrNotJSONMapInput error = errors.New("the expected input into this action is a map[string]string in json format")
+	ErrNotJSONMapInput error = errors.New("the expected input into this Handler is a map[string]string in json format")
 )
 
 // MapFilter is used to filter out Map[string]string that contains Values to search for
@@ -23,7 +23,7 @@ var (
 type MapFilter struct {
 	// Cfg is values needed to properly run the Handle func
 	Cfg     *property.Configuration `json:"configs" yaml:"configs"`
-	Name    string                  `json:"name" yaml:"name"`
+	Name    string                  `json:"name" yaml:"handler_name"`
 	filters map[string]*regexp.Regexp
 
 	strictMode bool
@@ -33,11 +33,11 @@ type MapFilter struct {
 }
 
 func init() {
-	register.Register("MapFilter", NewMapFilterAction())
+	register.Register("MapFilter", NewMapFilterHandler())
 }
 
-// NewMapFilterAction generates a new MapFilter action
-func NewMapFilterAction() *MapFilter {
+// NewMapFilterHandler generates a new MapFilter Handler
+func NewMapFilterHandler() *MapFilter {
 	act := &MapFilter{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
@@ -45,13 +45,13 @@ func NewMapFilterAction() *MapFilter {
 		Name:    "MapFilter",
 		filters: make(map[string]*regexp.Regexp),
 	}
-	act.Cfg.AddProperty("strict", "Setting strict to true will make the action only output payloads containing ALL filter values", false)
+	act.Cfg.AddProperty("strict", "Setting strict to true will make the Handler only output payloads containing ALL filter values", false)
 	act.Cfg.AddProperty("filters", "An Key->Value setting. Setting a filter here will check incominng payloads if they are a map, and if they are it will check if the key->Value setting exists in the payload", true)
 	return act
 }
 
-// GetActionName is used to retrun a unqiue string name
-func (a *MapFilter) GetActionName() string {
+// GetHandlerName is used to retrun a unqiue string name
+func (a *MapFilter) GetHandlerName() string {
 	return a.Name
 }
 
@@ -153,12 +153,12 @@ func (a *MapFilter) ValidateConfiguration() (bool, []string) {
 	return true, nil
 }
 
-// GetConfiguration will return the CFG for the action
+// GetConfiguration will return the CFG for the Handler
 func (a *MapFilter) GetConfiguration() *property.Configuration {
 	return a.Cfg
 }
 
-// Subscriptionless will return true/false if the action is genereating payloads itself
+// Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *MapFilter) Subscriptionless() bool {
 	return a.subscriptionless
 }

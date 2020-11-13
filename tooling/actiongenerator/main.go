@@ -1,4 +1,4 @@
-// This tool is used to generate a new Action and test file
+// This tool is used to generate a new Handler and test file
 // It will generate a basic struct based on the super simple template
 package main
 
@@ -11,27 +11,27 @@ import (
 	"text/template"
 )
 
-type newAction struct {
+type newHandler struct {
 	PackageName      string
-	ActionName       string
+	HandlerName      string
 	Location         string
 	TemplateLocation string
 }
 
 func main() {
-	var p newAction
+	var p newHandler
 
 	flag.StringVar(&p.PackageName, "package", "", "The name for the generated package")
-	flag.StringVar(&p.TemplateLocation, "templatepath", "", "The path to the templates to use, can also set ACTIONGENERATORPATH env variable")
-	flag.StringVar(&p.ActionName, "action", "", "The name of the action to generate")
+	flag.StringVar(&p.TemplateLocation, "templatepath", "", "The path to the templates to use, can also set HANDLERGENERATORPATH env variable")
+	flag.StringVar(&p.HandlerName, "handler", "", "The name of the Handler to generate")
 	flag.StringVar(&p.Location, "location", "", "Location of the generated output file/Files")
 	flag.Parse()
 
-	if p.PackageName == "" || p.ActionName == "" || p.Location == "" {
+	if p.PackageName == "" || p.HandlerName == "" || p.Location == "" {
 		flag.Usage()
 		os.Exit(0)
 	}
-	templatefiles := os.Getenv("ACTIONGENERATORPATH")
+	templatefiles := os.Getenv("HANDLERGENERATORPATH")
 	if templatefiles == "" && p.TemplateLocation == "" {
 		flag.Usage()
 		os.Exit(0)
@@ -46,17 +46,17 @@ func main() {
 		os.Exit(0)
 	}
 	// Generate files
-	f, err := os.Create(fmt.Sprintf("%s/%s.go", p.Location, p.ActionName))
+	f, err := os.Create(fmt.Sprintf("%s/%s.go", p.Location, p.HandlerName))
 	checkError(err)
-	testf, err := os.Create(fmt.Sprintf("%s/%s_test.go", p.Location, p.ActionName))
+	testf, err := os.Create(fmt.Sprintf("%s/%s_test.go", p.Location, p.HandlerName))
 	checkError(err)
 
-	action, err := GetActionTemplate(p.TemplateLocation)
+	Handler, err := GetHandlerTemplate(p.TemplateLocation)
 	checkError(err)
 	tests, err := GetTestTemplate(p.TemplateLocation)
 	checkError(err)
 
-	err = action.Execute(f, p)
+	err = Handler.Execute(f, p)
 	checkError(err)
 	err = tests.Execute(testf, p)
 	checkError(err)
@@ -85,12 +85,12 @@ func checkError(err error) {
 	}
 }
 
-// GetActionTemplate will read the ation template
-func GetActionTemplate(path string) (*template.Template, error) {
-	return template.New("action.gohtml").ParseFiles(fmt.Sprintf("%s/%s", path, "action.gohtml"))
+// GetHandlerTemplate will read the ation template
+func GetHandlerTemplate(path string) (*template.Template, error) {
+	return template.New("handler.gohtml").ParseFiles(fmt.Sprintf("%s/%s", path, "handler.gohtml"))
 }
 
 // GetTestTemplate will return a template of test file
 func GetTestTemplate(path string) (*template.Template, error) {
-	return template.New("action_test.gohtml").ParseFiles(fmt.Sprintf("%s/%s", path, "action_test.gohtml"))
+	return template.New("handler_test.gohtml").ParseFiles(fmt.Sprintf("%s/%s", path, "handler_test.gohtml"))
 }

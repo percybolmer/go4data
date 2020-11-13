@@ -56,18 +56,18 @@ type LoaderProccessor struct {
 	// Subscriptions is the Topics to subscribe to
 	Subscriptions []string `json:"subscriptions" yaml:"subscriptions"`
 	// ExecutionInterval is how often to execute the interval, this only
-	// applies to Selfpublishing actions
+	// applies to Selfpublishing Handlers
 	ExecutionInterval time.Duration `json:"executioninterval" yaml:"executioninterval"`
 	// QueueSize is a integer of how many payloads are accepted on the Output channels to Subscribers
 	QueueSize int `json:"queuesize" yaml:"queuesize"`
-	// LoaderAction is a action that can be loaded/saved
-	Action LoaderAction `json:"loaderaction" yaml:"action"`
+	// LoaderHandler is a Handler that can be loaded/saved
+	Handler LoaderHandler `json:"loaderhandler" yaml:"handler"`
 }
 
-// LoaderAction is a action thats easier to save/load
-type LoaderAction struct {
+// LoaderHandler is a Handler thats easier to save/load
+type LoaderHandler struct {
 	Cfg  *property.Configuration `json:"configs" yaml:"configs"`
-	Name string                  `json:"action" yaml:"action_name"`
+	Name string                  `json:"handler" yaml:"handler_name"`
 }
 
 // ConvertToProcessor is used to convert a Loader back into a Processor thats
@@ -77,23 +77,23 @@ func (la *LoaderProccessor) ConvertToProcessor() (*Processor, error) {
 	p := NewProcessor(la.Name, la.Topics...)
 	p.SetExecutionInterval(la.ExecutionInterval)
 	p.QueueSize = la.QueueSize
-	// Get NewAction from Register
-	action, err := register.GetAction(la.Action.Name)
+	// Get NewHandler from Register
+	handler, err := register.GetHandler(la.Handler.Name)
 	if err != nil {
 		return nil, err
 	}
-	p.Action = action
+	p.Handler = handler
 
-	cfg := p.Action.GetConfiguration()
+	cfg := p.Handler.GetConfiguration()
 	// Apply Configs
-	for _, loadcfg := range la.Action.Cfg.Properties {
+	for _, loadcfg := range la.Handler.Cfg.Properties {
 		err := cfg.SetProperty(loadcfg.Name, loadcfg.Value)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	worked, errs := p.Action.ValidateConfiguration()
+	worked, errs := p.Handler.ValidateConfiguration()
 	if !worked && errs != nil {
 		return nil, errors.New(errs[0])
 	}

@@ -1,4 +1,4 @@
-// Package workflow is a package that is used to create procescors that runs any kind of action on a payload flow
+// Package workflow is a package that is used to create procescors that runs any kind of handler on a payload flow
 // The payloads will be transferd between processors that has a relationship assigned
 package workflow
 
@@ -9,14 +9,14 @@ import (
 	"sync"
 	"time"
 
-	"github.com/perbol/workflow/actions"
+	"github.com/perbol/workflow/handlers"
 	"github.com/perbol/workflow/metric"
 	"github.com/perbol/workflow/payload"
 	"github.com/perbol/workflow/property"
 	"github.com/perbol/workflow/pubsub"
 )
 
-// Processor is used to perform an Action on each Item that is ingressed
+// Processor is used to perform an Handler on each Item that is ingressed
 type Processor struct {
 	// ID is a unique identifier for each processor,
 	ID uint `json:"id" yaml:"id"`
@@ -27,15 +27,15 @@ type Processor struct {
 	Running bool `json:"running" yaml:"running"`
 	// FailureHandler is the failurehandler to use with the Processor
 	FailureHandler func(f Failure) `json:"-" yaml:"-"`
-	// Action is the Action to Perform on the Payload  received
-	Action actions.Action `json:"action" yaml:"action"`
+	// Handler is the handler to Perform on the Payload  received
+	Handler handlers.Handler `json:"handler" yaml:"handler"`
 	// Subscriptions is a slice of all the current Subscriptions
 	// A Subscription will input data into the Processor
 	subscriptions []*pubsub.Pipe
 	// Topics is the Topics to publish payload onto
 	Topics []string `json:"topics" yaml:"topics"`
 	// ExecutionInterval is how often to execute the interval, this only
-	// applies to Selfpublishing actions
+	// applies to Selfpublishing handler
 	ExecutionInterval time.Duration `json:"executioninterval" yaml:"executioninterval"`
 	// QueueSize is a integer of how many payloads are accepted on the Output channels to Subscribers
 	QueueSize int `json:"queuesize" yaml:"queuesize"`
@@ -54,16 +54,16 @@ var (
 	// DefaultQueueSize is a limit set to define how many payloads can be sent in queue
 	DefaultQueueSize = 1000
 
-	//ErrProcessorHasNoActionApplied is when starting a processor that has a nil action
-	ErrProcessorHasNoActionApplied = errors.New("the processor has no action set. Please assign a action to it before running")
+	//ErrProcessorHasNoHandlerApplied is when starting a processor that has a nil Handler
+	ErrProcessorHasNoHandlerApplied = errors.New("the processor has no Handler set. Please assign a Handler to it before running")
 	//ErrNilContext not allowed
 	ErrNilContext = errors.New("nil context is not allowed when starting a processor")
 	//ErrProcessorAlreadyStopped is when trying to stop a processor that is alrady stopped
 	ErrProcessorAlreadyStopped = errors.New("the processor is already stopped")
-	//ErrRequiredPropertiesNotFulfilled is when trying to start a action but it needs additonal properties
-	ErrRequiredPropertiesNotFulfilled = errors.New("the action needs additional properties to work, see the actions documentation")
-	//ErrActionDoesNotAcceptPublishers is when trying to register an publisher to a processor that has a selfpublishing action
-	ErrActionDoesNotAcceptPublishers = errors.New("the used action does not allow publishers")
+	//ErrRequiredPropertiesNotFulfilled is when trying to start a Handler but it needs additonal properties
+	ErrRequiredPropertiesNotFulfilled = errors.New("the Handler needs additional properties to work, see the Handlers documentation")
+	//ErrHandlerDoesNotAcceptPublishers is when trying to register an publisher to a processor that has a selfpublishing Handler
+	ErrHandlerDoesNotAcceptPublishers = errors.New("the used Handler does not allow publishers")
 	//ErrDuplicateTopic is when trying to register an duplicate TOPIC to publish to
 	ErrDuplicateTopic = errors.New("the topic is already registerd")
 	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
@@ -77,7 +77,7 @@ func NewID() uint {
 }
 
 // NewProcessor is used to spawn a new processor
-// You need to set a Registerd Action or it will return an error
+// You need to set a Registerd Handler or it will return an error
 // Topics is a vararg that allows you to insert any topic you want the processor
 // to publish its payloads to
 func NewProcessor(name string, topics ...string) *Processor {
@@ -85,7 +85,7 @@ func NewProcessor(name string, topics ...string) *Processor {
 		ID:                NewID(),
 		Name:              name,
 		FailureHandler:    PrintFailure,
-		Action:            nil,
+		Handler:           nil,
 		subscriptions:     make([]*pubsub.Pipe, 0),
 		Topics:            make([]string, 0),
 		ExecutionInterval: DefaultExecutionInterval,
@@ -108,28 +108,28 @@ func NewProcessor(name string, topics ...string) *Processor {
 	return proc
 }
 
-// Start will run a Processor and execute the given Action on any incomming payloads
+// Start will run a Processor and execute the given Handler on any incomming payloads
 func (p *Processor) Start(ctx context.Context) error {
 	// IsRunning? Skip
 	if p.Running {
 		return nil
 	}
-	// Validate Settings of Action
-	if p.Action == nil {
-		return ErrProcessorHasNoActionApplied
+	// Validate Settings of Handler
+	if p.Handler == nil {
+		return ErrProcessorHasNoHandlerApplied
 	}
 	if ctx == nil {
 		return ErrNilContext
 	}
 
-	if ok, _ := p.Action.ValidateConfiguration(); !ok {
+	if ok, _ := p.Handler.ValidateConfiguration(); !ok {
 		return ErrRequiredPropertiesNotFulfilled
 	}
 
 	c, cancel := context.WithCancel(ctx)
 	p.cancel = cancel
 
-	if p.Action.Subscriptionless() {
+	if p.Handler.Subscriptionless() {
 		go p.HandleSubscriptionless(c)
 	} else {
 		for _, sub := range p.subscriptions {
@@ -154,14 +154,14 @@ func (p *Processor) Stop() error {
 	return nil
 }
 
-// SetExecutionInterval is used customize how often to trigger an SelfPublishing action
+// SetExecutionInterval is used customize how often to trigger an SelfPublishing Handler
 func (p *Processor) SetExecutionInterval(interval time.Duration) {
 	p.ExecutionInterval = interval
 }
 
-// GetConfiguration is just an reacher for actions getcfg
+// GetConfiguration is just an reacher for Handlers getcfg
 func (p *Processor) GetConfiguration() *property.Configuration {
-	return p.Action.GetConfiguration()
+	return p.Handler.GetConfiguration()
 }
 
 // SetID is a way to overwrite the generated ID, this is mostly used when Loading Processors from a Daisy file
@@ -174,18 +174,18 @@ func (p *Processor) SetName(n string) {
 	p.Name = n
 }
 
-// SetAction will change the action the Processor performs on incomming payloads
+// SetHandler will change the Handler the Processor performs on incomming payloads
 // Should hot reloading like this be ok? Do we need to Stop / Start the proccessor after?
-func (p *Processor) SetAction(a actions.Action) {
-	p.Action = a
+func (p *Processor) SetHandler(a handlers.Handler) {
+	p.Handler = a
 }
 
-// HandleSubscriptionless is used to handle actions that has no requirement of subscriptions
+// HandleSubscriptionless is used to handle Handlers that has no requirement of subscriptions
 // They will instead be triggerd by a Timer based on ExecutionInterval
 func (p *Processor) HandleSubscriptionless(ctx context.Context) {
 	ticker := time.NewTicker(p.ExecutionInterval)
-	// Trigger the action to run once at startup aswell.
-	payloads, err := p.Action.Handle(nil)
+	// Trigger the Handler to run once at startup aswell.
+	payloads, err := p.Handler.Handle(nil)
 	if err != nil {
 		p.FailureHandler(Failure{
 			Err:       err,
@@ -197,7 +197,7 @@ func (p *Processor) HandleSubscriptionless(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			payloads, err := p.Action.Handle(nil)
+			payloads, err := p.Handler.Handle(nil)
 			if err != nil {
 				p.FailureHandler(Failure{
 					Err:       err,
@@ -249,13 +249,13 @@ func (p *Processor) AddTopics(topics ...string) error {
 }
 
 // handleSubscription is used to spawn a gourtine that runs the
-// assigned Action on incomming payloads
+// assigned Handler on incomming payloads
 func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
 	for {
 		select {
 		case payload := <-sub.Flow:
 			p.Metric.IncrementMetric(fmt.Sprintf("%s_%d_payloads_in", p.Name, p.ID), 1)
-			payloads, err := p.Action.Handle(payload)
+			payloads, err := p.Handler.Handle(payload)
 			if err != nil {
 				p.FailureHandler(Failure{
 					Err:       err,
@@ -305,9 +305,9 @@ func (p *Processor) ConvertToLoader() *LoaderProccessor {
 		Running:           p.Running,
 		Topics:            p.Topics,
 		Subscriptions:     subnames,
-		Action: LoaderAction{
-			Cfg:  p.Action.GetConfiguration(),
-			Name: p.Action.GetActionName(),
+		Handler: LoaderHandler{
+			Cfg:  p.Handler.GetConfiguration(),
+			Name: p.Handler.GetHandlerName(),
 		},
 	}
 

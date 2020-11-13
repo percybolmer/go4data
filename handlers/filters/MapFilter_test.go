@@ -59,7 +59,7 @@ func TestMapFilterHandle(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewMapFilterAction()
+		rfg := NewMapFilterHandler()
 		rfg.Cfg.SetProperty("filters", tc.filters)
 		rfg.Cfg.SetProperty("strict", tc.strict)
 		_, miss := rfg.ValidateConfiguration()
@@ -81,7 +81,7 @@ func TestMapFilterHandle(t *testing.T) {
 			t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 		}
 		if tc.expectedPayload && len(values) == 0 {
-			t.Fatalf("%s: test expects output from this action", tc.name)
+			t.Fatalf("%s: test expects output from this Handler", tc.name)
 		}
 		if len(values) != 0 {
 			fmt.Println(tc.name + " " + string(values[0].GetPayload()))
@@ -107,7 +107,7 @@ func TestMapFilterValidateConfiguration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewMapFilterAction()
+		rfg := NewMapFilterHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)

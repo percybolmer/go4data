@@ -6,11 +6,11 @@ import (
 	"errors"
 )
 
-func Test{{.ActionName}}Handle(t *testing.T) {
+func Test{{.HandlerName}}Handle(t *testing.T) {
 
 }
 
-func Test{{.ActionName}}ValidateConfiguration(t *testing.T) {
+func Test{{.HandlerName}}ValidateConfiguration(t *testing.T) {
 	type testCase struct {
 			Name        string
 			Cfgs        map[string]interface{}
@@ -25,7 +25,7 @@ func Test{{.ActionName}}ValidateConfiguration(t *testing.T) {
 		}
 
 		for _, tc := range testCases {
-			rfg := New{{.ActionName}}Action()
+			rfg := New{{.HandlerName}}Handler()
 
 			for name, prop := range tc.Cfgs {
 				err := rfg.Cfg.SetProperty(name, prop)

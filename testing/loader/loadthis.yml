@@ -1,4 +1,4 @@
-- id: 1
+- id: 3
   name: listdir
   running: true
   topics:
@@ -6,7 +6,7 @@
   subscriptions: []
   executioninterval: 10s
   queuesize: 1000
-  action:
+  handler:
     configs:
         properties:
             - name: path
@@ -19,8 +19,8 @@
               description: the time in seconds for how long a found file should be rememberd and not relisted
               required: false
               valid: false
-    action_name: ListDirectory
-- id: 2
+    handler_name: ListDirectory
+- id: 4
   name: readfile
   running: true
   topics:
@@ -29,7 +29,7 @@
     - found_files
   executioninterval: 10s
   queuesize: 1000
-  action:
+  handler:
     configs:
         properties:
             - name: remove_after
@@ -37,4 +37,4 @@
               description: This property is used to configure if files that are read should be removed after
               required: true
               valid: false
-    action_name: ReadFile
+    handler_name: ReadFile

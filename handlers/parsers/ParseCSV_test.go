@@ -35,7 +35,7 @@ func TestParseCSVHandle(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		r := NewParseCSVAction()
+		r := NewParseCSVHandler()
 		if tc.Delimiter != "" {
 			r.Cfg.SetProperty("delimiter", tc.Delimiter)
 		}
@@ -86,7 +86,7 @@ func TestParseCSVValidateConfiguration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewParseCSVAction()
+		rfg := NewParseCSVHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)

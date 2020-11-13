@@ -36,7 +36,7 @@ func TestWriteFileHandle(t *testing.T) {
 	}
 
 	for _, tc := range testcases {
-		act := NewWriteFileAction()
+		act := NewWriteFileHandler()
 
 		for name, prop := range tc.cfgs {
 			err := act.Cfg.SetProperty(name, prop)
@@ -91,7 +91,7 @@ func TestWriteFileValidateConfiguration(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		rfg := NewWriteFileAction()
+		rfg := NewWriteFileHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)
