@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/perbol/workflow/property"
-	"github.com/perbol/workflow/register"
+	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/register"
 	"gopkg.in/yaml.v3"
 )
 

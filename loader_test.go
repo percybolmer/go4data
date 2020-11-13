@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/perbol/workflow/handlers/files"
+	"github.com/percybolmer/workflow/handlers/files"
 )
 
 func generateProcs(t *testing.T) []*Processor {

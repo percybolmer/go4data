@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/perbol/workflow/handlers"
-	"github.com/perbol/workflow/handlers/terminal"
+	"github.com/percybolmer/workflow/handlers"
+	"github.com/percybolmer/workflow/handlers/terminal"
 )
 
 func TestRegisterHandler(t *testing.T) {

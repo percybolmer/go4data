@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/perbol/workflow/handlers"
-	"github.com/perbol/workflow/metric"
-	"github.com/perbol/workflow/payload"
-	"github.com/perbol/workflow/property"
-	"github.com/perbol/workflow/pubsub"
+	"github.com/percybolmer/workflow/handlers"
+	"github.com/percybolmer/workflow/metric"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed

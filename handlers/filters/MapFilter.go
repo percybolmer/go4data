@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/perbol/workflow/payload"
-	"github.com/perbol/workflow/property"
-	"github.com/perbol/workflow/register"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/register"
 )
 
 var (

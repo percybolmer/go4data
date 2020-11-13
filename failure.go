@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/perbol/workflow/payload"
+	"github.com/percybolmer/workflow/payload"
 )
 
 var (

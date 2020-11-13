@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/perbol/workflow/metric"
+	"github.com/percybolmer/workflow/metric"
 	_ "github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )

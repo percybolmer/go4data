@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"github.com/perbol/workflow/payload"
-	"github.com/perbol/workflow/property"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
 )
 
 // Handler is a interface that allows users to create structs with certain functions attached that can be used inside a processor

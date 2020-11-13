@@ -3,7 +3,7 @@ package register
 import (
 	"errors"
 
-	"github.com/perbol/workflow/handlers"
+	"github.com/percybolmer/workflow/handlers"
 )
 
 // HandlerRegister is used to keep track of all available Handlers that a processor can use

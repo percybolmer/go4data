@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/perbol/workflow/handlers/files"
-	"github.com/perbol/workflow/handlers/filters"
-	"github.com/perbol/workflow/handlers/parsers"
-	"github.com/perbol/workflow/handlers/terminal"
-	"github.com/perbol/workflow/pubsub"
+	"github.com/percybolmer/workflow/handlers/files"
+	"github.com/percybolmer/workflow/handlers/filters"
+	"github.com/percybolmer/workflow/handlers/parsers"
+	"github.com/percybolmer/workflow/handlers/terminal"
 	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/pubsub"
 )
 
 func TestNewProcessor(t *testing.T) {
@@ -129,7 +129,7 @@ func TestRealLifeCase(t *testing.T) {
 	listDirProc.SetExecutionInterval(1 * time.Second)
 	printerProc.GetConfiguration().SetProperty("forward", true)
 	readFileProc.GetConfiguration().SetProperty("remove_after", false)
-	MapFilter.GetConfiguration().SetProperty("filters", map[string]string{"username": "perbol"})
+	MapFilter.GetConfiguration().SetProperty("filters", map[string]string{"username": "percybolmer"})
 	MapFilter.GetConfiguration().SetProperty("strict", true)
 	// Fix Relationships
 	readFileProc.Subscribe("found_files")

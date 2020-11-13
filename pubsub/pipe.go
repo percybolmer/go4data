@@ -1,6 +1,6 @@
 package pubsub
 
-import "github.com/perbol/workflow/payload"
+import "github.com/percybolmer/workflow/payload"
 
 // Pipe is PUB/SUB output/input Struct used for publishing or Subscribing to data flows
 type Pipe struct {

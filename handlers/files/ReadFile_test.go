@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/perbol/workflow/property"
+	"github.com/percybolmer/workflow/property"
 )
 
 func TestReadFileHandle(t *testing.T) {

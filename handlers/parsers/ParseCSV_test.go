@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/perbol/workflow/payload"
-	"github.com/perbol/workflow/property"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
 )
 
 func TestParseCSVHandle(t *testing.T) {

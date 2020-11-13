@@ -9,9 +9,9 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/perbol/workflow/payload"
-	"github.com/perbol/workflow/property"
-	"github.com/perbol/workflow/register"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/register"
 )
 
 // ExecCMD is used to execute a commandline command. This can be used to extend and use functions that are not part of the Workflow atm.

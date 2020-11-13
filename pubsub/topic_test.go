@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/perbol/workflow/payload"
+	"github.com/percybolmer/workflow/payload"
 )
 
 func TestNewTopic(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/perbol/workflow/payload"
+	"github.com/percybolmer/workflow/payload"
 )
 
 // Topics is a container for topics that has been created.
