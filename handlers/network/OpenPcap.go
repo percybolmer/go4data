@@ -15,8 +15,9 @@ type OpenPcap struct {
 	// Cfg is values needed to properly run the Handle func
 	Cfg *property.Configuration `json:"configs" yaml:"configs"`
 	// Name is sort of like an ID used to load data back should be the same that is used to register the Handler
-	Name string `json:"handler_name yaml:"handler_name"`
-
+	Name string `json:"handler_name" yaml:"handler_name"`
+	// bpf is used to apply a bpf filter
+	bpf string
 	// subscriptionless should be set to true if this Handler does not need any input payloads to function
 	subscriptionless bool
 }
@@ -33,6 +34,7 @@ func NewOpenPcapHandler() *OpenPcap {
 		},
 		Name: "OpenPcap",
 	}
+	act.Cfg.AddProperty("bpf", "A bpf filter to be used on the input pcap", false)
 	return act
 }
 
@@ -53,39 +55,28 @@ func (a *OpenPcap) Handle(input payload.Payload) ([]payload.Payload, error) {
 		file.Close()
 	}()
 
+	// apply filter if not empty
+	if a.bpf != "" {
+		err = file.SetBPFFilter(a.bpf)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	packets := gopacket.NewPacketSource(file, file.LinkType())
 
-	sources := payload.BasePayload{
+	sources := &Payload{
 		Source:  "OpenPcap",
-		Payload: packets,
+		Payload: make([]gopacket.Packet, 0),
 	}
+
+	for packet := range packets.Packets() {
+		sources.Payload = append(sources.Payload, packet)
+	}
+
 	output := make([]payload.Payload, 0)
 	output = append(output, sources)
 	return output, nil
-	/*
-	   // ReadPcap reads a pcap and prints all packets
-	   // argument can be a filter to onlly take certain packets
-	   func ReadPcap(path string, bpf string) (*gopacket.PacketSource,error) {
-	   	handle, err := pcap.OpenOffline(path)
-	   	if err != nil {
-	   		return nil, err
-	   	}
-	   	//defer handle.Close()
-
-	   	// apply filter if not empty
-	   	if bpf != "" {
-	   		// error checking ?? in teh future
-	   		err = handle.SetBPFFilter(bpf)
-	   		if err != nil {
-	   			return nil, err
-	   		}
-	   	}
-
-	   	return gopacket.NewPacketSource(handle, handle.LinkType()), nil
-	   }
-
-	*/
-
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -94,6 +85,11 @@ func (a *OpenPcap) ValidateConfiguration() (bool, []string) {
 	valid, miss := a.Cfg.ValidateProperties()
 	if !valid {
 		return valid, miss
+	}
+
+	bpfProp := a.Cfg.GetProperty("bpf")
+	if bpfProp != nil && bpfProp.Value != nil {
+		a.bpf = bpfProp.String()
 	}
 	return true, nil
 }

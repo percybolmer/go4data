@@ -16,7 +16,7 @@ type {{.HandlerName}} struct{
 	// Cfg is values needed to properly run the Handle func
 	Cfg *property.Configuration `json:"configs" yaml:"configs"`
 	// Name is sort of like an ID used to load data back should be the same that is used to register the Handler
-	Name string `json:"handler_name yaml:"handler_name"`
+	Name string `json:"handler_name" yaml:"handler_name"`
 	// subscriptionless should be set to true if this Handler does not need any input payloads to function
 	subscriptionless bool
 }

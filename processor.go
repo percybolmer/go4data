@@ -248,7 +248,7 @@ func (p *Processor) AddTopics(topics ...string) error {
 	return nil
 }
 
-// handleSubscription is used to spawn a gourtine that runs the
+// handleSubscription is used to run the
 // assigned Handler on incomming payloads
 func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
 	for {
