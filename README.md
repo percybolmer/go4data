@@ -29,6 +29,26 @@ if err := readFileProc.Start(context.Background()); err != nil {
 }
 ```
 
+## Building a Handler
+To build a handler there is a buildt in tool inside /tooling called handlergenerator. 
+This is a code generator that can be used to build a template Handler for you.
+Compile the code generator by going into the tooling folder after downloading the source.
+run 
+```bash
+go build -o handlergenerator
+```
+
+Then from commandline run   
+handlergenerator -package $PACKAGENAME -location handlers/$PACKAGENAME -templatepath $PATH TO TEMPLATES -handler $NAME_OF_HANDLER  
+You should now see a new Handler that is generated and be able to use it. 
+
+
+Example when Creating the pcap reader I ran  
+handlergenerator -package network -location handlers/network -handler OpenPcap  
+
+Notice how I did not specify a templatepath? The tool also checks the HANDLERGENERATORPATH environment variable.
+
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 

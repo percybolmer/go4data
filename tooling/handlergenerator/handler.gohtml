@@ -16,7 +16,7 @@ type {{.HandlerName}} struct{
 	// Cfg is values needed to properly run the Handle func
 	Cfg *property.Configuration `json:"configs" yaml:"configs"`
 	// Name is sort of like an ID used to load data back should be the same that is used to register the Handler
-	Name string
+	Name string `json:"handler_name yaml:"handler_name"`
 	// subscriptionless should be set to true if this Handler does not need any input payloads to function
 	subscriptionless bool
 }
@@ -31,10 +31,15 @@ func New{{.HandlerName}}Handler() *{{.HandlerName}} {
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
-		Name: {{.HandlerName}},
+		Name: "{{.HandlerName}}",
 	}
-	act.Cfg.AddProperty("test", "the configuratiosn you need", true)
+	act.Cfg.AddProperty("test", "the configuration you need", true)
 	return act
+}
+
+// GetHandlerName should return the name of the handler that was used in register
+func (a *{{.HandlerName}}) GetHandlerName() string {
+	return a.Name
 }
 
 // Handle is used to $INSERT DESCRIPTION HERE
