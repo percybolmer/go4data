@@ -70,16 +70,20 @@ func TestPubSub(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Register Sender and Printer to topics
-	sender := NewProcessor("test", "testtopic", "topicthatbuffers")
 	// Now everything is setup, What sender sends will be printed by Printer
-	sender.publishPayloads(payload.BasePayload{
+	pay := payload.BasePayload{
 		Source:  "Test",
 		Payload: []byte(`Hello world`),
-	})
+	}
+	errs := pubsub.Publish("testtopic", pay)
+	if errs != nil {
+		t.Fatal(errs[0])
+	}
+	pubsub.Publish("topicthatbuffers", pay)
 	time.Sleep(1 * time.Second)
 	metricName := fmt.Sprintf("%s_%d_payloads_in", printer.Name, printer.ID)
 	printerMetric := printer.Metric.GetMetrics()
+	t.Logf("%+v", printerMetric)
 	if printerMetric[metricName].Value != 1 {
 		t.Fatal("Wrong Printer metric value")
 	}
@@ -106,12 +110,15 @@ func TestRealLifeCase(t *testing.T) {
 	// The idea here is to test a case of how it could be used by others
 	listDirProc := NewProcessor("listdir", "found_files")
 	readFileProc := NewProcessor("readfile", "file_data")
+	writeFileProc := NewProcessor("writefile")
 	csvReader := NewProcessor("csvReader", "map_reduce")
 	MapFilter := NewProcessor("mapfilter", "print_stdout")
+
 	printerProc := NewProcessor("printer", "printer_output")
 	printer2Proc := NewProcessor("printer2")
 	listDirProc.SetHandler(files.NewListDirectoryHandler())
 	printerProc.SetHandler(terminal.NewStdoutHandler())
+	writeFileProc.SetHandler(files.NewWriteFileHandler())
 	printer2Proc.SetHandler(terminal.NewStdoutHandler())
 	readFileProc.SetHandler(files.NewReadFileHandler())
 	csvReader.SetHandler(parsers.NewParseCSVHandler())
@@ -122,13 +129,15 @@ func TestRealLifeCase(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = cfg.SetProperty("buffertime", 2)
+	err = cfg.SetProperty("buffertime", 5)
 	if err != nil {
 		t.Fatal(err)
 	}
-	listDirProc.SetExecutionInterval(1 * time.Second)
 	printerProc.GetConfiguration().SetProperty("forward", true)
 	readFileProc.GetConfiguration().SetProperty("remove_after", false)
+	writeFileProc.GetConfiguration().SetProperty("path", "testing/realexample")
+	writeFileProc.GetConfiguration().SetProperty("append", true)
+	writeFileProc.GetConfiguration().SetProperty("forward", false)
 	MapFilter.GetConfiguration().SetProperty("filters", map[string]string{"username": "percybolmer"})
 	MapFilter.GetConfiguration().SetProperty("strict", true)
 	// Fix Relationships
@@ -137,6 +146,7 @@ func TestRealLifeCase(t *testing.T) {
 	MapFilter.Subscribe("map_reduce")
 	printerProc.Subscribe("print_stdout")
 	printer2Proc.Subscribe("printer_output")
+	writeFileProc.Subscribe("printer_output")
 
 	// Startup
 	if err := listDirProc.Start(context.Background()); err != nil {
@@ -157,6 +167,11 @@ func TestRealLifeCase(t *testing.T) {
 	if err := printerProc.Start(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-
+	if err := writeFileProc.Start(context.Background()); err != nil {
+		t.Fatal(err)
+	}
 	time.Sleep(5 * time.Second)
+	t.Logf("%+v", writeFileProc.Metric.GetMetric(fmt.Sprintf("%s_%d_payloads_in", writeFileProc.Name, writeFileProc.ID)))
+
+	// Compare metrics so that they Match
 }

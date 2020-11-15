@@ -3,6 +3,7 @@
 package files
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -10,8 +11,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -26,6 +29,15 @@ type ListDirectory struct {
 	sync.Mutex `json:"-" yaml:"-"`
 
 	subscriptionless bool
+	errChan          chan error
+
+	metrics      metric.Provider
+	metricPrefix string
+
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 var (
@@ -46,6 +58,7 @@ func NewListDirectoryHandler() *ListDirectory {
 		Name:             "ListDirectory",
 		found:            make(map[string]int64),
 		subscriptionless: true,
+		errChan:          make(chan error, 1000),
 	}
 
 	act.Cfg.AddProperty("path", "the path to search for", true)
@@ -60,7 +73,31 @@ func (a *ListDirectory) GetHandlerName() string {
 }
 
 // Handle is used to list all files in a direcory
-func (a *ListDirectory) Handle(p payload.Payload) ([]payload.Payload, error) {
+func (a *ListDirectory) Handle(ctx context.Context, p payload.Payload, topics ...string) error {
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		default:
+			payloads, err := a.ListDirectory()
+			if err != nil {
+				a.errChan <- err
+				continue
+			}
+			if len(payloads) != 0 {
+				a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(payloads)))
+				errs := pubsub.PublishTopics(topics, payloads...)
+				for _, err := range errs {
+					a.errChan <- err
+				}
+
+			}
+		}
+	}
+}
+
+// ListDirectory will do all the main work, list directory or return error
+func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 	files, err := ioutil.ReadDir(a.path)
 	if err != nil {
 		return nil, err
@@ -72,8 +109,7 @@ func (a *ListDirectory) Handle(p payload.Payload) ([]payload.Payload, error) {
 		}
 	}
 	a.Unlock()
-	foundfiles := make([]payload.Payload, 0)
-
+	var payloads []payload.Payload
 	for _, f := range files {
 		if f.IsDir() == false {
 			file := filepath.Base(f.Name())
@@ -84,7 +120,7 @@ func (a *ListDirectory) Handle(p payload.Payload) ([]payload.Payload, error) {
 				filepath = fmt.Sprintf("%s/%s", a.path, file)
 			}
 			if _, ok := a.found[filepath]; !ok {
-				foundfiles = append(foundfiles, payload.BasePayload{
+				payloads = append(payloads, payload.BasePayload{
 					Payload: []byte(filepath),
 					Source:  "ListDirectory",
 				})
@@ -92,8 +128,7 @@ func (a *ListDirectory) Handle(p payload.Payload) ([]payload.Payload, error) {
 			}
 		}
 	}
-	/* Should a Buffer of found files be kept? */
-	return foundfiles, nil
+	return payloads, nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -130,4 +165,30 @@ func (a *ListDirectory) GetConfiguration() *property.Configuration {
 // Subscriptionless is used to send out true
 func (a *ListDirectory) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *ListDirectory) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *ListDirectory) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }

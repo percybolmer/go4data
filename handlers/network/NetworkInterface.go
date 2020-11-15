@@ -3,9 +3,12 @@
 package network
 
 import (
+	"context"
 	"errors"
+	"fmt"
 
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/register"
@@ -35,6 +38,14 @@ type NetworkInterface struct {
 	// link layer
 	// prommode
 	prommode bool
+
+	errChan      chan error
+	metrics      metric.Provider
+	metricPrefix string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 func init() {
@@ -51,6 +62,7 @@ func NewNetworkInterfaceHandler() *NetworkInterface {
 		subscriptionless: true,
 		snapshotlength:   65536,
 		prommode:         true,
+		errChan:          make(chan error, 1000),
 	}
 
 	act.Cfg.AddProperty("bpf", "A bpf filter to be used on the input interface", false)
@@ -65,7 +77,7 @@ func (a *NetworkInterface) GetHandlerName() string {
 }
 
 // Handle is used to $INSERT DESCRIPTION HERE
-func (a *NetworkInterface) Handle(input payload.Payload) ([]payload.Payload, error) {
+func (a *NetworkInterface) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
 
 	/**
 	handle, err := pcap.OpenLive(n.selectedInterface.Name, n.snapShotLength, n.promiscousMode, 30*time.Second)
@@ -73,9 +85,7 @@ func (a *NetworkInterface) Handle(input payload.Payload) ([]payload.Payload, err
 		fmt.Printf("Error opening device %s: %v", n.selectedInterface.Name, err)
 	}
 	*/
-	output := make([]payload.Payload, 0)
-	output = append(output, input)
-	return output, nil
+	return nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -134,4 +144,30 @@ func FindDevices() ([]pcap.Interface, error) {
 		return nil, ErrNoDevicesFound
 	}
 	return devices, nil
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *NetworkInterface) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *NetworkInterface) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }

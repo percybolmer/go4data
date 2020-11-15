@@ -71,3 +71,11 @@ func (pp *PrometheusProvider) IncrementMetric(name string, value float64) error 
 func (pp *PrometheusProvider) GetMetrics() map[string]*Metric {
 	return pp.Metrics
 }
+
+// GetMetric will return a metric if it exists, or nil if not
+func (pp *PrometheusProvider) GetMetric(name string) *Metric {
+	if met, ok := pp.Metrics[name]; ok {
+		return met
+	}
+	return nil
+}

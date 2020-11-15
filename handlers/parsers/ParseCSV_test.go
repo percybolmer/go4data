@@ -2,9 +2,12 @@ package parsers
 
 import (
 	"bytes"
+	"context"
 	"errors"
+	"fmt"
 	"testing"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
@@ -34,8 +37,9 @@ func TestParseCSVHandle(t *testing.T) {
 		{"CustomDelimiter", customDelim, "|", 1, 0, nil, 1},
 	}
 
-	for _, tc := range testcases {
+	for i, tc := range testcases {
 		r := NewParseCSVHandler()
+		r.SetMetricProvider(metric.NewPrometheusProvider(), fmt.Sprintf("%s_%d", tc.Name, i))
 		if tc.Delimiter != "" {
 			r.Cfg.SetProperty("delimiter", tc.Delimiter)
 		}
@@ -52,16 +56,16 @@ func TestParseCSVHandle(t *testing.T) {
 			d.WriteString(s)
 		}
 
-		results, err := r.Handle(payload.BasePayload{
+		err := r.Handle(context.Background(), payload.BasePayload{
 			Payload: d.Bytes(),
-		})
+		}, "test")
 
 		if !errors.Is(err, tc.ExpectedError) {
 			t.Fatalf("%s: %s", tc.Name, err)
 		}
-
-		if len(results) != tc.ExpectedRowLength {
-			t.Fatalf("%s: Wrong length on result: %d", tc.Name, len(results))
+		invalue := r.metrics.GetMetric(r.MetricPayloadOut).Value
+		if int(invalue) != tc.ExpectedRowLength {
+			t.Fatalf("%s: Wrong length on result: %f", tc.Name, invalue)
 		}
 
 	}

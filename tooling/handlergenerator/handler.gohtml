@@ -19,6 +19,12 @@ type {{.HandlerName}} struct{
 	Name string `json:"handler_name" yaml:"handler_name"`
 	// subscriptionless should be set to true if this Handler does not need any input payloads to function
 	subscriptionless bool
+	//errChan is the channel to output errors.
+	errChan chan error
+	// metrics is a metric.Provider that allows export of metrics
+	metrics metric.Provider
+	// metricPrefix is a unique string to attach to metrics
+	metricPrefix string
 }
 
 func init() {
@@ -32,6 +38,7 @@ func New{{.HandlerName}}Handler() *{{.HandlerName}} {
 			Properties: make([]*property.Property, 0),
 		},
 		Name: "{{.HandlerName}}",
+		errChan: make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("test", "the configuration you need", true)
 	return act
@@ -43,11 +50,9 @@ func (a *{{.HandlerName}}) GetHandlerName() string {
 }
 
 // Handle is used to $INSERT DESCRIPTION HERE
-func (a *{{.HandlerName}}) Handle(input payload.Payload) ([]payload.Payload,error) {
+func (a *{{.HandlerName}}) Handle(ctx context.Context, input payload.Payload, topics...) error {
 	fmt.Println(input)
-	output := make([]payload.Payload, 0)
-	output = append(output, input)
-	return output,nil
+	return nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -69,4 +74,20 @@ func (a *{{.HandlerName}}) GetConfiguration() *property.Configuration {
 func (a *{{.HandlerName}}) Subscriptionless() bool {
 	return a.subscriptionless
 }
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *{{.HandlerName}}) GetErrorChannel() chan error {
+	return a.errChan
+}
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *{{.HandlerName}}) SetMetricProvider(p metric.Provider, prefix string) error{
+	a.metrics = p
+	a.metricPrefix = prefix
 
+	// Here you can add Metrics that you want to be stored, should return error if the metric collides with another metric from ANY handler.
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        fmt.Sprintf("%s_payloads_out", prefix),
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	return err
+
+}

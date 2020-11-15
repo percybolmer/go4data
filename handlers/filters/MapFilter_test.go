@@ -1,11 +1,12 @@
 package filters
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"testing"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
@@ -60,6 +61,7 @@ func TestMapFilterHandle(t *testing.T) {
 
 	for _, tc := range testCases {
 		rfg := NewMapFilterHandler()
+		rfg.SetMetricProvider(metric.NewPrometheusProvider(), tc.name)
 		rfg.Cfg.SetProperty("filters", tc.filters)
 		rfg.Cfg.SetProperty("strict", tc.strict)
 		_, miss := rfg.ValidateConfiguration()
@@ -75,16 +77,14 @@ func TestMapFilterHandle(t *testing.T) {
 			Payload: data,
 		}
 
-		values, err := rfg.Handle(pay)
+		err = rfg.Handle(context.Background(), pay)
 
 		if !errors.Is(err, tc.expectedErr) {
 			t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 		}
-		if tc.expectedPayload && len(values) == 0 {
+		mets := rfg.metrics.GetMetric(rfg.MetricPayloadOut)
+		if tc.expectedPayload && mets.Value == 0 {
 			t.Fatalf("%s: test expects output from this Handler", tc.name)
-		}
-		if len(values) != 0 {
-			fmt.Println(tc.name + " " + string(values[0].GetPayload()))
 		}
 
 	}

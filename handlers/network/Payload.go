@@ -15,9 +15,9 @@ var (
 //Payload is a struct representing pcap.PacketSource as payload
 //Its also a part of the Payload interface
 type Payload struct {
-	Payload []gopacket.Packet `json:"payload"`
-	Source  string            `json:"source"`
-	Error   error             `json:"error"`
+	Payload gopacket.Packet `json:"payload"`
+	Source  string          `json:"source"`
+	Error   error           `json:"error"`
 }
 
 // NewPayload is used to convert a regular payload into a network payload
@@ -31,7 +31,7 @@ func NewPayload(pay payload.Payload) (*Payload, error) {
 
 // GetPayloadLength will return the payload X Bytes
 func (nf *Payload) GetPayloadLength() float64 {
-	return float64(len(nf.Payload))
+	return float64(len(nf.Payload.ApplicationLayer().Payload()))
 }
 
 // GetPayload is used to return an actual value for the Flow

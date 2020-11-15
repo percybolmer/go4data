@@ -3,10 +3,15 @@
 package network
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -20,6 +25,13 @@ type OpenPcap struct {
 	bpf string
 	// subscriptionless should be set to true if this Handler does not need any input payloads to function
 	subscriptionless bool
+	errChan          chan error
+	metrics          metric.Provider
+	metricPrefix     string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 func init() {
@@ -32,7 +44,8 @@ func NewOpenPcapHandler() *OpenPcap {
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
-		Name: "OpenPcap",
+		Name:    "OpenPcap",
+		errChan: make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("bpf", "A bpf filter to be used on the input pcap", false)
 	return act
@@ -44,12 +57,12 @@ func (a *OpenPcap) GetHandlerName() string {
 }
 
 // Handle is used to open a pcap and output all network packets
-func (a *OpenPcap) Handle(input payload.Payload) ([]payload.Payload, error) {
-
+func (a *OpenPcap) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	path := string(input.GetPayload())
 	file, err := pcap.OpenOffline(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() {
 		file.Close()
@@ -59,24 +72,30 @@ func (a *OpenPcap) Handle(input payload.Payload) ([]payload.Payload, error) {
 	if a.bpf != "" {
 		err = file.SetBPFFilter(a.bpf)
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 
 	packets := gopacket.NewPacketSource(file, file.LinkType())
 
-	sources := &Payload{
-		Source:  "OpenPcap",
-		Payload: make([]gopacket.Packet, 0),
-	}
+	var payloads []payload.Payload
 
 	for packet := range packets.Packets() {
-		sources.Payload = append(sources.Payload, packet)
+		payloads = append(payloads, &Payload{
+			Source:  "OpenPcap",
+			Payload: packet,
+		})
 	}
 
-	output := make([]payload.Payload, 0)
-	output = append(output, sources)
-	return output, nil
+	a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(payloads)))
+	errs := pubsub.PublishTopics(topics, payloads...)
+	if errs != nil {
+		for _, err := range errs {
+			a.errChan <- err
+		}
+	}
+
+	return nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -102,4 +121,30 @@ func (a *OpenPcap) GetConfiguration() *property.Configuration {
 // Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *OpenPcap) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *OpenPcap) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *OpenPcap) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }

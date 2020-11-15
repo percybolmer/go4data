@@ -1,14 +1,6 @@
 package workflow
 
-import (
-	"fmt"
-	"os"
-	"testing"
-	"time"
-
-	"github.com/percybolmer/workflow/handlers/files"
-)
-
+/*
 func generateProcs(t *testing.T) []*Processor {
 	listDirProc := NewProcessor("listdir", "found_files")
 	readFileProc := NewProcessor("readfile", "file_data")
@@ -67,3 +59,4 @@ func TestLoad(t *testing.T) {
 		t.Fatal("ReadFile proc should have atleast 1 input")
 	}
 }
+*/

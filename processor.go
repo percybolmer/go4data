@@ -11,7 +11,6 @@ import (
 
 	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
 )
@@ -96,15 +95,6 @@ func NewProcessor(name string, topics ...string) *Processor {
 		proc.Topics = append(proc.Topics, topics...)
 	}
 
-	// Add Some default Metric values
-	proc.Metric.AddMetric(&metric.Metric{
-		Name:        fmt.Sprintf("%s_%d_payloads_out", proc.Name, proc.ID),
-		Description: "keeps track of how many payloads the processor has outputted",
-	})
-	proc.Metric.AddMetric(&metric.Metric{
-		Name:        fmt.Sprintf("%s_%d_payloads_in", proc.Name, proc.ID),
-		Description: "keeps track of how many payloads the processor has inputted",
-	})
 	return proc
 }
 
@@ -129,6 +119,10 @@ func (p *Processor) Start(ctx context.Context) error {
 	c, cancel := context.WithCancel(ctx)
 	p.cancel = cancel
 
+	err := p.Handler.SetMetricProvider(p.Metric, fmt.Sprintf("%s_%d", p.Name, p.ID))
+	if err != nil {
+		return err
+	}
 	if p.Handler.Subscriptionless() {
 		go p.HandleSubscriptionless(c)
 	} else {
@@ -181,11 +175,8 @@ func (p *Processor) SetHandler(a handlers.Handler) {
 }
 
 // HandleSubscriptionless is used to handle Handlers that has no requirement of subscriptions
-// They will instead be triggerd by a Timer based on ExecutionInterval
 func (p *Processor) HandleSubscriptionless(ctx context.Context) {
-	ticker := time.NewTicker(p.ExecutionInterval)
-	// Trigger the Handler to run once at startup aswell.
-	payloads, err := p.Handler.Handle(nil)
+	err := p.Handler.Handle(ctx, nil, p.Topics...)
 	if err != nil {
 		p.FailureHandler(Failure{
 			Err:       err,
@@ -193,20 +184,22 @@ func (p *Processor) HandleSubscriptionless(ctx context.Context) {
 			Processor: p.ID,
 		})
 	}
-	p.publishPayloads(payloads...)
+}
+
+// handleSubscription is used to run the
+// assigned Handler on incomming payloads
+func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
 	for {
 		select {
-		case <-ticker.C:
-			payloads, err := p.Handler.Handle(nil)
+		case payload := <-sub.Flow:
+			err := p.Handler.Handle(ctx, payload, p.Topics...)
 			if err != nil {
 				p.FailureHandler(Failure{
 					Err:       err,
-					Payload:   nil,
+					Payload:   payload,
 					Processor: p.ID,
 				})
 			}
-
-			p.publishPayloads(payloads...)
 		case <-ctx.Done():
 			return
 		}
@@ -246,48 +239,6 @@ func (p *Processor) AddTopics(topics ...string) error {
 	}
 	p.Topics = append(p.Topics, topics...)
 	return nil
-}
-
-// handleSubscription is used to run the
-// assigned Handler on incomming payloads
-func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
-	for {
-		select {
-		case payload := <-sub.Flow:
-			p.Metric.IncrementMetric(fmt.Sprintf("%s_%d_payloads_in", p.Name, p.ID), 1)
-			payloads, err := p.Handler.Handle(payload)
-			if err != nil {
-				p.FailureHandler(Failure{
-					Err:       err,
-					Payload:   payload,
-					Processor: p.ID,
-				})
-			}
-
-			p.publishPayloads(payloads...)
-		case <-ctx.Done():
-			return
-		}
-	}
-}
-
-// publishPayloads will itterate all topics and output the payloads
-func (p *Processor) publishPayloads(payloads ...payload.Payload) {
-	for _, payload := range payloads {
-		for _, topic := range p.Topics {
-			errors := pubsub.Publish(topic, payload)
-			for _, err := range errors {
-				p.FailureHandler(Failure{
-					Err:       err.Err,
-					Payload:   payload,
-					Processor: p.ID,
-				})
-				continue
-			}
-			p.Metric.IncrementMetric(fmt.Sprintf("%s_%d_payloads_out", p.Name, p.ID), 1)
-
-		}
-	}
 }
 
 // ConvertToLoader is actually just a way too convert into a savable format

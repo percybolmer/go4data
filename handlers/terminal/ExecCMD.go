@@ -4,13 +4,16 @@ package terminal
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
 	"strings"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -25,6 +28,13 @@ type ExecCMD struct {
 	arguments []string
 	// Subscriptionless is set to true if Payload is set in the arguments
 	subscriptionless bool
+	errChan          chan error
+	metrics          metric.Provider
+	metricPrefix     string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 var (
@@ -44,7 +54,8 @@ func NewExecCMDHandler() *ExecCMD {
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
-		Name: "ExecCMD",
+		Name:    "ExecCMD",
+		errChan: make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("command", "the command to run ", true)
 	act.Cfg.AddProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument", false)
@@ -59,23 +70,21 @@ func (a *ExecCMD) GetHandlerName() string {
 
 // Handle is used to execute a Command if its set and ValidateConfiguration has been
 // properly run
-func (a *ExecCMD) Handle(input payload.Payload) ([]payload.Payload, error) {
-
-	if a.subscriptionless {
-		// If subscriptionless is true we dont need payloads so payload is probably NIL
-		pay, err := a.Exec(nil)
-		if err != nil {
-			return nil, err
-		}
-
-		return []payload.Payload{pay}, nil
-	}
+func (a *ExecCMD) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	pay, err := a.Exec(input)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
 
-	return []payload.Payload{pay}, nil
+	errs := pubsub.PublishTopics(topics, pay)
+	if errs != nil {
+		for _, err := range errs {
+			a.errChan <- err
+		}
+	}
+	return nil
 }
 
 // Exec will execute the command
@@ -157,4 +166,30 @@ func (a *ExecCMD) GetConfiguration() *property.Configuration {
 // Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *ExecCMD) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *ExecCMD) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *ExecCMD) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }

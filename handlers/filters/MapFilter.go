@@ -3,13 +3,16 @@
 package filters
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -30,6 +33,13 @@ type MapFilter struct {
 	regexpMode bool
 
 	subscriptionless bool
+	errChan          chan error
+	metrics          metric.Provider
+	metricPrefix     string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 func init() {
@@ -44,6 +54,7 @@ func NewMapFilterHandler() *MapFilter {
 		},
 		Name:    "MapFilter",
 		filters: make(map[string]*regexp.Regexp),
+		errChan: make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("strict", "Setting strict to true will make the Handler only output payloads containing ALL filter values", false)
 	act.Cfg.AddProperty("filters", "An Key->Value setting. Setting a filter here will check incominng payloads if they are a map, and if they are it will check if the key->Value setting exists in the payload", true)
@@ -57,20 +68,24 @@ func (a *MapFilter) GetHandlerName() string {
 
 // Handle is used to filter out map values. If a value matches a filter it will continue forward
 // If strict mode is set it will only output maps containing all values
-func (a *MapFilter) Handle(input payload.Payload) ([]payload.Payload, error) {
-
+func (a *MapFilter) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	m, err := a.isPayloadMap(input)
 	if err != nil {
-		return nil, fmt.Errorf("%w:%v", ErrNotJSONMapInput, err)
+		return fmt.Errorf("%w:%v", ErrNotJSONMapInput, err)
 	}
-	output := make([]payload.Payload, 0)
 	if a.isMatch(m) {
-
-		output = append(output, input)
-		return output, nil
+		a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
+		errs := pubsub.PublishTopics(topics, input)
+		if errs != nil {
+			for _, err := range errs {
+				a.errChan <- err
+			}
+		}
+		return nil
 	}
 
-	return nil, nil
+	return nil
 
 }
 
@@ -161,4 +176,30 @@ func (a *MapFilter) GetConfiguration() *property.Configuration {
 // Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *MapFilter) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *MapFilter) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *MapFilter) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }

@@ -5,6 +5,7 @@ type Provider interface {
 	AddMetric(*Metric) error
 	IncrementMetric(name string, value float64) error
 	GetMetrics() map[string]*Metric
+	GetMetric(name string) *Metric
 }
 
 // Metric is information about a certain value of a processor with a name and description,

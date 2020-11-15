@@ -1,9 +1,12 @@
 package files
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"testing"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
@@ -35,9 +38,9 @@ func TestWriteFileHandle(t *testing.T) {
 		},
 	}
 
-	for _, tc := range testcases {
+	for i, tc := range testcases {
 		act := NewWriteFileHandler()
-
+		act.SetMetricProvider(metric.NewPrometheusProvider(), fmt.Sprintf("%s_%d", "testprefix", i))
 		for name, prop := range tc.cfgs {
 			err := act.Cfg.SetProperty(name, prop)
 			if !errors.Is(err, tc.expectedErr) {
@@ -54,21 +57,21 @@ func TestWriteFileHandle(t *testing.T) {
 			Source:  "test",
 			Payload: tc.data,
 		}
-		output, err := act.Handle(pay)
+		err := act.Handle(context.Background(), pay)
 
 		if !errors.Is(err, tc.expectedErr) {
 			t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 		}
 
 		if act.append {
-			_, err := act.Handle(pay)
+			err := act.Handle(context.Background(), pay)
 			if !errors.Is(err, tc.expectedErr) {
 				t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 			}
 		}
 
 		if act.forward {
-			if len(output) != 1 {
+			if act.metrics.GetMetric(act.MetricPayloadOut).Value != 1 {
 				t.Fatal("Act didnt forward payload")
 			}
 		}
@@ -92,7 +95,6 @@ func TestWriteFileValidateConfiguration(t *testing.T) {
 
 	for _, tc := range testCases {
 		rfg := NewWriteFileHandler()
-
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {

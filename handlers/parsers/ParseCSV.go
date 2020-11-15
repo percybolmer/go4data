@@ -5,12 +5,16 @@ package parsers
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -41,6 +45,14 @@ type ParseCSV struct {
 	skiprows int
 
 	subscriptionless bool
+	errChan          chan error
+
+	metrics      metric.Provider
+	metricPrefix string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 func init() {
@@ -57,6 +69,7 @@ func NewParseCSVHandler() *ParseCSV {
 		delimiter:    DefaultDelimiter,
 		headerlength: DefaultHeaderLength,
 		skiprows:     DefaultSkipRows,
+		errChan:      make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("delimiter", "The character or string to use as a Delimiter", false)
 	act.Cfg.AddProperty("headerlength", "How many rows the header is", false)
@@ -70,7 +83,8 @@ func (a *ParseCSV) GetHandlerName() string {
 }
 
 // Handle will go through a CSV payload and output all the CSV rows
-func (a ParseCSV) Handle(input payload.Payload) ([]payload.Payload, error) {
+func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	buf := bytes.NewBuffer(input.GetPayload())
 
 	scanner := bufio.NewScanner(buf)
@@ -91,7 +105,7 @@ func (a ParseCSV) Handle(input payload.Payload) ([]payload.Payload, error) {
 		// Handle Header row
 		values := strings.Split(line, a.delimiter)
 		if len(values) <= 1 {
-			return nil, ErrNotCsv
+			return ErrNotCsv
 		}
 
 		// Handle Unique Cases of header rows longer than 1 line
@@ -104,7 +118,7 @@ func (a ParseCSV) Handle(input payload.Payload) ([]payload.Payload, error) {
 
 		// Make sure header is no longer than current values
 		if len(header) != len(values) {
-			return nil, ErrHeaderMismatch
+			return ErrHeaderMismatch
 		}
 		// Handle the CSV ROW as a Map of string, should this be interface?
 		newRow := &CsvRow{
@@ -115,7 +129,16 @@ func (a ParseCSV) Handle(input payload.Payload) ([]payload.Payload, error) {
 		}
 		result = append(result, newRow)
 	}
-	return result, nil
+
+	// Publish rows
+	a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(result)))
+	errs := pubsub.PublishTopics(topics, result...)
+	if errs != nil {
+		for _, err := range errs {
+			a.errChan <- err
+		}
+	}
+	return nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -162,6 +185,33 @@ func (a *ParseCSV) GetConfiguration() *property.Configuration {
 // Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *ParseCSV) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *ParseCSV) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *ParseCSV) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+
+	return err
 }
 
 //CsvRow is a struct representing Csv data as a map

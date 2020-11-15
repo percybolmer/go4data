@@ -176,10 +176,27 @@ func Subscribe(key string, pid uint, queueSize int) (*Pipe, error) {
 	return sub, nil
 }
 
+// PublishTopics is used to publish to many topics at once
+func PublishTopics(topics []string, payloads ...payload.Payload) []PublishingError {
+	var errors []PublishingError
+
+	for _, topic := range topics {
+		errs := Publish(topic, payloads...)
+		if errs != nil {
+			errors = append(errors, errs...)
+		}
+	}
+
+	if len(errors) == 0 {
+		return nil
+	}
+	return errors
+}
+
 // Publish is used to publish a payload onto a Topic
 // If there is no Subscribers it will push the Payloads onto a Topic Buffer which will be drained as soon
 // As there is a subscriber
-func Publish(key string, payload payload.Payload) []PublishingError {
+func Publish(key string, payloads ...payload.Payload) []PublishingError {
 	var errors []PublishingError
 	var top *Topic
 	if TopicExists(key) {
@@ -189,35 +206,38 @@ func Publish(key string, payload payload.Payload) []PublishingError {
 	}
 
 	// If Subscribers is empty, add to Buffer
-	if len(top.Subscribers) == 0 {
-		select {
-		case top.Buffer.Flow <- payload:
-			// Managed to send item
-		default:
-			// The pipe is full
-			errors = append(errors, PublishingError{
-				Err:     ErrTopicBufferIsFull,
-				Payload: payload,
-				Tid:     top.ID,
-			})
-		}
-	} else {
-		for _, sub := range top.Subscribers {
+	for _, payload := range payloads {
+		if len(top.Subscribers) == 0 {
+
 			select {
-			case sub.Flow <- payload:
-				// Managed to send
-				continue
+			case top.Buffer.Flow <- payload:
+				// Managed to send item
 			default:
-				// This Subscriber queue is full,  return an error
-				// We Could send items to the Buffer   top.Buffer.Flow <- payload
-				// But we would need a way of Knowing what Subscriber has gotten What payload to avoid resending
-				// It to all Subscribers
+				// The pipe is full
 				errors = append(errors, PublishingError{
-					Err:     ErrProcessorQueueIsFull,
-					Pid:     sub.Pid,
-					Tid:     top.ID,
+					Err:     ErrTopicBufferIsFull,
 					Payload: payload,
+					Tid:     top.ID,
 				})
+			}
+		} else {
+			for _, sub := range top.Subscribers {
+				select {
+				case sub.Flow <- payload:
+					// Managed to send
+					continue
+				default:
+					// This Subscriber queue is full,  return an error
+					// We Could send items to the Buffer   top.Buffer.Flow <- payload
+					// But we would need a way of Knowing what Subscriber has gotten What payload to avoid resending
+					// It to all Subscribers
+					errors = append(errors, PublishingError{
+						Err:     ErrProcessorQueueIsFull,
+						Pid:     sub.Pid,
+						Tid:     top.ID,
+						Payload: payload,
+					})
+				}
 			}
 		}
 	}

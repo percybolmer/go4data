@@ -3,11 +3,15 @@
 package files
 
 import (
+	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -19,6 +23,14 @@ type ReadFile struct {
 	remove bool
 
 	subscriptionless bool
+	errChan          chan error
+
+	metrics      metric.Provider
+	metricPrefix string
+	// MetricPayloadOut is how many payloads the processor has outputted
+	MetricPayloadOut string
+	// MetricPayloadIn is how many payloads the processor has inputted
+	MetricPayloadIn string
 }
 
 func init() {
@@ -31,7 +43,8 @@ func NewReadFileHandler() *ReadFile {
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
-		Name: "ReadFile",
+		Name:    "ReadFile",
+		errChan: make(chan error, 1000),
 	}
 	act.Cfg.AddProperty("remove_after", "This property is used to configure if files that are read should be removed after", true)
 	return act
@@ -44,14 +57,13 @@ func (a *ReadFile) GetHandlerName() string {
 
 // Handle is used to Read the content of a file from the former payload
 // Expects a filepath in the input payload
-func (a *ReadFile) Handle(input payload.Payload) ([]payload.Payload, error) {
-	output := make([]payload.Payload, 0)
-
+func (a *ReadFile) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	path := string(input.GetPayload())
 	file, err := os.Open(path)
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() {
 		file.Close()
@@ -61,14 +73,18 @@ func (a *ReadFile) Handle(input payload.Payload) ([]payload.Payload, error) {
 	}()
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	output = append(output, payload.BasePayload{
+	a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
+	errs := pubsub.PublishTopics(topics, payload.BasePayload{
 		Payload: data,
 		Source:  "ReadFile",
 	})
+	for _, err := range errs {
+		a.errChan <- err
+	}
 
-	return output, nil
+	return nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -100,4 +116,30 @@ func (a *ReadFile) GetConfiguration() *property.Configuration {
 // Subscriptionless will return true/false if the Handler is genereating payloads itself
 func (a *ReadFile) Subscriptionless() bool {
 	return a.subscriptionless
+}
+
+// GetErrorChannel will return a channel that the Handler can output eventual errors onto
+func (a *ReadFile) GetErrorChannel() chan error {
+	return a.errChan
+}
+
+// SetMetricProvider is used to change what metrics provider is used by the handler
+func (a *ReadFile) SetMetricProvider(p metric.Provider, prefix string) error {
+	a.metrics = p
+	a.metricPrefix = prefix
+
+	a.MetricPayloadIn = fmt.Sprintf("%s_payloads_in", prefix)
+	a.MetricPayloadOut = fmt.Sprintf("%s_payloads_out", prefix)
+	err := a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadOut,
+		Description: "keeps track of how many payloads the handler has outputted",
+	})
+	if err != nil {
+		return err
+	}
+	err = a.metrics.AddMetric(&metric.Metric{
+		Name:        a.MetricPayloadIn,
+		Description: "keeps track of how many payloads the handler has ingested",
+	})
+	return err
 }
