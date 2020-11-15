@@ -7,10 +7,12 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 )
 
@@ -66,6 +68,8 @@ func NewNetworkInterfaceHandler() *NetworkInterface {
 	}
 
 	act.Cfg.AddProperty("bpf", "A bpf filter to be used on the input interface", false)
+	act.Cfg.AddProperty("snapshotlength", "The snapshot length to use", false)
+	act.Cfg.AddProperty("promiscuousmode", "True or false to use promiscious mode", false)
 
 	act.Cfg.AddProperty("interface", "The interface to read network traffic from", true)
 	return act
@@ -76,16 +80,40 @@ func (a *NetworkInterface) GetHandlerName() string {
 	return a.Name
 }
 
-// Handle is used to $INSERT DESCRIPTION HERE
+// Handle is used to sniff network packets on a interface and output all packets
 func (a *NetworkInterface) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
+	// Start processing our packets
 
-	/**
-	handle, err := pcap.OpenLive(n.selectedInterface.Name, n.snapShotLength, n.promiscousMode, 30*time.Second)
+	handle, err := pcap.OpenLive(a.netinterface.Name, a.snapshotlength, a.prommode, pcap.BlockForever)
 	if err != nil {
-		fmt.Printf("Error opening device %s: %v", n.selectedInterface.Name, err)
+		return fmt.Errorf("Error opening device %s: %v", a.netinterface.Name, err)
 	}
-	*/
-	return nil
+	err = handle.SetBPFFilter(a.bpf)
+	if err != nil {
+		return err
+	}
+
+	packets := gopacket.NewPacketSource(handle, handle.LinkType())
+	for {
+		packet, err := packets.NextPacket()
+		if err != nil {
+			a.errChan <- err
+			continue
+		}
+		a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
+		// Maybe instead of publishing like this we might need to make a buffer of some sort
+		// that gets dumped from into a new routine so we dont block each packet
+		newpay := &Payload{
+			Source:  "NetworkInterface",
+			Payload: packet,
+		}
+		errs := pubsub.PublishTopics(topics, newpay)
+		if errs != nil {
+			for _, err := range errs {
+				a.errChan <- err
+			}
+		}
+	}
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
@@ -111,15 +139,29 @@ func (a *NetworkInterface) ValidateConfiguration() (bool, []string) {
 	for _, interf := range availableInterfaces {
 		if interf.Name == wantedInterface {
 			a.netinterface = &interf
+			break
 		}
 	}
 	if a.netinterface == nil {
 		return false, []string{ErrConfiguredInterface.Error()}
 	}
-	// ADD CHUNK SIZE
-	// ADD DELAY OR WAIT TIMER BEFORE PUBLISHING X PACKETS
-	// Default snapshot length
-	// Link layer type
+
+	promModeProp := a.Cfg.GetProperty("promiscuous")
+	if promModeProp != nil && promModeProp.Value != nil {
+		promMode, err := promModeProp.Bool()
+		if err != nil {
+			return false, []string{err.Error()}
+		}
+		a.prommode = promMode
+	}
+	snapshotLenProp := a.Cfg.GetProperty("snapshotlength")
+	if snapshotLenProp != nil && snapshotLenProp.Value != nil {
+		snaplen, err := snapshotLenProp.Int64()
+		if err != nil {
+			return false, []string{err.Error()}
+		}
+		a.snapshotlength = int32(snaplen)
+	}
 
 	return true, nil
 }
