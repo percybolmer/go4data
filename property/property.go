@@ -80,10 +80,17 @@ func (p *Property) StringSplice() ([]string, error) {
 
 // StringMap is used to return the value as a map[string]string
 func (p *Property) StringMap() (map[string]string, error) {
-	var value map[string]string
+	// The reason for this is because golang cannot type asset to
+	// a map string string, only map string interface
+	// So we need to first type convert to map string interface and then convert each value
+	var value map[string]interface{}
+	valueStr := make(map[string]string, 0)
 	var ok bool
-	if value, ok = p.Value.(map[string]string); !ok {
+	if value, ok = p.Value.(map[string]interface{}); !ok {
 		return nil, ErrWrongPropertyType
 	}
-	return value, nil
+	for key, val := range value {
+		valueStr[key] = val.(string)
+	}
+	return valueStr, nil
 }

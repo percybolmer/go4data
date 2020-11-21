@@ -1,6 +1,15 @@
 package workflow
 
-/*
+import (
+	"fmt"
+	"os"
+	"testing"
+	"time"
+
+	"github.com/percybolmer/workflow/handlers/files"
+	"github.com/percybolmer/workflow/handlers/filters"
+)
+
 func generateProcs(t *testing.T) []*Processor {
 	listDirProc := NewProcessor("listdir", "found_files")
 	readFileProc := NewProcessor("readfile", "file_data")
@@ -59,4 +68,20 @@ func TestLoad(t *testing.T) {
 		t.Fatal("ReadFile proc should have atleast 1 input")
 	}
 }
-*/
+
+func TestLoadMap(t *testing.T) {
+
+	proc := NewProcessor("MapFilter", "filtered_data")
+	proc.SetHandler(filters.NewMapFilterHandler())
+
+	filter := map[string]string{"email": "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"}
+	proc.GetConfiguration().SetProperty("filters", filter)
+	Save("testing/loader/loadmaptest.yml", proc)
+
+	loaded, err := Load("testing/loader/loadMap.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Logf("%+v", loaded)
+}

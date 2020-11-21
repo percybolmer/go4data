@@ -13,6 +13,7 @@ import (
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
+	// Add shadow import to all known Handler categories?
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed
