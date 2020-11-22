@@ -1,0 +1,21 @@
+- id: 4
+  name: ExecCMD
+  running: false
+  topics:
+    - filterd_data
+  subscriptions:
+    - map_reduce
+  executioninterval: 10s
+  queuesize: 1000
+  handler:
+    configs:
+      properties:
+        - name: command
+          value: echo
+          required: true
+          valid: true
+        - name: arguments
+          value: [hej, på , dig]
+          required: true
+          valid: true
+    handler_name: ExecCMD

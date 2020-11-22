@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
 
@@ -56,7 +56,7 @@ func TestParseCSVHandle(t *testing.T) {
 			d.WriteString(s)
 		}
 
-		err := r.Handle(context.Background(), payload.BasePayload{
+		err := r.Handle(context.Background(), payloads.BasePayload{
 			Payload: d.Bytes(),
 		}, "test")
 
@@ -69,11 +69,6 @@ func TestParseCSVHandle(t *testing.T) {
 		}
 
 	}
-}
-
-func TestParseCSVROWPayload(t *testing.T) {
-	var _ payload.Payload = (*CsvRow)(nil)
-
 }
 
 func TestParseCSVValidateConfiguration(t *testing.T) {

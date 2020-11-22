@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -28,9 +29,13 @@ type ExecCMD struct {
 	arguments []string
 	// Subscriptionless is set to true if Payload is set in the arguments
 	subscriptionless bool
-	errChan          chan error
-	metrics          metric.Provider
-	metricPrefix     string
+	// appendOldPayload is a value that can be set to add the exec output to the old payload, used if you want to keep the payload that went into this one
+	appendOldPayload bool
+	// appendDelimiter is a value that will be set to seperate the newpayload
+	appendDelimiter string
+	errChan         chan error
+	metrics         metric.Provider
+	metricPrefix    string
 	// MetricPayloadOut is how many payloads the processor has outputted
 	MetricPayloadOut string
 	// MetricPayloadIn is how many payloads the processor has inputted
@@ -54,11 +59,14 @@ func NewExecCMDHandler() *ExecCMD {
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
 		},
-		Name:    "ExecCMD",
-		errChan: make(chan error, 1000),
+		Name:             "ExecCMD",
+		errChan:          make(chan error, 1000),
+		appendOldPayload: false,
 	}
 	act.Cfg.AddProperty("command", "the command to run ", true)
 	act.Cfg.AddProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument", false)
+	act.Cfg.AddProperty("append_old_payload", "Setting this to true will make the output of the handler become the oldpayload + the exec payload", false)
+	act.Cfg.AddProperty("append_delimiter", "The value to seperate payloads with", false)
 
 	return act
 }
@@ -120,10 +128,22 @@ func (a *ExecCMD) Exec(input payload.Payload) (payload.Payload, error) {
 	if errStr != "" {
 		return nil, errors.New(errStr)
 	}
-	newPayload := &payload.BasePayload{
-		Payload: stdout.Bytes(),
-		Source:  fullCmd.String(),
+	var newPayload *payloads.BasePayload
+	if a.appendOldPayload {
+		data := input.GetPayload()
+		data = append(data, []byte(a.appendDelimiter)...)
+		data = append(data, stdout.Bytes()...)
+		newPayload = &payloads.BasePayload{
+			Payload: data,
+			Source:  fullCmd.String(),
+		}
+	} else {
+		newPayload = &payloads.BasePayload{
+			Payload: stdout.Bytes(),
+			Source:  fullCmd.String(),
+		}
 	}
+
 	return newPayload, nil
 }
 
@@ -133,6 +153,8 @@ func (a *ExecCMD) ValidateConfiguration() (bool, []string) {
 	commandProp := a.Cfg.GetProperty("command")
 	argumentsProp := a.Cfg.GetProperty("arguments")
 
+	appendProp := a.Cfg.GetProperty("append_old_payload")
+	delimiterProp := a.Cfg.GetProperty("append_delimiter")
 	if commandProp.Value == nil {
 		return false, []string{"Missing command property"}
 	}
@@ -140,6 +162,13 @@ func (a *ExecCMD) ValidateConfiguration() (bool, []string) {
 	command := commandProp.String()
 	a.command = command
 
+	appendBool, err := appendProp.Bool()
+	if err != nil {
+		return false, []string{err.Error()}
+	}
+	a.appendOldPayload = appendBool
+	delimiter := delimiterProp.String()
+	a.appendDelimiter = delimiter
 	if argumentsProp.Value != nil {
 		splice, err := argumentsProp.StringSplice()
 		if err != nil {

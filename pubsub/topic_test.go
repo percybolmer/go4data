@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/handlers/payloads"
 )
 
 func TestNewTopic(t *testing.T) {
@@ -90,7 +90,7 @@ func TestPublish(t *testing.T) {
 	}
 	// Now Queue Should be full and we should geta Queue is full Err from Sub
 	// But sub2 should have 1 item in queue
-	perr = Publish("test", payload.BasePayload{
+	perr = Publish("test", payloads.BasePayload{
 		Source: "test",
 	})
 	if len(perr) != 1 {

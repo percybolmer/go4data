@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -103,7 +104,7 @@ func (a *NetworkInterface) Handle(ctx context.Context, input payload.Payload, to
 		a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
 		// Maybe instead of publishing like this we might need to make a buffer of some sort
 		// that gets dumped from into a new routine so we dont block each packet
-		newpay := &Payload{
+		newpay := &payloads.NetworkPayload{
 			Source:  "NetworkInterface",
 			Payload: packet,
 		}

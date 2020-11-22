@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -78,17 +79,17 @@ func (a *OpenPcap) Handle(ctx context.Context, input payload.Payload, topics ...
 
 	packets := gopacket.NewPacketSource(file, file.LinkType())
 
-	var payloads []payload.Payload
+	var outgoing []payload.Payload
 
 	for packet := range packets.Packets() {
-		payloads = append(payloads, &Payload{
+		outgoing = append(outgoing, &payloads.NetworkPayload{
 			Source:  "OpenPcap",
 			Payload: packet,
 		})
 	}
 
-	a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(payloads)))
-	errs := pubsub.PublishTopics(topics, payloads...)
+	a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(outgoing)))
+	errs := pubsub.PublishTopics(topics, outgoing...)
 	if errs != nil {
 		for _, err := range errs {
 			a.errChan <- err

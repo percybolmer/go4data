@@ -2,7 +2,6 @@ package filters
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"testing"
 
@@ -11,12 +10,14 @@ import (
 	"github.com/percybolmer/workflow/property"
 )
 
-func TestMapFilterHandle(t *testing.T) {
+func TestCsvFilterHandle(t *testing.T) {
 	type testCase struct {
 		name            string
 		expectedErr     error
 		expectedPayload bool
-		data            interface{}
+		data            string
+		header          string
+		delimiter       string
 		filters         map[string]string
 		strict          bool
 	}
@@ -26,41 +27,42 @@ func TestMapFilterHandle(t *testing.T) {
 			expectedErr:     nil,
 			expectedPayload: false,
 			strict:          true,
-			data:            map[string]string{"hello": "world", "second": "wrong_value"},
-			filters:         map[string]string{"hello": "world", "second": "notvalid"},
-		}, {
-			name:            "BadInputPayload",
-			expectedErr:     ErrNotJSONMapInput,
-			expectedPayload: false,
-			strict:          true,
-			data:            "NotAJSONMAP",
+			header:          "hello,second",
+			data:            "world,wrong_value",
+			delimiter:       ",",
 			filters:         map[string]string{"hello": "world", "second": "notvalid"},
 		}, {
 			name:            "GoodPayload",
 			expectedErr:     nil,
 			expectedPayload: true,
 			strict:          false,
-			data:            map[string]string{"hello": "world", "second": "wrong_value"},
+			header:          "hello,second",
+			data:            "world,wrong_value",
+			delimiter:       ",",
 			filters:         map[string]string{"hello": "world", "second": "notvalid"},
 		}, {
 			name:            "RegexpFilters",
 			expectedErr:     nil,
 			expectedPayload: true,
 			strict:          false,
-			data:            map[string]string{"hello": "world", "second": "wrong_value"},
+			header:          "hello,second",
+			data:            "world,wrong_value",
+			delimiter:       ",",
 			filters:         map[string]string{"hello": "wor.*"},
 		}, {
 			name:            "ComplexRegexpFilters",
 			expectedErr:     nil,
 			expectedPayload: true,
 			strict:          false,
-			data:            map[string]string{"hello": "world", "email": "thisisacool@email.com"},
+			header:          "hello,email",
+			data:            "world,thisisacool@email.com",
+			delimiter:       ",",
 			filters:         map[string]string{"email": "^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"},
 		},
 	}
 
 	for _, tc := range testCases {
-		rfg := NewMapFilterHandler()
+		rfg := NewCsvFilterHandler()
 		rfg.SetMetricProvider(metric.NewPrometheusProvider(), tc.name)
 		rfg.Cfg.SetProperty("filters", tc.filters)
 		rfg.Cfg.SetProperty("strict", tc.strict)
@@ -68,16 +70,14 @@ func TestMapFilterHandle(t *testing.T) {
 		if miss != nil {
 			t.Fatalf("%+v", miss)
 		}
-		data, err := json.Marshal(tc.data)
-		if err != nil {
-			t.Fatal(err)
-		}
-		pay := payloads.BasePayload{
-			Source:  "test",
-			Payload: data,
+		pay := &payloads.CsvRow{
+			Source:    "test",
+			Payload:   tc.data,
+			Header:    tc.header,
+			Delimiter: tc.delimiter,
 		}
 
-		err = rfg.Handle(context.Background(), pay)
+		err := rfg.Handle(context.Background(), pay)
 
 		if !errors.Is(err, tc.expectedErr) {
 			t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
@@ -91,7 +91,7 @@ func TestMapFilterHandle(t *testing.T) {
 
 }
 
-func TestMapFilterValidateConfiguration(t *testing.T) {
+func TestCsvFilterValidateConfiguration(t *testing.T) {
 	type testCase struct {
 		Name        string
 		Cfgs        map[string]interface{}
@@ -100,14 +100,14 @@ func TestMapFilterValidateConfiguration(t *testing.T) {
 	}
 
 	testCases := []testCase{
-		{Name: "InValidType", IsValid: false, Cfgs: map[string]interface{}{"strict": 1}, ExpectedErr: property.ErrWrongPropertyType},
+		{Name: "InValidType", IsValid: false, Cfgs: map[string]interface{}{"strict": "haj"}, ExpectedErr: property.ErrWrongPropertyType},
 		{Name: "NoSuchConfig", IsValid: false, Cfgs: map[string]interface{}{"ConfigThatDoesNotExist": true}, ExpectedErr: property.ErrNoSuchProperty},
 		{Name: "MissingConfig", IsValid: false, Cfgs: nil, ExpectedErr: nil},
 		{Name: "AssignedFilters", IsValid: true, Cfgs: map[string]interface{}{"filters": map[string]string{"thisfilter": "here"}}, ExpectedErr: nil},
 	}
 
 	for _, tc := range testCases {
-		rfg := NewMapFilterHandler()
+		rfg := NewCsvFilterHandler()
 
 		for name, prop := range tc.Cfgs {
 			err := rfg.Cfg.SetProperty(name, prop)

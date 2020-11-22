@@ -10,8 +10,8 @@ import (
 	"github.com/percybolmer/workflow/handlers/files"
 	"github.com/percybolmer/workflow/handlers/filters"
 	"github.com/percybolmer/workflow/handlers/parsers"
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/handlers/terminal"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/pubsub"
 )
 
@@ -71,7 +71,7 @@ func TestPubSub(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Now everything is setup, What sender sends will be printed by Printer
-	pay := payload.BasePayload{
+	pay := payloads.BasePayload{
 		Source:  "Test",
 		Payload: []byte(`Hello world`),
 	}
@@ -112,7 +112,7 @@ func TestRealLifeCase(t *testing.T) {
 	readFileProc := NewProcessor("readfile", "file_data")
 	writeFileProc := NewProcessor("writefile")
 	csvReader := NewProcessor("csvReader", "map_reduce")
-	MapFilter := NewProcessor("mapfilter", "print_stdout")
+	CsvFilter := NewProcessor("csvfilter", "print_stdout")
 
 	printerProc := NewProcessor("printer", "printer_output")
 	printer2Proc := NewProcessor("printer2")
@@ -122,7 +122,7 @@ func TestRealLifeCase(t *testing.T) {
 	printer2Proc.SetHandler(terminal.NewStdoutHandler())
 	readFileProc.SetHandler(files.NewReadFileHandler())
 	csvReader.SetHandler(parsers.NewParseCSVHandler())
-	MapFilter.SetHandler(filters.NewMapFilterHandler())
+	CsvFilter.SetHandler(filters.NewCsvFilterHandler())
 	// Setup configurations - still a bit clonky, but LoadConfig should be impl soon
 	cfg := listDirProc.GetConfiguration()
 	err := cfg.SetProperty("path", "testing")
@@ -138,12 +138,12 @@ func TestRealLifeCase(t *testing.T) {
 	writeFileProc.GetConfiguration().SetProperty("path", "testing/realexample")
 	writeFileProc.GetConfiguration().SetProperty("append", true)
 	writeFileProc.GetConfiguration().SetProperty("forward", false)
-	MapFilter.GetConfiguration().SetProperty("filters", map[string]string{"username": "percybolmer"})
-	MapFilter.GetConfiguration().SetProperty("strict", true)
+	CsvFilter.GetConfiguration().SetProperty("filters", map[string]string{"username": "percybolmer"})
+	CsvFilter.GetConfiguration().SetProperty("strict", true)
 	// Fix Relationships
 	readFileProc.Subscribe("found_files")
 	csvReader.Subscribe("file_data")
-	MapFilter.Subscribe("map_reduce")
+	CsvFilter.Subscribe("map_reduce")
 	printerProc.Subscribe("print_stdout")
 	printer2Proc.Subscribe("printer_output")
 	writeFileProc.Subscribe("printer_output")
@@ -158,7 +158,7 @@ func TestRealLifeCase(t *testing.T) {
 	if err := csvReader.Start(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	if err := MapFilter.Start(context.Background()); err != nil {
+	if err := CsvFilter.Start(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 	if err := printer2Proc.Start(context.Background()); err != nil {

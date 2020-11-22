@@ -6,11 +6,11 @@ import (
 	"bufio"
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
 
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -121,11 +121,10 @@ func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...s
 			return ErrHeaderMismatch
 		}
 		// Handle the CSV ROW as a Map of string, should this be interface?
-		newRow := &CsvRow{
-			Payload: make(map[string]string, len(values)),
-		}
-		for i, value := range values {
-			newRow.Payload[header[i]] = value
+		newRow := &payloads.CsvRow{
+			Payload:   line,
+			Header:    strings.Join(header, a.delimiter),
+			Delimiter: a.delimiter,
 		}
 		result = append(result, newRow)
 	}
@@ -212,47 +211,4 @@ func (a *ParseCSV) SetMetricProvider(p metric.Provider, prefix string) error {
 	})
 
 	return err
-}
-
-//CsvRow is a struct representing Csv data as a map
-//Its also a part of the Payload interface
-type CsvRow struct {
-	Payload map[string]string `json:"payload"`
-	Source  string            `json:"source"`
-	Error   error             `json:"error"`
-}
-
-// GetPayloadLength will return the payload X Bytes
-func (nf *CsvRow) GetPayloadLength() float64 {
-	data, err := json.Marshal(nf.Payload)
-	if err != nil {
-		nf.Error = err
-	}
-	return float64(len(data))
-}
-
-// GetPayload is used to return an actual value for the Flow
-func (nf *CsvRow) GetPayload() []byte {
-	data, err := json.Marshal(nf.Payload)
-	if err != nil {
-		nf.Error = err
-	}
-	return data
-}
-
-//SetPayload will change the value of the Flow
-func (nf *CsvRow) SetPayload(newpayload []byte) {
-	nf.Error = json.Unmarshal(newpayload, &nf.Payload)
-}
-
-//GetSource will return the source of the flow
-func (nf *CsvRow) GetSource() string {
-	return nf.Source
-}
-
-//SetSource will change the value of the configured source
-//The source value should represent something that makes it possible to traceback
-//Errors, so for files etc its the filename.
-func (nf *CsvRow) SetSource(s string) {
-	nf.Source = s
 }

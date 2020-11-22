@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
 
@@ -53,7 +53,7 @@ func TestWriteFileHandle(t *testing.T) {
 
 		act.ValidateConfiguration()
 
-		pay := payload.BasePayload{
+		pay := payloads.BasePayload{
 			Source:  "test",
 			Payload: tc.data,
 		}

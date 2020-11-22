@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -109,7 +110,7 @@ func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 		}
 	}
 	a.Unlock()
-	var payloads []payload.Payload
+	var outputPayloads []payload.Payload
 	for _, f := range files {
 		if f.IsDir() == false {
 			file := filepath.Base(f.Name())
@@ -120,7 +121,7 @@ func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 				filepath = fmt.Sprintf("%s/%s", a.path, file)
 			}
 			if _, ok := a.found[filepath]; !ok {
-				payloads = append(payloads, payload.BasePayload{
+				outputPayloads = append(outputPayloads, payloads.BasePayload{
 					Payload: []byte(filepath),
 					Source:  "ListDirectory",
 				})
@@ -128,7 +129,7 @@ func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 			}
 		}
 	}
-	return payloads, nil
+	return outputPayloads, nil
 }
 
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting

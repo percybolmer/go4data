@@ -69,12 +69,18 @@ func (p *Property) Bool() (bool, error) {
 
 // StringSplice is used to get the value as a stringslice
 func (p *Property) StringSplice() ([]string, error) {
-	var value []string
+	var value []interface{}
 	var ok bool
-	if value, ok = p.Value.([]string); !ok {
-		return nil, ErrWrongPropertyType
+	// THis is the same as with the MAP case, we cannot type assert into slice of strings.
+	// GOland doest know that the content is strings and wont work.
+	if value, ok = p.Value.([]interface{}); !ok {
+		return nil, fmt.Errorf("%s: %w", p.Name, ErrWrongPropertyType)
 	}
-	return value, nil
+	valueStr := make([]string, len(value))
+	for _, val := range value {
+		valueStr = append(valueStr, val.(string))
+	}
+	return valueStr, nil
 
 }
 
@@ -87,7 +93,12 @@ func (p *Property) StringMap() (map[string]string, error) {
 	valueStr := make(map[string]string, 0)
 	var ok bool
 	if value, ok = p.Value.(map[string]interface{}); !ok {
-		return nil, ErrWrongPropertyType
+
+		// Also try mstrmap
+		if valueStr, ok2 := p.Value.(map[string]string); ok2 {
+			return valueStr, nil
+		}
+		return nil, fmt.Errorf("%s: %w", p.Name, ErrWrongPropertyType)
 	}
 	for key, val := range value {
 		valueStr[key] = val.(string)
