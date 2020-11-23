@@ -50,7 +50,7 @@ func (a *{{.HandlerName}}) GetHandlerName() string {
 }
 
 // Handle is used to $INSERT DESCRIPTION HERE
-func (a *{{.HandlerName}}) Handle(ctx context.Context, input payload.Payload, topics...) error {
+func (a *{{.HandlerName}}) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
 	fmt.Println(input)
 	return nil
 }
