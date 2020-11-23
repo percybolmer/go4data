@@ -15,7 +15,7 @@ import (
 	"github.com/percybolmer/workflow/pubsub"
 
 	// Add shadow import to all known Handler categories?
-	_ "github.com/percybolmer/handlers/databases"
+	_ "github.com/percybolmer/workflow/handlers/databases"
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed
