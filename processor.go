@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
@@ -29,8 +28,7 @@ import (
 type Processor struct {
 	// ID is a unique identifier for each processor,
 	ID uint `json:"id" yaml:"id"`
-	// Name is a user configured Name for a processor that can be used relatd to an Processor easier than an ID, cannot be duplicate tho
-	// It will be changed to be duplicates later, but for now PrometheusMetrics crashes.
+	// Name is a user configured Name for a processor that can be used relatd to an Processor easier than an ID
 	Name string `json:"name" yaml:"name"`
 	// Running is a boolean indicator if the processor is currently Running
 	Running bool `json:"running" yaml:"running"`
@@ -43,9 +41,6 @@ type Processor struct {
 	subscriptions []*pubsub.Pipe
 	// Topics is the Topics to publish payload onto
 	Topics []string `json:"topics" yaml:"topics"`
-	// ExecutionInterval is how often to execute the interval, this only
-	// applies to Selfpublishing handler
-	ExecutionInterval time.Duration `json:"executioninterval" yaml:"executioninterval"`
 	// QueueSize is a integer of how many payloads are accepted on the Output channels to Subscribers
 	QueueSize int `json:"queuesize" yaml:"queuesize"`
 	// Metric is used to store metrics
@@ -58,8 +53,6 @@ type Processor struct {
 var (
 	//IDCounter is used to make sure no processors are generated with a ID that already exists
 	IDCounter uint = 1
-	// DefaultExecutionInterval is the default time between executions
-	DefaultExecutionInterval = 10 * time.Second
 	// DefaultQueueSize is a limit set to define how many payloads can be sent in queue
 	DefaultQueueSize = 1000
 
@@ -91,15 +84,14 @@ func NewID() uint {
 // to publish its payloads to
 func NewProcessor(name string, topics ...string) *Processor {
 	proc := &Processor{
-		ID:                NewID(),
-		Name:              name,
-		FailureHandler:    PrintFailure,
-		Handler:           nil,
-		subscriptions:     make([]*pubsub.Pipe, 0),
-		Topics:            make([]string, 0),
-		ExecutionInterval: DefaultExecutionInterval,
-		QueueSize:         DefaultQueueSize,
-		Metric:            metric.NewPrometheusProvider(),
+		ID:             NewID(),
+		Name:           name,
+		FailureHandler: PrintFailure,
+		Handler:        nil,
+		subscriptions:  make([]*pubsub.Pipe, 0),
+		Topics:         make([]string, 0),
+		QueueSize:      DefaultQueueSize,
+		Metric:         metric.NewPrometheusProvider(),
 	}
 	if len(topics) != 0 {
 		proc.Topics = append(proc.Topics, topics...)
@@ -156,11 +148,6 @@ func (p *Processor) Stop() error {
 	p.cancel()
 	p.Running = false
 	return nil
-}
-
-// SetExecutionInterval is used customize how often to trigger an SelfPublishing Handler
-func (p *Processor) SetExecutionInterval(interval time.Duration) {
-	p.ExecutionInterval = interval
 }
 
 // GetConfiguration is just an reacher for Handlers getcfg
@@ -259,13 +246,12 @@ func (p *Processor) ConvertToLoader() *LoaderProccessor {
 		subnames = append(subnames, sub.Topic)
 	}
 	return &LoaderProccessor{
-		ID:                p.ID,
-		ExecutionInterval: p.ExecutionInterval,
-		Name:              p.Name,
-		QueueSize:         p.QueueSize,
-		Running:           p.Running,
-		Topics:            p.Topics,
-		Subscriptions:     subnames,
+		ID:            p.ID,
+		Name:          p.Name,
+		QueueSize:     p.QueueSize,
+		Running:       p.Running,
+		Topics:        p.Topics,
+		Subscriptions: subnames,
 		Handler: LoaderHandler{
 			Cfg:  p.Handler.GetConfiguration(),
 			Name: p.Handler.GetHandlerName(),

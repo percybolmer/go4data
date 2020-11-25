@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
-	"time"
 
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/register"
@@ -55,9 +54,6 @@ type LoaderProccessor struct {
 	Topics []string `json:"topics" yaml:"topics"`
 	// Subscriptions is the Topics to subscribe to
 	Subscriptions []string `json:"subscriptions" yaml:"subscriptions"`
-	// ExecutionInterval is how often to execute the interval, this only
-	// applies to Selfpublishing Handlers
-	ExecutionInterval time.Duration `json:"executioninterval" yaml:"executioninterval"`
 	// QueueSize is a integer of how many payloads are accepted on the Output channels to Subscribers
 	QueueSize int `json:"queuesize" yaml:"queuesize"`
 	// LoaderHandler is a Handler that can be loaded/saved
@@ -75,7 +71,6 @@ type LoaderHandler struct {
 func (la *LoaderProccessor) ConvertToProcessor() (*Processor, error) {
 	// Load all Processor stuff, Topics etc etc
 	p := NewProcessor(la.Name, la.Topics...)
-	p.SetExecutionInterval(la.ExecutionInterval)
 	p.QueueSize = la.QueueSize
 	// Get NewHandler from Register
 	handler, err := register.GetHandler(la.Handler.Name)
