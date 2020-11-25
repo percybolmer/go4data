@@ -129,9 +129,8 @@ func TestFilterHandle(t *testing.T) {
 
 func TestFilterValidateConfiguration(t *testing.T) {
 	// add All 3 Properties and try Validating and check that filters load corr
-
 	fh := NewFilterHandler()
-	fh.SetMetricProvider(metric.NewPrometheusProvider(), "filterhandler")
+	fh.SetMetricProvider(metric.NewPrometheusProvider(), "filterhandlerValidate")
 
 	filterMap := make(map[string][]string, 0)
 	filterMap["userdata"] = []string{"username:^[a-zA-Z0-9]{0,20}"}
@@ -145,7 +144,7 @@ func TestFilterValidateConfiguration(t *testing.T) {
 	}
 
 	if valid {
-		if len(fh.filters) != 2 {
+		if len(fh.filters) != 3 {
 			t.Fatal("Wrong length type for filter group")
 		}
 	}
@@ -164,7 +163,7 @@ func TestLoadFilterDirectory(t *testing.T) {
 
 	testCases := []testcase{
 		{Name: "EmptyPath", Path: "", ExpectedErr: payload.ErrEmptyFilterDirectory},
-		{Name: "RealPath", Path: "testing", ExpectedErr: nil, GroupLength: 1, GroupName: "userinformation", Filters: 1},
+		{Name: "RealPath", Path: "testing", ExpectedErr: nil, GroupLength: 2, GroupName: "userinformation", Filters: 1},
 	}
 
 	for _, tc := range testCases {

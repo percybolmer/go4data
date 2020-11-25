@@ -1,19 +1,13 @@
 package network
 
 import (
-	"context"
 	"errors"
-	"log"
 	"testing"
-	"time"
 
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
 )
 
-func TestNetworkInterfaceHandle(t *testing.T) {
+/*func TestNetworkInterfaceHandle(t *testing.T) {
 	rfg := NewNetworkInterfaceHandler()
 
 	rfg.SetMetricProvider(metric.NewPrometheusProvider(), "test_sniff")
@@ -64,7 +58,7 @@ func TestNetworkInterfaceHandle(t *testing.T) {
 	}
 
 }
-
+*/
 func TestNetworkInterfaceValidateConfiguration(t *testing.T) {
 	type testCase struct {
 		Name        string
