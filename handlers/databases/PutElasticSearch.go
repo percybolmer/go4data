@@ -6,13 +6,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/olivere/elastic"
+	"github.com/olivere/elastic/config"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
-
-	"github.com/percybolmer/elasticlogger"
 )
 
 // PutElasticSearch is used to push payloads onto a elasticsearch topic
@@ -28,8 +28,10 @@ type PutElasticSearch struct {
 	// the ip of the elastic node
 	ip string
 	// the port of the elastic
-	port   int
-	system string
+	port int
+	// elastictype is the type that is set for the input to elasticsearch, used for mapping purpose
+	elastictype string
+
 	//errChan is the channel to output errors.
 	errChan chan error
 	// metrics is a metric.Provider that allows export of metrics
@@ -37,7 +39,7 @@ type PutElasticSearch struct {
 	// metricPrefix is a unique string to attach to metrics
 	metricPrefix string
 	// eslogger is used to log to escluster
-	eslogger *elasticlogger.ElasticLog
+	eslogger *elastic.Client
 }
 
 func init() {
@@ -56,6 +58,7 @@ func NewPutElasticSearchHandler() *PutElasticSearch {
 	act.Cfg.AddProperty("index", "the index to push to", true)
 	act.Cfg.AddProperty("ip", "the ip of the elasticserver to connect", true)
 	act.Cfg.AddProperty("port", "the port used by the server", true)
+	act.Cfg.AddProperty("type", "the elastic type to use, has to be unique to avoid mapping collisions", true)
 	return act
 }
 
@@ -64,10 +67,14 @@ func (a *PutElasticSearch) GetHandlerName() string {
 	return a.Name
 }
 
-// Handle is used to send the payload []byte to an index as a JSON
+// Handle is used to send the payload []byte to an index as a JSON blobb
 func (a *PutElasticSearch) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
 	a.metrics.IncrementMetric(fmt.Sprintf("%s_payloads_in", a.metricPrefix), 1)
-	_, err := a.eslogger.Write(input.GetPayload())
+
+	_, err := a.eslogger.Index().Index(a.index).
+		Type(a.elastictype).
+		BodyJson(input.GetPayload()).
+		Do(context.Background())
 	if err != nil {
 		return err
 	}
@@ -92,10 +99,16 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 		return false, []string{"cannot have an empty index"}
 	}
 
+	typeProp := a.Cfg.GetProperty("type")
+	elastictype := typeProp.String()
+	if elastictype == "" {
+		return false, []string{"cannot use empty type"}
+	}
+	a.elastictype = elastictype
 	ipProp := a.Cfg.GetProperty("ip")
 	ip := ipProp.String()
 
-	portProp := a.Cfg.GetProperty(("port"))
+	portProp := a.Cfg.GetProperty("port")
 	port, err := portProp.Int()
 	if err != nil {
 		return false, []string{err.Error()}
@@ -105,11 +118,26 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 	a.port = port
 	a.index = index
 
-	es, err := elasticlogger.NewElasticLogger(ip, int16(port), index)
+	esclient, err := elastic.NewClientFromConfig(&config.Config{
+		Index: index,
+		URL:   fmt.Sprintf("http://%s:%d", ip, port),
+	})
 	if err != nil {
 		return false, []string{err.Error()}
 	}
-	a.eslogger = es
+	a.eslogger = esclient
+
+	exists, err := esclient.IndexExists(index).Do(context.Background())
+	if err != nil {
+		return false, []string{err.Error()}
+	}
+	if !exists {
+		_, err := esclient.CreateIndex(index).Do(context.Background())
+		if err != nil {
+			return false, []string{err.Error()}
+		}
+	}
+
 	return true, nil
 }
 

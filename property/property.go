@@ -70,10 +70,16 @@ func (p *Property) Bool() (bool, error) {
 // StringSplice is used to get the value as a stringslice
 func (p *Property) StringSplice() ([]string, error) {
 	var value []interface{}
+
 	var ok bool
 	// THis is the same as with the MAP case, we cannot type assert into slice of strings.
 	// GOland doest know that the content is strings and wont work.
 	if value, ok = p.Value.([]interface{}); !ok {
+
+		// Also try with regular slice instead of interface
+		if valueSplice, ok2 := p.Value.([]string); ok2 {
+			return valueSplice, nil
+		}
 		return nil, fmt.Errorf("%s: %w", p.Name, ErrWrongPropertyType)
 	}
 	valueStr := make([]string, len(value))
@@ -104,4 +110,16 @@ func (p *Property) StringMap() (map[string]string, error) {
 		valueStr[key] = val.(string)
 	}
 	return valueStr, nil
+}
+
+// MapWithSlice will return a Map that holds a slice of strings
+func (p *Property) MapWithSlice() (map[string][]string, error) {
+	var value map[string][]string
+
+	value, ok := p.Value.(map[string][]string)
+	if !ok {
+		return nil, ErrWrongPropertyType
+	}
+
+	return value, nil
 }

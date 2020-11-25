@@ -1,4 +1,4 @@
-package payloads
+package payload
 
 import (
 	"testing"

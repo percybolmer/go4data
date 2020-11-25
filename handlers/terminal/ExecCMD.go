@@ -152,9 +152,9 @@ func (a *ExecCMD) ValidateConfiguration() (bool, []string) {
 	// Check if Cfgs are there as needed
 	commandProp := a.Cfg.GetProperty("command")
 	argumentsProp := a.Cfg.GetProperty("arguments")
-
-	appendProp := a.Cfg.GetProperty("append_old_payload")
 	delimiterProp := a.Cfg.GetProperty("append_delimiter")
+	appendProp := a.Cfg.GetProperty("append_old_payload")
+
 	if commandProp.Value == nil {
 		return false, []string{"Missing command property"}
 	}
@@ -162,13 +162,17 @@ func (a *ExecCMD) ValidateConfiguration() (bool, []string) {
 	command := commandProp.String()
 	a.command = command
 
-	appendBool, err := appendProp.Bool()
-	if err != nil {
-		return false, []string{err.Error()}
+	if appendProp != nil && appendProp.Value != nil {
+		appendBool, err := appendProp.Bool()
+		if err != nil {
+			return false, []string{err.Error()}
+		}
+		a.appendOldPayload = appendBool
 	}
-	a.appendOldPayload = appendBool
-	delimiter := delimiterProp.String()
-	a.appendDelimiter = delimiter
+	if delimiterProp != nil && delimiterProp.Value != nil {
+		delimiter := delimiterProp.String()
+		a.appendDelimiter = delimiter
+	}
 	if argumentsProp.Value != nil {
 		splice, err := argumentsProp.StringSplice()
 		if err != nil {

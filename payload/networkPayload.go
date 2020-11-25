@@ -1,10 +1,11 @@
-package payloads
+package payload
 
 import (
 	"errors"
 
 	"github.com/google/gopacket"
 	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
 )
 
 var (
@@ -15,9 +16,10 @@ var (
 //NetworkPayload is a struct representing pcap.PacketSource as NetworkPayload
 //Its also a part of the Payload interface
 type NetworkPayload struct {
-	Payload gopacket.Packet `json:"payload"`
-	Source  string          `json:"source"`
-	Error   error           `json:"error"`
+	Payload  gopacket.Packet         `json:"payload"`
+	Source   string                  `json:"source"`
+	Error    error                   `json:"error"`
+	Metadata *property.Configuration `json:"-"`
 }
 
 // NewNetworkPayload is used to convert a regular payload into a network payload
@@ -53,4 +55,9 @@ func (nf *NetworkPayload) GetSource() string {
 //Errors, so for files etc its the filename.
 func (nf *NetworkPayload) SetSource(s string) {
 	nf.Source = s
+}
+
+// GetMetaData returns a configuration object that can be used to store metadata
+func (nf *NetworkPayload) GetMetaData() *property.Configuration {
+	return nf.Metadata
 }

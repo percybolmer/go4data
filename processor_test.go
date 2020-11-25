@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/percybolmer/workflow/handlers/files"
-	"github.com/percybolmer/workflow/handlers/filters"
 	"github.com/percybolmer/workflow/handlers/parsers"
 	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/handlers/terminal"
@@ -122,7 +121,7 @@ func TestRealLifeCase(t *testing.T) {
 	printer2Proc.SetHandler(terminal.NewStdoutHandler())
 	readFileProc.SetHandler(files.NewReadFileHandler())
 	csvReader.SetHandler(parsers.NewParseCSVHandler())
-	CsvFilter.SetHandler(filters.NewCsvFilterHandler())
+	//CsvFilter.SetHandler(filters.NewCsvFilterHandler())
 	// Setup configurations - still a bit clonky, but LoadConfig should be impl soon
 	cfg := listDirProc.GetConfiguration()
 	err := cfg.SetProperty("path", "testing")

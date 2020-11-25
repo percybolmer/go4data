@@ -2,7 +2,7 @@ package property
 
 import "sync"
 
-// Configuration is used to store Cfg for Actions
+// Configuration is used to store Cfg for Actions and metadata for Payloads
 type Configuration struct {
 	Properties []*Property `json:"properties" yaml:"properties"`
 	sync.Mutex `json:"-" yaml:"-"`
@@ -45,7 +45,7 @@ func (a *Configuration) AddProperty(name, description string, requierd bool) {
 	a.Unlock()
 }
 
-// SetProperty will extract properties from the map, it will also create the map if its nil to avoid any nil pointers
+// SetProperty will extract properties from the map,
 func (a *Configuration) SetProperty(name string, value interface{}) error {
 	prop := a.GetProperty(name)
 	if prop == nil {

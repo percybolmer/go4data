@@ -4,6 +4,8 @@
 // as long as it fulfills our interface
 package payload
 
+import "github.com/percybolmer/workflow/property"
+
 // Payload is a interface that will allows different Processors to send data between them in a unified fashion
 type Payload interface {
 	// GetPayloadLength returns the payload length in flota64
@@ -18,4 +20,6 @@ type Payload interface {
 	GetSource() string
 	// SetSource should change the value of the source
 	SetSource(string)
+	// GetMetaData should return a configuration object that contains metadata about the payload
+	GetMetaData() *property.Configuration
 }

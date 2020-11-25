@@ -1,9 +1,12 @@
-package payloads
+package payload
+
+import "github.com/percybolmer/workflow/property"
 
 // BasePayload is a simple struct for processor to use if they dont have a custom payload
 type BasePayload struct {
-	Payload []byte `json:"payload"`
-	Source  string `json:"-"`
+	Payload  []byte                  `json:"payload"`
+	Source   string                  `json:"-"`
+	Metadata *property.Configuration `json:"-"`
 }
 
 // GetPayloadLength is used to get the number of bytes in a float
@@ -29,4 +32,9 @@ func (bp BasePayload) GetSource() string {
 // SetSource will change the value of the payload source
 func (bp BasePayload) SetSource(s string) {
 	bp.Source = s
+}
+
+// GetMetaData returns a configuration object that can be used to store metadata
+func (bp BasePayload) GetMetaData() *property.Configuration {
+	return bp.Metadata
 }
