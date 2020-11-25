@@ -1,13 +1,6 @@
 package register
 
-import (
-	"errors"
-	"testing"
-
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/handlers/terminal"
-)
-
+/*
 func TestRegisterHandler(t *testing.T) {
 	testf := &terminal.StdoutHandler{}
 
@@ -49,3 +42,4 @@ func TestGetHandler(t *testing.T) {
 		t.Fatal("Handler should not be nil")
 	}
 }
+*/
