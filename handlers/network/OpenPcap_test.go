@@ -4,15 +4,15 @@ import (
 	"context"
 	"testing"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
+	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/pubsub"
 )
 
 func TestOpenPcapHandle(t *testing.T) {
 	pcapHandler := NewOpenPcapHandler()
 
-	testPayload := payloads.BasePayload{
+	testPayload := payload.BasePayload{
 		Source:  "test",
 		Payload: []byte(`testing/tcpSpoof.pcap`),
 	}
@@ -28,7 +28,7 @@ func TestOpenPcapHandle(t *testing.T) {
 		t.Fatal(err)
 	}
 	for pay := range pipe.Flow {
-		netpay, err := payloads.NewNetworkPayload(pay)
+		netpay, err := payload.NewNetworkPayload(pay)
 		if err != nil {
 			t.Fatal(err)
 		}

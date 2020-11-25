@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/percybolmer/workflow/metric"
+	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/workflow/property"
 )
 
 type FilterPayload struct {
@@ -13,7 +15,7 @@ type FilterPayload struct {
 	Email    string
 }
 
-func (fp *FilterPayload) ApplyFilter(f *Filter) bool {
+func (fp *FilterPayload) ApplyFilter(f *payload.Filter) bool {
 	switch f.Key {
 	case "email":
 		return f.Regexp.MatchString(fp.Email)
@@ -35,7 +37,7 @@ func TestEmailRegexp(t *testing.T) {
 func TestParseFilterLine(t *testing.T) {
 	line := "userinformation:^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 
-	f, err := parseFilterLine(line)
+	f, err := payload.ParseFilterLine(line)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,8 +47,8 @@ func TestParseFilterLine(t *testing.T) {
 	}
 
 	badLine := "blablipopp"
-	_, err = parseFilterLine(badLine)
-	if !errors.Is(err, ErrBadFilterFormat) {
+	_, err = payload.ParseFilterLine(badLine)
+	if !errors.Is(err, payload.ErrBadFilterFormat) {
 		t.Fatal("Should have triggerd abad filter format")
 	}
 }
@@ -74,14 +76,55 @@ func TestFilterHandle(t *testing.T) {
 		Email:    "",
 	}
 
-	isEmailMatch := fh.isMatch(&emailPayload)
-	isNoEmailMatch := fh.isMatch(&noEmailPayload)
+	isEmailMatch := fh.isMatch(&emailPayload, nil)
+	isNoEmailMatch := fh.isMatch(&noEmailPayload, nil)
 
 	if !isEmailMatch {
 		t.Fatal("IsEmailMatch is not true, should be true")
 	} else if isNoEmailMatch {
 		t.Fatal("IsNoEmailMatch is not false, should be false since strict mode applies")
 	}
+
+	// Test for MetaData so that its added correctly, also test so metadata isnt overwritten
+	metacontainer := property.NewConfiguration()
+	metacontainer.AddProperty("filter_group_hits", "this property contains all the filter groups that has hit, also the certain filters that hit", false)
+
+	isEmailMatch = fh.isMatch(&emailPayload, metacontainer)
+	if !isEmailMatch {
+		t.Fatal("isEmailMatch should be true, even with metacontainer")
+	}
+
+	filterhits := metacontainer.GetProperty("filter_group_hits").Value
+
+	if hits, ok := filterhits.(map[string][]*payload.Filter); ok {
+		if len(hits) != 1 {
+			t.Fatal("Wrong length of metadata")
+		}
+	}
+
+	findMePayload := FilterPayload{
+		Username: "FindMe",
+		Email:    "test@testerson.com",
+	}
+
+	// Lets reuse the metacontainer, this is not the usecase in real examples, each payload will have its own, but we want to spoof this
+	findMeMatch := fh.isMatch(&findMePayload, metacontainer)
+	if !findMeMatch {
+		t.Fatal("findMeMatch should be a match")
+	}
+	filterhits = metacontainer.GetProperty("filter_group_hits").Value
+
+	if hits, ok := filterhits.(map[string][]*payload.Filter); ok {
+		// We should now see 2 HitGroups, certainuser and userinformation
+		// userinformation should also have 2 hits
+		if len(hits) != 2 {
+			t.Fatal("Wrong length of metadata")
+		}
+		if len(hits["userinformation"]) != 2 {
+			t.Fatal("Wrong length of userinfromation from findme")
+		}
+	}
+
 }
 
 func TestFilterValidateConfiguration(t *testing.T) {
@@ -120,12 +163,12 @@ func TestLoadFilterDirectory(t *testing.T) {
 	}
 
 	testCases := []testcase{
-		{Name: "EmptyPath", Path: "", ExpectedErr: ErrEmptyFilterDirectory},
+		{Name: "EmptyPath", Path: "", ExpectedErr: payload.ErrEmptyFilterDirectory},
 		{Name: "RealPath", Path: "testing", ExpectedErr: nil, GroupLength: 1, GroupName: "userinformation", Filters: 1},
 	}
 
 	for _, tc := range testCases {
-		groups, err := loadFilterDirectory(tc.Path)
+		groups, err := payload.LoadFilterDirectory(tc.Path)
 
 		if !errors.Is(err, tc.ExpectedErr) {
 			t.Fatalf("%s: %s", tc.Name, err.Error())

@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -77,7 +76,7 @@ func (a *ReadFile) Handle(ctx context.Context, input payload.Payload, topics ...
 		return err
 	}
 	a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
-	errs := pubsub.PublishTopics(topics, payloads.BasePayload{
+	errs := pubsub.PublishTopics(topics, payload.BasePayload{
 		Payload: data,
 		Source:  "ReadFile",
 	})

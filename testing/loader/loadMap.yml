@@ -1,5 +1,5 @@
 - id: 4
-  name: MapFilter
+  name: filter
   running: false
   topics:
     - filterd_data
@@ -11,12 +11,13 @@
     configs:
       properties:
         - name: strict
-          value: true
+          value: [userinformation]
           required: true
           valid: true
         - name: filters
           value: 
-            email: "test@hotmail.com"
+            userinformation:
+              - email:percy@hotmail.com
           required: true
           valid: true
-    handler_name: MapFilter
+    handler_name: Filter

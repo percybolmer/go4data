@@ -11,7 +11,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -121,7 +120,7 @@ func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 				filepath = fmt.Sprintf("%s/%s", a.path, file)
 			}
 			if _, ok := a.found[filepath]; !ok {
-				outputPayloads = append(outputPayloads, payloads.BasePayload{
+				outputPayloads = append(outputPayloads, payload.BasePayload{
 					Payload: []byte(filepath),
 					Source:  "ListDirectory",
 				})

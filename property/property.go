@@ -114,10 +114,23 @@ func (p *Property) StringMap() (map[string]string, error) {
 
 // MapWithSlice will return a Map that holds a slice of strings
 func (p *Property) MapWithSlice() (map[string][]string, error) {
-	var value map[string][]string
+	value := make(map[string][]string, 0)
 
 	value, ok := p.Value.(map[string][]string)
 	if !ok {
+		value := make(map[string][]string, 0)
+		// Now try interface conversion instead -- this is a use case needed when handeling YAML marshall
+		intvalue, ok2 := p.Value.(map[string]interface{})
+		if ok2 {
+			for group, mapvalue := range intvalue {
+				slice := mapvalue.([]interface{})
+				for _, str := range slice {
+					value[group] = append(value[group], str.(string))
+				}
+			}
+			return value, nil
+
+		}
 		return nil, ErrWrongPropertyType
 	}
 

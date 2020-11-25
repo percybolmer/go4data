@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -82,7 +81,7 @@ func (a *OpenPcap) Handle(ctx context.Context, input payload.Payload, topics ...
 	var outgoing []payload.Payload
 
 	for packet := range packets.Packets() {
-		outgoing = append(outgoing, &payloads.NetworkPayload{
+		outgoing = append(outgoing, &payload.NetworkPayload{
 			Source:  "OpenPcap",
 			Payload: packet,
 		})

@@ -1,4 +1,4 @@
-package filters
+package payload
 
 import (
 	"bufio"
@@ -35,8 +35,8 @@ type Filter struct {
 	GroupName string
 }
 
-// loadFilterDirectory is used to load the filter direcotry into the handler
-func loadFilterDirectory(path string) (map[string][]*Filter, error) {
+// LoadFilterDirectory is used to load the filter direcotry into the handler
+func LoadFilterDirectory(path string) (map[string][]*Filter, error) {
 	if path == "" {
 		return nil, ErrEmptyFilterDirectory
 	}
@@ -68,7 +68,7 @@ func loadFilterDirectory(path string) (map[string][]*Filter, error) {
 				scanner := bufio.NewScanner(file)
 				for scanner.Scan() {
 					line := scanner.Text()
-					newfilt, err := parseFilterLine(line)
+					newfilt, err := ParseFilterLine(line)
 					if err != nil {
 						return nil, err
 					}
@@ -82,8 +82,8 @@ func loadFilterDirectory(path string) (map[string][]*Filter, error) {
 	return filterGroups, nil
 }
 
-// parseFilterLine is used to parse out a filter line
-func parseFilterLine(line string) (*Filter, error) {
+// ParseFilterLine is used to parse out a filter line
+func ParseFilterLine(line string) (*Filter, error) {
 	splits := strings.SplitN(line, ":", 2)
 	if len(splits) != 2 {
 		// This can only trigger when there is less than one : in the line,

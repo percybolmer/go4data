@@ -25,7 +25,7 @@ type FilterHandler struct {
 	Cfg  *property.Configuration `json:"configs" yaml:"configs"`
 	Name string                  `json:"name" yaml:"handler_name"`
 
-	filters      map[string][]*Filter
+	filters      map[string][]*payload.Filter
 	strictgroups []string
 
 	subscriptionless bool
@@ -50,7 +50,7 @@ func NewFilterHandler() *FilterHandler {
 		},
 		Name:    "Filter",
 		errChan: make(chan error, 1000),
-		filters: make(map[string][]*Filter, 0),
+		filters: make(map[string][]*payload.Filter, 0),
 	}
 	act.Cfg.AddProperty("strict", "Strict is a array of groupnames that will apply StrictMode, with strictmode all Filters in that group has to match", false)
 	act.Cfg.AddProperty("filters", "An Key:value setting, will check if incomming Payloads are filterable and if the Value exists in the keyslot", false)
@@ -71,7 +71,13 @@ func (a *FilterHandler) Handle(ctx context.Context, input payload.Payload, topic
 		return fmt.Errorf("%w:%v", ErrNotFilterablePayload, err)
 	}
 	metacontainer := input.GetMetaData()
-	if a.isMatch(m) {
+	if metacontainer != nil {
+		prop := metacontainer.GetProperty("filter_group_hits")
+		if prop == nil {
+			metacontainer.AddProperty("filter_group_hits", "this property contains all the filter groups that has hit, also the certain filters that hit", false)
+		}
+	}
+	if a.isMatch(m, metacontainer) {
 		a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
 		errs := pubsub.PublishTopics(topics, input)
 		if errs != nil {
@@ -87,11 +93,24 @@ func (a *FilterHandler) Handle(ctx context.Context, input payload.Payload, topic
 }
 
 // isMatch is used to control if current filters matches input
-func (a *FilterHandler) isMatch(input Filterable) bool {
+func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configuration) bool {
 	// Itterate all Filter groups
+	hits := make(map[string][]*payload.Filter, 0)
+	if meta != nil {
+		hitgroups := meta.GetProperty("filter_group_hits")
+		if hitgroups != nil {
+			// See if its set in the old payload, we dont want to overwrite
+			if hitgroups.Value != nil {
+				// Reflect it back into map[string][]Filters
+				if oldhits, ok := hitgroups.Value.(map[string][]*payload.Filter); ok {
+					hits = oldhits
+				}
+			}
+		}
+	}
 	for group, filters := range a.filters {
 		totalHits := 0
-
+		filterHits := make([]*payload.Filter, 0)
 		// See if its a strict mode Group
 		var strictMode bool
 		for _, strictGroup := range a.strictgroups {
@@ -104,6 +123,7 @@ func (a *FilterHandler) isMatch(input Filterable) bool {
 			hit := input.ApplyFilter(filter)
 			if hit {
 				// Add metadata to the payload about what Groups and Keywords that hit
+				filterHits = append(filterHits, filter)
 				totalHits++
 			}
 
@@ -111,24 +131,31 @@ func (a *FilterHandler) isMatch(input Filterable) bool {
 		// See if filter group Matched all if its part of strict Groups
 		if strictMode {
 			if totalHits == len(filters) {
-				return true
+				hits[group] = append(hits[group], filterHits...)
 			}
-			return false
+			continue
 		}
 		if totalHits > 0 {
-			return true
+			hits[group] = append(hits[group], filterHits...)
 		}
 
 	}
+	if len(hits) != 0 {
+		if meta != nil {
+			meta.SetProperty("filter_group_hits", hits)
+		}
 
-	return true
+		return true
+	}
+	return false
+
 }
 
 // isPayloadMap makes sure that the input payload is of the correct type
-func (a *FilterHandler) isPayloadFilterable(p payload.Payload) (Filterable, error) {
+func (a *FilterHandler) isPayloadFilterable(p payload.Payload) (payload.Filterable, error) {
 	// Cast payload to Filterable if possible
 	var i interface{} = p
-	conv, ok := i.(Filterable)
+	conv, ok := i.(payload.Filterable)
 	if ok {
 		return conv, nil
 	}
@@ -143,13 +170,13 @@ func (a *FilterHandler) ValidateConfiguration() (bool, []string) {
 	directoryProp := a.Cfg.GetProperty("filterDirectory")
 	var missing []string
 	if (filterProp == nil && filterProp.Value == nil) && (directoryProp == nil && directoryProp.Value == nil) {
-		missing = append(missing, ErrFilterOrDirectory.Error())
+		missing = append(missing, payload.ErrFilterOrDirectory.Error())
 		return false, missing
 	}
 
 	if directoryProp != nil && directoryProp.Value != nil {
 		// Load Directory of Filters
-		filters, err := loadFilterDirectory(directoryProp.String())
+		filters, err := payload.LoadFilterDirectory(directoryProp.String())
 		if err != nil {
 			return false, []string{err.Error()}
 		}
@@ -163,7 +190,7 @@ func (a *FilterHandler) ValidateConfiguration() (bool, []string) {
 		// FilterMap should be GroupName: "key:value"
 		for groupName, values := range filterMap {
 			for _, value := range values {
-				filter, err := parseFilterLine(value)
+				filter, err := payload.ParseFilterLine(value)
 				if err != nil {
 					return false, []string{err.Error()}
 				}

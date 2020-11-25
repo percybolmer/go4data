@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -92,6 +91,7 @@ func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...s
 	var index int
 
 	header := make([]string, 0)
+	headerRow := ""
 	result := make([]payload.Payload, 0)
 
 	for scanner.Scan() {
@@ -109,9 +109,9 @@ func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...s
 		}
 
 		// Handle Unique Cases of header rows longer than 1 line
-
 		if index < (a.skiprows + a.headerlength) {
 			header = append(header, values...)
+			headerRow = strings.Join(header, a.delimiter)
 			index++
 			continue
 		}
@@ -121,11 +121,7 @@ func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...s
 			return ErrHeaderMismatch
 		}
 		// Handle the CSV ROW as a Map of string, should this be interface?
-		newRow := &payloads.CsvRow{
-			Payload:   line,
-			Header:    strings.Join(header, a.delimiter),
-			Delimiter: a.delimiter,
-		}
+		newRow := payload.NewCsvPayload(headerRow, line, a.delimiter)
 		result = append(result, newRow)
 	}
 

@@ -8,6 +8,13 @@ type Configuration struct {
 	sync.Mutex `json:"-" yaml:"-"`
 }
 
+// NewConfiguration will initialize a configuration properly to avoid nil pointers
+func NewConfiguration() *Configuration {
+	return &Configuration{
+		Properties: make([]*Property, 0),
+	}
+}
+
 // GetProperty is used to extract an property from the Configuration
 func (a *Configuration) GetProperty(name string) *Property {
 	for _, prop := range a.Properties {

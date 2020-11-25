@@ -4,13 +4,12 @@ package payload
 import (
 	"strings"
 
-	"github.com/percybolmer/workflow/handlers/filters"
 	"github.com/percybolmer/workflow/property"
 )
 
-//CsvRow is a struct representing Csv data as a map
+//CsvPayload is a struct representing Csv data as a map
 //Its also a part of the Payload interface
-type CsvRow struct {
+type CsvPayload struct {
 	Payload   string                  `json:"payload"`
 	Header    string                  `json:"header"`
 	Delimiter string                  `json:"delimiter"`
@@ -19,8 +18,18 @@ type CsvRow struct {
 	Metadata  *property.Configuration `json:"metadata"`
 }
 
+// NewCsvPayload is used to Create a new Payload
+func NewCsvPayload(header, payload, delimiter string) *CsvPayload {
+	return &CsvPayload{
+		Header:    header,
+		Payload:   payload,
+		Delimiter: delimiter,
+		Metadata:  property.NewConfiguration(),
+	}
+}
+
 // ApplyFilter is used to make this part of the Filterable interface
-func (nf *CsvRow) ApplyFilter(f *filters.Filter) bool {
+func (nf *CsvPayload) ApplyFilter(f *Filter) bool {
 	header := strings.Split(nf.Header, nf.Delimiter)
 	values := strings.Split(nf.Payload, nf.Delimiter)
 
@@ -37,34 +46,34 @@ func (nf *CsvRow) ApplyFilter(f *filters.Filter) bool {
 }
 
 // GetPayloadLength will return the payload X Bytes
-func (nf *CsvRow) GetPayloadLength() float64 {
+func (nf *CsvPayload) GetPayloadLength() float64 {
 	return float64(len(nf.Payload))
 }
 
 // GetPayload is used to return an actual value for the Flow
 // Csv hedaer will be appended with a newline aswell
-func (nf *CsvRow) GetPayload() []byte {
+func (nf *CsvPayload) GetPayload() []byte {
 	return []byte(nf.Header + "\n" + nf.Payload)
 }
 
 //SetPayload will change the value of the Flow
-func (nf *CsvRow) SetPayload(newpayload []byte) {
+func (nf *CsvPayload) SetPayload(newpayload []byte) {
 	nf.Payload = string(newpayload)
 }
 
 //GetSource will return the source of the flow
-func (nf *CsvRow) GetSource() string {
+func (nf *CsvPayload) GetSource() string {
 	return nf.Source
 }
 
 //SetSource will change the value of the configured source
 //The source value should represent something that makes it possible to traceback
 //Errors, so for files etc its the filename.
-func (nf *CsvRow) SetSource(s string) {
+func (nf *CsvPayload) SetSource(s string) {
 	nf.Source = s
 }
 
 // GetMetaData returns a configuration object that can be used to store metadata
-func (nf *CsvRow) GetMetaData() *property.Configuration {
+func (nf *CsvPayload) GetMetaData() *property.Configuration {
 	return nf.Metadata
 }

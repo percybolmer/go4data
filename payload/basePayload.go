@@ -9,6 +9,15 @@ type BasePayload struct {
 	Metadata *property.Configuration `json:"-"`
 }
 
+// NewBasePayload will spawn a basic default payload
+func NewBasePayload(payload []byte, source string) *BasePayload {
+	return &BasePayload{
+		Payload:  payload,
+		Source:   source,
+		Metadata: property.NewConfiguration(),
+	}
+}
+
 // GetPayloadLength is used to get the number of bytes in a float
 func (bp BasePayload) GetPayloadLength() float64 {
 	return float64(len(bp.Payload))

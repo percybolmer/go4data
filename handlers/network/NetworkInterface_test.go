@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
+	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
 )
@@ -50,7 +50,7 @@ func TestNetworkInterfaceHandle(t *testing.T) {
 		if pay != nil {
 			break
 		}
-		netpay, err := payloads.NewNetworkPayload(pay)
+		netpay, err := payload.NewNetworkPayload(pay)
 		if err != nil {
 			t.Fatal(err)
 		}

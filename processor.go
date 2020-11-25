@@ -16,6 +16,11 @@ import (
 
 	// Add shadow import to all known Handler categories?
 	_ "github.com/percybolmer/workflow/handlers/databases"
+	_ "github.com/percybolmer/workflow/handlers/files"
+	_ "github.com/percybolmer/workflow/handlers/filters"
+	_ "github.com/percybolmer/workflow/handlers/network"
+	_ "github.com/percybolmer/workflow/handlers/parsers"
+	_ "github.com/percybolmer/workflow/handlers/terminal"
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed

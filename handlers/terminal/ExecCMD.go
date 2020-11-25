@@ -10,7 +10,6 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/percybolmer/workflow/handlers/payloads"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -128,17 +127,17 @@ func (a *ExecCMD) Exec(input payload.Payload) (payload.Payload, error) {
 	if errStr != "" {
 		return nil, errors.New(errStr)
 	}
-	var newPayload *payloads.BasePayload
+	var newPayload *payload.BasePayload
 	if a.appendOldPayload {
 		data := input.GetPayload()
 		data = append(data, []byte(a.appendDelimiter)...)
 		data = append(data, stdout.Bytes()...)
-		newPayload = &payloads.BasePayload{
+		newPayload = &payload.BasePayload{
 			Payload: data,
 			Source:  fullCmd.String(),
 		}
 	} else {
-		newPayload = &payloads.BasePayload{
+		newPayload = &payload.BasePayload{
 			Payload: stdout.Bytes(),
 			Source:  fullCmd.String(),
 		}

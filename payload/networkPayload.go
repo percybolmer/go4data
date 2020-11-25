@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/google/gopacket"
-	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 )
 
@@ -23,7 +22,7 @@ type NetworkPayload struct {
 }
 
 // NewNetworkPayload is used to convert a regular payload into a network payload
-func NewNetworkPayload(pay payload.Payload) (*NetworkPayload, error) {
+func NewNetworkPayload(pay Payload) (*NetworkPayload, error) {
 	conv, ok := pay.(*NetworkPayload)
 	if ok {
 		return conv, nil

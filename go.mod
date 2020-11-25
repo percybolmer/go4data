@@ -2,7 +2,6 @@ module github.com/percybolmer/workflow
 
 go 1.14
 
-replace github.com/percybolmer/workflow => /home/perbol/development/workflow_2.0
 
 require (
 	github.com/fortytw2/leaktest v1.3.0 // indirect
