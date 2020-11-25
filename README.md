@@ -17,7 +17,11 @@ go get github.com/percybolmer/workflow
 ```
 
 ## Usage
-Soon an Examples folder is comming with better examples
+See examples folder for examples.
+
+
+You can either load processors from a yaml file or you can initialize them by hand. Loading from yaml is the recommended way to avoid alot of coding.  
+
 
 ```golang
 readFileProc := NewProcessor("readfile", "file_data")
