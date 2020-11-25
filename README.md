@@ -53,36 +53,59 @@ A processor consists of the following fields
 **Metric** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics). 
 
 ## Handler  
+Comming soon
 ## Payload
-## Properties  
+
+Comming soon
+## Properties 
+
+Comming soon 
 ## Metrics  
+
+Comming soon
 ## Pubsub  
+
+Comming soon
 ## Failures
+
+Comming soon
 ## Loader
 
 
 #Tooling
 
 ## Running a Workflow yaml
+If only interessted in using workflow as a CLI tool then use [runner](tooling/runner). 
+
+After you have downloaded workflow go inside that folder and run
+
+```bash
+go build -o runner
+./runner -workflow /path/to/workflow.yml -port 2112
+```
+
+The port is where to host Prometheus metrics, currently runner only has support for prometheus.
 
 ## Building a new Handler
-To build a handler there is a buildt in tool inside /tooling called handlergenerator. 
+To build a handler one should look at [Handler](#handler) to learn what a Handler is. Any struct that fullfills the [Handler interface](https://github.com/percybolmer/workflow/blob/5f3faca66d9588cdf87d644ab094f10ba0055f46/handlers/handler.go#L13) can be assigned to a Processor.
+
+To help in building new handlers there is a tooling that will generate a fresh handler for you, the tool can be found [here](tooling/handlergenerator).
+
 This is a code generator that can be used to build a template Handler for you.
 Compile the code generator by going into the tooling folder after downloading the source.
 run 
 ```bash
 go build -o handlergenerator
+./handlergenerator -package $YOURHANDLERPACKAGE -location $HANDLERPACKAGEPATH -templatepath $PATHTOHANDLERTEMPLATE -handler $HANDLERNAME
 ```
-
-Then from commandline run   
-handlergenerator -package $PACKAGENAME -location handlers/$PACKAGENAME -templatepath $PATH TO TEMPLATES -handler $NAME_OF_HANDLER  
 You should now see a new Handler that is generated and be able to use it. 
+Offcourse, you still have to do some coding, The generated handler will only print stdout. View other handlers to see how they are setup. 
 
-
-Example when Creating the pcap reader I ran  
-handlergenerator -package network -location handlers/network -handler OpenPcap  
-
-Notice how I did not specify a templatepath? The tool also checks the HANDLERGENERATORPATH environment variable.
+Example when Creating the pcap reader I ran
+```bash 
+handlergenerator -package network -location handlers/network -handler OpenPcap
+```  
+The tooling will use HANDLERGENERATORPATH environment variable to know where the templates are if not specified. The templates can be found [Template Location](tooling/handlergenerator)
 
 
 ## Contributing
