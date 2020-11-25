@@ -33,24 +33,24 @@ You can either load processors from a yaml file or you can initialize them by ha
 
 
 See examples folder for examples.
-[Csv files to Elasticsearch with Filtering](examples/csvToElastic/workflow.yml)
-[Creating processor and subscribing to output](examples/inline/readme.MD)
+[Csv files to Elasticsearch with Filtering](examples/csvToElastic/workflow.yml)  
+[Creating processor and subscribing to output](examples/inline/readme.MD)  
 
-#Components in workflow
+# Components in workflow  
 Below is a more indepth explaination of all the components that are found in workflow. 
 ## Processors
 Processor is the default component that is used. It is used to make a standarized way of handeling the dataflow, error handeling and metrics.
 
 A processor consists of the following fields
 
-**ID** which is a unique ID that each processor should have. This is done automagically when running [NewProcessor](https://github.com/percybolmer/workflow/blob/5f3faca66d9588cdf87d644ab094f10ba0055f46/processor.go#L92)
-**Name** This is a name of the processor, this does not have to be unique, its usage is mainly for the upcomming UI.
-**FailureHandler** is the assigned way of handeling errors that occur during processing. See [FailureHandler](#failures).
-**Handler** is the processing action to apply, this determines what the processor should be doing. See [Handler](#handler) for more information, and see [HandlerList](handlers/readme.MD).
-**Subscriptions** is all the [topics](#pubsub) to listen for data on.
-**Topics** is where to send data after processing it. 
-**QueueSize** is how many [payloads](#payload)  are allowed to be on queue in the Processor. This is to limit and avoid memory burning if a topic isnt drained.
-**Metric** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics). 
+**ID -** which is a unique ID that each processor should have. This is done automagically when running [NewProcessor](https://github.com/percybolmer/workflow/blob/5f3faca66d9588cdf87d644ab094f10ba0055f46/processor.go#L92)
+**Name -** This is a name of the processor, this does not have to be unique, its usage is mainly for the upcomming UI.
+**FailureHandler -** is the assigned way of handeling errors that occur during processing. See [FailureHandler](#failures).  
+**Handler -** is the processing action to apply, this determines what the processor should be doing. See [Handler](#handler) for more information, and see [HandlerList](handlers/readme.MD).  
+**Subscriptions -** is all the [topics](#pubsub) to listen for data on.  
+**Topics -** is where to send data after processing it.   
+**QueueSize -** is how many [payloads](#payload)  are allowed to be on queue in the Processor. This is to limit and avoid memory burning if a topic isnt drained.  
+**Metric -** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics). 
 
 ## Handler  
 Comming soon
@@ -72,7 +72,7 @@ Comming soon
 ## Loader
 
 
-#Tooling
+# Tooling
 
 ## Running a Workflow yaml
 If only interessted in using workflow as a CLI tool then use [runner](tooling/runner). 
