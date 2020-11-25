@@ -19,13 +19,19 @@ type CsvPayload struct {
 }
 
 // NewCsvPayload is used to Create a new Payload
-func NewCsvPayload(header, payload, delimiter string) *CsvPayload {
-	return &CsvPayload{
+func NewCsvPayload(header, payload, delimiter string, meta *property.Configuration) *CsvPayload {
+	pay := &CsvPayload{
 		Header:    header,
 		Payload:   payload,
 		Delimiter: delimiter,
-		Metadata:  property.NewConfiguration(),
 	}
+	if meta != nil {
+		pay.Metadata = meta
+	} else {
+		pay.Metadata = property.NewConfiguration()
+	}
+	return pay
+
 }
 
 // ApplyFilter is used to make this part of the Filterable interface

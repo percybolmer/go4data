@@ -76,10 +76,7 @@ func (a *ReadFile) Handle(ctx context.Context, input payload.Payload, topics ...
 		return err
 	}
 	a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
-	errs := pubsub.PublishTopics(topics, payload.BasePayload{
-		Payload: data,
-		Source:  "ReadFile",
-	})
+	errs := pubsub.PublishTopics(topics, payload.NewBasePayload(data, file.Name(), input.GetMetaData()))
 	for _, err := range errs {
 		a.errChan <- err
 	}

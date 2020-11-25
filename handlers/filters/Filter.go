@@ -108,6 +108,7 @@ func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configu
 			}
 		}
 	}
+
 	for group, filters := range a.filters {
 		totalHits := 0
 		filterHits := make([]*payload.Filter, 0)
@@ -133,9 +134,7 @@ func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configu
 			if totalHits == len(filters) {
 				hits[group] = append(hits[group], filterHits...)
 			}
-			continue
-		}
-		if totalHits > 0 {
+		} else if !strictMode && totalHits > 0 {
 			hits[group] = append(hits[group], filterHits...)
 		}
 

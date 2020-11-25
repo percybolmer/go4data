@@ -132,15 +132,9 @@ func (a *ExecCMD) Exec(input payload.Payload) (payload.Payload, error) {
 		data := input.GetPayload()
 		data = append(data, []byte(a.appendDelimiter)...)
 		data = append(data, stdout.Bytes()...)
-		newPayload = &payload.BasePayload{
-			Payload: data,
-			Source:  fullCmd.String(),
-		}
+		newPayload = payload.NewBasePayload(data, fullCmd.String(), input.GetMetaData())
 	} else {
-		newPayload = &payload.BasePayload{
-			Payload: stdout.Bytes(),
-			Source:  fullCmd.String(),
-		}
+		newPayload = payload.NewBasePayload(stdout.Bytes(), fullCmd.String(), input.GetMetaData())
 	}
 
 	return newPayload, nil

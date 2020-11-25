@@ -120,10 +120,7 @@ func (a *ListDirectory) ListDirectory() ([]payload.Payload, error) {
 				filepath = fmt.Sprintf("%s/%s", a.path, file)
 			}
 			if _, ok := a.found[filepath]; !ok {
-				outputPayloads = append(outputPayloads, payload.BasePayload{
-					Payload: []byte(filepath),
-					Source:  "ListDirectory",
-				})
+				outputPayloads = append(outputPayloads, payload.NewBasePayload([]byte(filepath), "ListDirectory", nil))
 				a.found[filepath] = time.Now().Unix()
 			}
 		}

@@ -121,7 +121,7 @@ func (a ParseCSV) Handle(ctx context.Context, input payload.Payload, topics ...s
 			return ErrHeaderMismatch
 		}
 		// Handle the CSV ROW as a Map of string, should this be interface?
-		newRow := payload.NewCsvPayload(headerRow, line, a.delimiter)
+		newRow := payload.NewCsvPayload(headerRow, line, a.delimiter, nil)
 		result = append(result, newRow)
 	}
 

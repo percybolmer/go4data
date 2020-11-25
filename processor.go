@@ -18,7 +18,9 @@ import (
 	_ "github.com/percybolmer/workflow/handlers/databases"
 	_ "github.com/percybolmer/workflow/handlers/files"
 	_ "github.com/percybolmer/workflow/handlers/filters"
-	_ "github.com/percybolmer/workflow/handlers/network"
+
+	// Removed network from shadow since we dont wanna force users to download libpcap
+	//_ "github.com/percybolmer/workflow/handlers/network"
 	_ "github.com/percybolmer/workflow/handlers/parsers"
 	_ "github.com/percybolmer/workflow/handlers/terminal"
 )

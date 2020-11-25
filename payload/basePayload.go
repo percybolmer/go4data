@@ -10,12 +10,17 @@ type BasePayload struct {
 }
 
 // NewBasePayload will spawn a basic default payload
-func NewBasePayload(payload []byte, source string) *BasePayload {
-	return &BasePayload{
-		Payload:  payload,
-		Source:   source,
-		Metadata: property.NewConfiguration(),
+func NewBasePayload(payload []byte, source string, meta *property.Configuration) *BasePayload {
+	pay := &BasePayload{
+		Payload: payload,
+		Source:  source,
 	}
+	if meta != nil {
+		pay.Metadata = meta
+	} else {
+		pay.Metadata = property.NewConfiguration()
+	}
+	return pay
 }
 
 // GetPayloadLength is used to get the number of bytes in a float
