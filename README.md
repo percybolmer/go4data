@@ -1,4 +1,3 @@
-https://img.shields.io/github/license/percybolmer/workflow
 # Workflow
 
 Automate all things  
