@@ -3,6 +3,7 @@ package network
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
@@ -27,14 +28,23 @@ func TestOpenPcapHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for pay := range pipe.Flow {
-		netpay, err := payload.NewNetworkPayload(pay)
-		if err != nil {
-			t.Fatal(err)
+
+	exit := time.NewTicker(2 * time.Second)
+
+	for {
+		select {
+		case pay := <-pipe.Flow:
+			netpay, err := payload.NewNetworkPayload(pay)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(netpay.Payload.Data()) == 0 {
+				t.Fatalf("Wrong packet length, %s", netpay.Payload.Dump())
+			}
+			t.Log(netpay.Payload.Dump())
+
+		case <-exit.C:
+			return
 		}
-		if len(netpay.Payload.Data()) == 0 {
-			t.Fatalf("Wrong packet length, %s", netpay.Payload.Dump())
-		}
-		t.Log(netpay.Payload.Dump())
 	}
 }

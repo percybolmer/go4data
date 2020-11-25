@@ -173,7 +173,7 @@ func TestRealLifeCase(t *testing.T) {
 	if err := writeFileProc.Start(context.Background()); err != nil {
 		t.Fatal(err)
 	}
-	time.Sleep(5 * time.Second)
+	time.Sleep(1 * time.Second)
 	t.Logf("%+v", writeFileProc.Metric.GetMetric(fmt.Sprintf("%s_%d_payloads_in", writeFileProc.Name, writeFileProc.ID)))
 
 	// Compare metrics so that they Match
