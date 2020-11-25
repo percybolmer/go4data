@@ -3,6 +3,7 @@
 Automate all things  
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/percybolmer/workflow)](https://github.com/percybolmer/workflow/stargazers)
+![Go](https://github.com/percybolmer/workflow/workflows/Go/badge.svg)
 ## About workflow
 Workflow is a dataflow automazation tool.  
 The idea behind workflow is that you should be able to create automated tasks at ease.  
