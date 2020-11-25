@@ -1,7 +1,7 @@
 https://img.shields.io/github/license/percybolmer/workflow
 # Workflow
 
-Automate all things
+Automate all things  
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/percybolmer/workflow)](https://github.com/percybolmer/workflow/stargazers)
 ## About workflow
