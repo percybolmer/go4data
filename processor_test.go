@@ -19,13 +19,13 @@ func TestNewProcessor(t *testing.T) {
 
 	p1 := NewProcessor("test")
 
-	if p1.ID != 1 {
-		t.Fatal("First id should be 1")
+	if p1.ID == 0 {
+		t.Fatal("should not be 0")
 	}
 
 	p2 := NewProcessor("test")
-	if p2.ID != 2 {
-		t.Fatal("Second ID should be 2")
+	if p2.ID == p1.ID {
+		t.Fatal("Second ID should be not be duplicate ")
 	}
 }
 

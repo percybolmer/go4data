@@ -127,14 +127,18 @@ func (a *ExecCMD) Exec(input payload.Payload) (payload.Payload, error) {
 	if errStr != "" {
 		return nil, errors.New(errStr)
 	}
+	meta := property.NewConfiguration()
+	if input != nil {
+		meta = input.GetMetaData()
+	}
 	var newPayload *payload.BasePayload
 	if a.appendOldPayload {
 		data := input.GetPayload()
 		data = append(data, []byte(a.appendDelimiter)...)
 		data = append(data, stdout.Bytes()...)
-		newPayload = payload.NewBasePayload(data, fullCmd.String(), input.GetMetaData())
+		newPayload = payload.NewBasePayload(data, fullCmd.String(), meta)
 	} else {
-		newPayload = payload.NewBasePayload(stdout.Bytes(), fullCmd.String(), input.GetMetaData())
+		newPayload = payload.NewBasePayload(stdout.Bytes(), fullCmd.String(), meta)
 	}
 
 	return newPayload, nil

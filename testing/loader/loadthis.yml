@@ -4,7 +4,6 @@
   topics:
     - found_files
   subscriptions: []
-  executioninterval: 10s
   queuesize: 1000
   handler:
     configs:
@@ -27,7 +26,6 @@
     - file_data
   subscriptions:
     - found_files
-  executioninterval: 10s
   queuesize: 1000
   handler:
     configs:
