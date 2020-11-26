@@ -41,6 +41,7 @@ func TestSave(t *testing.T) {
 		t.Fatal(err)
 	}
 	os.Remove("testing/loader/save.yml")
+
 }
 
 func TestLoad(t *testing.T) {
@@ -65,6 +66,11 @@ func TestLoad(t *testing.T) {
 
 	if mets[payin] == nil {
 		t.Fatal("ReadFile proc should have atleast 1 input")
+	}
+
+	_, err = Load("nosuchfile")
+	if err == nil {
+		t.Fatal("Should have failed to load this")
 	}
 }
 

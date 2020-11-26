@@ -1,4 +1,4 @@
-- id: 3
+- id: 1
   name: listdir
   running: true
   topics:
@@ -19,7 +19,7 @@
               required: false
               valid: false
     handler_name: ListDirectory
-- id: 4
+- id: 2
   name: readfile
   running: true
   topics:

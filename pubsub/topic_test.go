@@ -180,6 +180,33 @@ func TestPublish(t *testing.T) {
 	}
 }
 
+func TestPublishTopics(t *testing.T) {
+	Topics = sync.Map{}
+
+	// Create full topic
+	top := &Topic{
+		Key:         "topic2",
+		ID:          newID(),
+		Subscribers: make([]*Pipe, 0),
+		Buffer: &Pipe{
+			Flow: make(chan payload.Payload, 1),
+		},
+	}
+	Topics.Store("topic2", top)
+
+	topics := []string{"topic1", "topic2"}
+
+	puberrs := PublishTopics(topics, nil)
+	if len(puberrs) != 0 {
+		t.Fatal("should see 0 errors")
+	}
+
+	puberrs = PublishTopics(topics, nil)
+	if len(puberrs) != 1 {
+		t.Fatal("Should see atleast 1 puberror")
+	}
+}
+
 func TestDrainBuffer(t *testing.T) {
 	Topics = sync.Map{}
 	// Scenario to test is this
