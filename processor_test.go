@@ -93,7 +93,15 @@ func TestPubSub(t *testing.T) {
 	printer2.Subscribe("topicthatbuffers")
 
 	printer2.Start(context.Background())
-	if len(pubsub.Topics["topicthatbuffers"].Buffer.Flow) != 1 {
+	buffertopicInt, ok := pubsub.Topics.Load("topicthatbuffers")
+	if !ok {
+		t.Fatal("Didnt find buffer topic")
+	}
+	bufferTopic, ok := buffertopicInt.(*pubsub.Topic)
+	if !ok {
+		t.Fatal("Couldnt convert to topic")
+	}
+	if len(bufferTopic.Buffer.Flow) != 1 {
 		t.Fatal("Wrong buffer length in topicthatbuffers")
 	}
 	pubsub.DrainTopicsBuffer()

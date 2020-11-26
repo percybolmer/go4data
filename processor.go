@@ -234,7 +234,9 @@ func (p *Processor) AddTopics(topics ...string) error {
 			}
 		}
 	}
+	p.Lock()
 	p.Topics = append(p.Topics, topics...)
+	p.Unlock()
 	return nil
 }
 

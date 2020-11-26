@@ -15,7 +15,7 @@
               valid: false
             - name: buffertime
               value: 2
-              description: the time in seconds for how long a found file should be rememberd and not relisted
+              description: the time in seconds for how long a found file should be fulfillremembered and not relisted
               required: false
               valid: false
     handler_name: ListDirectory

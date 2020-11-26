@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/percybolmer/workflow/payload"
@@ -9,7 +10,7 @@ import (
 
 // Topics is a container for topics that has been created.
 // A topic is automatically created when a Processor registers as a Subscriber to it
-var Topics map[string]*Topic
+var Topics sync.Map
 
 var (
 	//ErrTopicAlreadyExists is thrown when running NewTopic on a topic that already exists
@@ -17,9 +18,11 @@ var (
 	//ErrPidAlreadyRegistered is thrown when trying to publish/subscribe with a processor already publishing/subscribing on a certain topic
 	ErrPidAlreadyRegistered = errors.New("the pid is already Registered, duplicate Pub/Subs not allowed")
 	//ErrNoSuchTopic is a error that can be thrown when no topic is found
-	ErrNoSuchTopic = errors.New("thrown when no topic is found")
+	ErrNoSuchTopic = errors.New("the topic key you search for does not exist")
 	//ErrNoSuchPid is when no Pid in a topic is found
 	ErrNoSuchPid = errors.New("no such pid was found on this topic")
+	//ErrIsNotTopic is when something else than a topic has been loaded in a map
+	ErrIsNotTopic = errors.New("the item stored in this key is not a topic")
 
 	//ErrProcessorQueueIsFull is when a Publisher is trying to publish to a queue that is full
 	ErrProcessorQueueIsFull = errors.New("cannot push new payload since queue is full")
@@ -32,7 +35,6 @@ var (
 
 // Init will create the Topic register
 func init() {
-	Topics = make(map[string]*Topic)
 
 	go func() {
 		timer := time.NewTicker(2 * time.Second)
@@ -56,6 +58,7 @@ type Topic struct {
 	Subscribers []*Pipe
 	// Buffer is a data pipe containing our Buffer data. It will empty as soon as a subscriber registers
 	Buffer *Pipe
+	sync.Mutex
 }
 
 // PublishingError is a custom error that is used when reporting back errors when trying to publish
@@ -85,7 +88,7 @@ func NewTopic(key string) (*Topic, error) {
 	if TopicExists(key) {
 		return nil, ErrTopicAlreadyExists
 	}
-	Topics[key] = &Topic{
+	t := &Topic{
 		Key:         key,
 		ID:          newID(),
 		Subscribers: make([]*Pipe, 0),
@@ -93,21 +96,100 @@ func NewTopic(key string) (*Topic, error) {
 			Flow: make(chan payload.Payload, 1000),
 		},
 	}
-	return Topics[key], nil
+	Topics.Store(key, t)
+
+	return t, nil
 }
 
 // TopicExists is used to find out if a topic exists
 // will return true if it does, false if not
 func TopicExists(key string) bool {
-	if _, ok := Topics[key]; ok {
+	if _, ok := Topics.Load(key); ok {
 		return true
 	}
 	return false
 }
 
+// getTopic is a help util that does the type assertion for us  so we dont have to repeat
+func getTopic(key string) (*Topic, error) {
+	t, ok := Topics.Load(key)
+	if !ok {
+		return nil, ErrNoSuchTopic
+	}
+	topic, ok := t.(*Topic)
+	if !ok {
+		return nil, ErrIsNotTopic
+	}
+	return topic, nil
+
+}
+
+// Subscribe will take a key and a Pid (processor ID) and Add a new Subscription to a topic
+// It will also return the topic used
+func Subscribe(key string, pid uint, queueSize int) (*Pipe, error) {
+	top, err := NewTopic(key)
+	if errors.Is(err, ErrTopicAlreadyExists) {
+		// Topic exists, see if PID is not duplicate
+		topic, err := getTopic(key)
+		if err != nil {
+			return nil, err
+		}
+		for _, sub := range topic.Subscribers {
+			if sub.Pid == pid {
+				return nil, ErrPidAlreadyRegistered
+			}
+		}
+		top = topic
+	}
+	// Topic is new , add subscription
+	sub := NewPipe(key, pid, queueSize)
+	top.Lock()
+	top.Subscribers = append(top.Subscribers, sub)
+	top.Unlock()
+	return sub, nil
+}
+
+// Unsubscribe will remove and close a channel related to a subscription
+func Unsubscribe(key string, pid uint) error {
+	if !TopicExists(key) {
+		return ErrNoSuchTopic
+	}
+	topic, err := getTopic(key)
+	if err != nil {
+		return err
+	}
+	topic.Lock()
+	defer topic.Unlock()
+	pipeline, err := removePipeIfExist(key, pid, topic.Subscribers)
+	if err != nil {
+		return err
+	}
+	if pipeline != nil {
+		topic.Subscribers = pipeline
+	}
+
+	return nil
+}
+
+// removePipeIfExist is used to delete a index from a pipe slice and return a new slice without it
+func removePipeIfExist(key string, pid uint, pipes []*Pipe) ([]*Pipe, error) {
+	for i, p := range pipes {
+		if p.Pid == pid {
+			close(p.Flow)
+			pipes[i] = pipes[len(pipes)-1]
+			return pipes[:len(pipes)-1], nil
+		}
+	}
+	return nil, ErrNoSuchPid
+}
+
 // DrainTopicsBuffer will itterate all topics and drain their buffer if there is any subscribers
 func DrainTopicsBuffer() {
-	for _, top := range Topics {
+	Topics.Range(func(key, value interface{}) bool {
+		top, ok := value.(*Topic)
+		if !ok {
+			return ok
+		}
 		xCanReceive := len(top.Subscribers)
 		for len(top.Buffer.Flow) > 0 {
 			// If no subscriber can Receive more data, stop draining
@@ -126,71 +208,8 @@ func DrainTopicsBuffer() {
 			}
 
 		}
-	}
-}
-
-// Unsubscribe will remove and close a channel related to a subscription
-func Unsubscribe(key string, pid uint) error {
-	if !TopicExists(key) {
-		return ErrNoSuchTopic
-	}
-	pipeline, err := removePipeIfExist(key, pid, Topics[key].Subscribers)
-	if err != nil {
-		return err
-	}
-	if pipeline != nil {
-		Topics[key].Subscribers = pipeline
-	}
-	return nil
-}
-
-// removePipeIfExist is used to delete a index from a pipe slice and return a new slice without it
-func removePipeIfExist(key string, pid uint, pipes []*Pipe) ([]*Pipe, error) {
-	for i, p := range pipes {
-		if p.Pid == pid {
-			close(p.Flow)
-			pipes[i] = pipes[len(pipes)-1]
-			return pipes[:len(pipes)-1], nil
-		}
-	}
-	return nil, ErrNoSuchPid
-}
-
-// Subscribe will take a key and a Pid (processor ID) and Add a new Subscription to a topic
-// It will also return the topic used
-func Subscribe(key string, pid uint, queueSize int) (*Pipe, error) {
-	top, err := NewTopic(key)
-	if errors.Is(err, ErrTopicAlreadyExists) {
-		// Topic exists, see if PID is not duplicate
-		for _, sub := range Topics[key].Subscribers {
-			if sub.Pid == pid {
-				return nil, ErrPidAlreadyRegistered
-			}
-		}
-		top = Topics[key]
-	}
-	// Topic is new , add subscription
-	sub := NewPipe(key, pid, queueSize)
-	top.Subscribers = append(top.Subscribers, sub)
-
-	return sub, nil
-}
-
-// PublishTopics is used to publish to many topics at once
-func PublishTopics(topics []string, payloads ...payload.Payload) []PublishingError {
-	var errors []PublishingError
-
-	for _, topic := range topics {
-		errs := Publish(topic, payloads...)
-		if errs != nil {
-			errors = append(errors, errs...)
-		}
-	}
-
-	if len(errors) == 0 {
-		return nil
-	}
-	return errors
+		return true
+	})
 }
 
 // Publish is used to publish a payload onto a Topic
@@ -200,7 +219,14 @@ func Publish(key string, payloads ...payload.Payload) []PublishingError {
 	var errors []PublishingError
 	var top *Topic
 	if TopicExists(key) {
-		top = Topics[key]
+		topic, err := getTopic(key)
+		if err != nil {
+			return append(errors, PublishingError{
+				Err:     err,
+				Payload: nil,
+			})
+		}
+		top = topic
 	} else {
 		top, _ = NewTopic(key)
 	}
@@ -243,4 +269,22 @@ func Publish(key string, payloads ...payload.Payload) []PublishingError {
 	}
 	return errors
 
+}
+
+// PublishTopics is used to publish to many topics at once
+func PublishTopics(topics []string, payloads ...payload.Payload) []PublishingError {
+	var errors []PublishingError
+
+	for _, topic := range topics {
+		t := topic
+		errs := Publish(t, payloads...)
+		if errs != nil {
+			errors = append(errors, errs...)
+		}
+	}
+
+	if len(errors) == 0 {
+		return nil
+	}
+	return errors
 }

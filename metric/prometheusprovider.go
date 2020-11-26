@@ -45,7 +45,7 @@ func (pp *PrometheusProvider) AddMetric(m *Metric) error {
 	if _, ok := pp.Metrics[m.Name]; ok {
 		return ErrMetricAlreadyExist
 	}
-
+	pp.Lock()
 	pp.Metrics[m.Name] = m
 	promCounter := promauto.NewCounter(prometheus.CounterOpts{
 		Name: m.Name,
@@ -53,6 +53,7 @@ func (pp *PrometheusProvider) AddMetric(m *Metric) error {
 	})
 	promCounter.Add(m.Value)
 	pp.PromMetrics[m.Name] = promCounter
+	pp.Unlock()
 	return nil
 }
 
@@ -61,9 +62,10 @@ func (pp *PrometheusProvider) IncrementMetric(name string, value float64) error 
 	if pp.PromMetrics[name] == nil || pp.Metrics[name] == nil {
 		return ErrMetricNotFound
 	}
-
+	pp.Lock()
 	pp.PromMetrics[name].Add(value)
 	pp.Metrics[name].Value = pp.Metrics[name].Value + value
+	pp.Unlock()
 	return nil
 }
 
