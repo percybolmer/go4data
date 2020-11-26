@@ -59,10 +59,7 @@ func (a *StdoutHandler) GetHandlerName() string {
 func (a *StdoutHandler) Handle(ctx context.Context, p payload.Payload, topics ...string) error {
 	a.metrics.IncrementMetric(a.MetricPayloadIn, 1)
 	fmt.Println(string(p.GetPayload()))
-	meta := p.GetMetaData()
-	if meta != nil {
-		fmt.Println(meta.GetProperty("filter_group_hits"))
-	}
+
 	if a.forward {
 		errs := pubsub.PublishTopics(topics, p)
 		for _, err := range errs {

@@ -40,7 +40,7 @@ You can either load processors from a yaml file or you can initialize them by ha
 
 
 See examples folder for examples.  
-[Csv files to Elasticsearch with Filtering](examples/csvToElastic/workflow.yml)  
+[Csv files to Elasticsearch with Filtering](examples/csvToElastic/README.md)  
 [Creating processor and subscribing to output](examples/inline/README.md)  
 
 # Components in workflow  
