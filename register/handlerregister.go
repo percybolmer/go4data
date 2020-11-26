@@ -8,7 +8,7 @@ import (
 
 // HandlerRegister is used to keep track of all available Handlers that a processor can use
 // To have a processor use a custom Handler It need to be Register with RegisterHandler
-var HandlerRegister map[string]handlers.Handler
+var HandlerRegister map[string]func() handlers.Handler
 
 // ErrHandlerAlreadyRegistered is an error when trying to add Handlers that already is Registered
 var ErrHandlerAlreadyRegistered = errors.New("an Handler with this name is already Registered")
@@ -17,11 +17,11 @@ var ErrHandlerAlreadyRegistered = errors.New("an Handler with this name is alrea
 var ErrHandlerNotRegistered = errors.New("the Handler asked for is not Registered")
 
 func init() {
-	HandlerRegister = make(map[string]handlers.Handler, 0)
+	HandlerRegister = make(map[string]func() handlers.Handler)
 }
 
 // Register is used to register an Handler. If a Handler with that name already exists it will return an ErrHandlerAlreadyRegistered
-func Register(name string, f handlers.Handler) error {
+func Register(name string, f func() handlers.Handler) error {
 	if _, ok := HandlerRegister[name]; ok {
 		return ErrHandlerAlreadyRegistered
 	}
@@ -34,6 +34,5 @@ func GetHandler(name string) (handlers.Handler, error) {
 	if _, ok := HandlerRegister[name]; !ok {
 		return nil, ErrHandlerNotRegistered
 	}
-	// @TODO FIX so it returns a copy instead
-	return HandlerRegister[name], nil
+	return HandlerRegister[name](), nil
 }

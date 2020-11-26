@@ -38,7 +38,8 @@ func TestParseCSVHandle(t *testing.T) {
 	}
 
 	for i, tc := range testcases {
-		r := NewParseCSVHandler()
+		rh := NewParseCSVHandler()
+		r := rh.(*ParseCSV)
 		r.SetMetricProvider(metric.NewPrometheusProvider(), fmt.Sprintf("%s_%d", tc.Name, i))
 		if tc.Delimiter != "" {
 			r.Cfg.SetProperty("delimiter", tc.Delimiter)
@@ -88,7 +89,7 @@ func TestParseCSVValidateConfiguration(t *testing.T) {
 		rfg := NewParseCSVHandler()
 
 		for name, prop := range tc.Cfgs {
-			err := rfg.Cfg.SetProperty(name, prop)
+			err := rfg.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {
 				if err != nil && tc.ExpectedErr != nil {
 					t.Fatalf("Expected: %s, but found: %s", tc.ExpectedErr, err.Error())

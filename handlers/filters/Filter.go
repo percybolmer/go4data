@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -39,11 +40,11 @@ type FilterHandler struct {
 }
 
 func init() {
-	register.Register("Filter", NewFilterHandler())
+	register.Register("Filter", NewFilterHandler)
 }
 
 // NewFilterHandler generates a new Filter Handler
-func NewFilterHandler() *FilterHandler {
+func NewFilterHandler() handlers.Handler {
 	act := &FilterHandler{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
@@ -77,7 +78,7 @@ func (a *FilterHandler) Handle(ctx context.Context, input payload.Payload, topic
 			metacontainer.AddProperty("filter_group_hits", "this property contains all the filter groups that has hit, also the certain filters that hit", false)
 		}
 	}
-	if a.isMatch(m, metacontainer) {
+	if isMatch(m, metacontainer, a.filters, a.strictgroups) {
 		a.metrics.IncrementMetric(a.MetricPayloadOut, 1)
 		errs := pubsub.PublishTopics(topics, input)
 		if errs != nil {
@@ -93,7 +94,7 @@ func (a *FilterHandler) Handle(ctx context.Context, input payload.Payload, topic
 }
 
 // isMatch is used to control if current filters matches input
-func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configuration) bool {
+func isMatch(input payload.Filterable, meta *property.Configuration, filters map[string][]*payload.Filter, strictgroups []string) bool {
 	// Itterate all Filter groups
 	hits := make(map[string][]*payload.Filter, 0)
 	if meta != nil {
@@ -109,18 +110,18 @@ func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configu
 		}
 	}
 
-	for group, filters := range a.filters {
+	for group, groupfilters := range filters {
 		totalHits := 0
 		filterHits := make([]*payload.Filter, 0)
 		// See if its a strict mode Group
 		var strictMode bool
-		for _, strictGroup := range a.strictgroups {
+		for _, strictGroup := range strictgroups {
 			if strictGroup == group {
 				strictMode = true
 			}
 		}
 
-		for _, filter := range filters {
+		for _, filter := range groupfilters {
 			hit := input.ApplyFilter(filter)
 			if hit {
 				// Add metadata to the payload about what Groups and Keywords that hit
@@ -131,7 +132,7 @@ func (a *FilterHandler) isMatch(input payload.Filterable, meta *property.Configu
 		}
 		// See if filter group Matched all if its part of strict Groups
 		if strictMode {
-			if totalHits == len(filters) {
+			if totalHits == len(groupfilters) {
 				hits[group] = append(hits[group], filterHits...)
 			}
 		} else if !strictMode && totalHits > 0 {

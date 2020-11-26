@@ -8,8 +8,8 @@ import (
 )
 
 func TestExecCMDHandle(t *testing.T) {
-	rfg := NewExecCMDHandler()
-
+	rfgh := NewExecCMDHandler()
+	rfg := rfgh.(*ExecCMD)
 	rfg.Cfg.SetProperty("command", "echo")
 	//rfg.Cfg.SetProperty("arguments", map[string]interface{}{"hello": "world"})
 	rfg.Cfg.SetProperty("arguments", []string{"Hello", "World!"})
@@ -56,7 +56,7 @@ func TestExecCMDValidateConfiguration(t *testing.T) {
 		rfg := NewExecCMDHandler()
 
 		for name, prop := range tc.Cfgs {
-			err := rfg.Cfg.SetProperty(name, prop)
+			err := rfg.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {
 				if err != nil && tc.ExpectedErr != nil {
 					t.Fatalf("Expected: %s, but found: %s", tc.ExpectedErr, err.Error())

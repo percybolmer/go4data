@@ -8,6 +8,7 @@ import (
 
 	"github.com/olivere/elastic"
 	"github.com/olivere/elastic/config"
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -43,11 +44,11 @@ type PutElasticSearch struct {
 }
 
 func init() {
-	register.Register("PutElasticSearch", NewPutElasticSearchHandler())
+	register.Register("PutElasticSearch", NewPutElasticSearchHandler)
 }
 
 // NewPutElasticSearchHandler generates a new PutElasticSearch Handler
-func NewPutElasticSearchHandler() *PutElasticSearch {
+func NewPutElasticSearchHandler() handlers.Handler {
 	act := &PutElasticSearch{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

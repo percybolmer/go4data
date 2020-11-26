@@ -28,11 +28,11 @@ type {{.HandlerName}} struct{
 }
 
 func init() {
-	register.Register("{{.HandlerName}}", New{{.HandlerName}}Handler())
+	register.Register("{{.HandlerName}}", New{{.HandlerName}}Handler)
 }
 
 // New{{.HandlerName}}Handler generates a new {{.HandlerName}} Handler
-func New{{.HandlerName}}Handler() *{{.HandlerName}} {
+func New{{.HandlerName}}Handler() handlers.Handler {
 	act := &{{.HandlerName}}{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

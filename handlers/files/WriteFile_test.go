@@ -42,7 +42,7 @@ func TestWriteFileHandle(t *testing.T) {
 		act := NewWriteFileHandler()
 		act.SetMetricProvider(metric.NewPrometheusProvider(), fmt.Sprintf("%s_%d", "testprefix", i))
 		for name, prop := range tc.cfgs {
-			err := act.Cfg.SetProperty(name, prop)
+			err := act.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.expectedErr) {
 				if err != nil && tc.expectedErr != nil {
 					t.Fatalf("%s: Expected: %s, but found: %s", tc.name, tc.expectedErr, err.Error())
@@ -62,16 +62,16 @@ func TestWriteFileHandle(t *testing.T) {
 		if !errors.Is(err, tc.expectedErr) {
 			t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 		}
-
-		if act.append {
+		writeact := act.(*WriteFile)
+		if writeact.append {
 			err := act.Handle(context.Background(), pay)
 			if !errors.Is(err, tc.expectedErr) {
 				t.Fatalf("%s: %s : %s", tc.name, err, tc.expectedErr)
 			}
 		}
 
-		if act.forward {
-			if act.metrics.GetMetric(act.MetricPayloadOut).Value != 1 {
+		if writeact.forward {
+			if writeact.metrics.GetMetric(writeact.MetricPayloadOut).Value != 1 {
 				t.Fatal("Act didnt forward payload")
 			}
 		}
@@ -96,7 +96,7 @@ func TestWriteFileValidateConfiguration(t *testing.T) {
 	for _, tc := range testCases {
 		rfg := NewWriteFileHandler()
 		for name, prop := range tc.Cfgs {
-			err := rfg.Cfg.SetProperty(name, prop)
+			err := rfg.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {
 				if err != nil && tc.ExpectedErr != nil {
 					t.Fatalf("Expected: %s, but found: %s", tc.ExpectedErr, err.Error())

@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -34,11 +35,11 @@ type ReadFile struct {
 }
 
 func init() {
-	register.Register("ReadFile", NewReadFileHandler())
+	register.Register("ReadFile", NewReadFileHandler)
 }
 
 // NewReadFileHandler generates a new ReadFile Handler
-func NewReadFileHandler() *ReadFile {
+func NewReadFileHandler() handlers.Handler {
 	act := &ReadFile{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

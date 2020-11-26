@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -55,11 +56,11 @@ type ParseCSV struct {
 }
 
 func init() {
-	register.Register("ParseCSV", NewParseCSVHandler())
+	register.Register("ParseCSV", NewParseCSVHandler)
 }
 
 // NewParseCSVHandler generates a new ParseCSV Handler
-func NewParseCSVHandler() *ParseCSV {
+func NewParseCSVHandler() handlers.Handler {
 	act := &ParseCSV{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

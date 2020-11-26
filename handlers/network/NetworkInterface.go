@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -51,11 +52,11 @@ type NetworkInterface struct {
 }
 
 func init() {
-	register.Register("NetworkInterface", NewNetworkInterfaceHandler())
+	register.Register("NetworkInterface", NewNetworkInterfaceHandler)
 }
 
 // NewNetworkInterfaceHandler generates a new NetworkInterface Handler
-func NewNetworkInterfaceHandler() *NetworkInterface {
+func NewNetworkInterfaceHandler() handlers.Handler {
 	act := &NetworkInterface{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

@@ -29,7 +29,7 @@ func TestReadFileValidateConfiguration(t *testing.T) {
 		rfg := NewReadFileHandler()
 
 		for name, prop := range tc.Cfgs {
-			err := rfg.Cfg.SetProperty(name, prop)
+			err := rfg.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {
 				if err != nil && tc.ExpectedErr != nil {
 					t.Fatalf("Expected: %s, but found: %s", tc.ExpectedErr, err.Error())

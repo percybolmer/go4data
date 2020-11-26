@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -46,11 +47,11 @@ var (
 )
 
 func init() {
-	register.Register("ListDirectory", NewListDirectoryHandler())
+	register.Register("ListDirectory", NewListDirectoryHandler)
 }
 
 // NewListDirectoryHandler generates a new ListDirectory Handler
-func NewListDirectoryHandler() *ListDirectory {
+func NewListDirectoryHandler() handlers.Handler {
 	act := &ListDirectory{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

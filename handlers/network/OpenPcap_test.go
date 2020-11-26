@@ -11,8 +11,8 @@ import (
 )
 
 func TestOpenPcapHandle(t *testing.T) {
-	pcapHandler := NewOpenPcapHandler()
-
+	pcapHandlerH := NewOpenPcapHandler()
+	pcapHandler := pcapHandlerH.(*OpenPcap)
 	testPayload := payload.BasePayload{
 		Source:  "test",
 		Payload: []byte(`testing/tcpSpoof.pcap`),

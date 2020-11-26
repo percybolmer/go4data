@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -49,11 +50,11 @@ var (
 )
 
 func init() {
-	register.Register("ExecCMD", NewExecCMDHandler())
+	register.Register("ExecCMD", NewExecCMDHandler)
 }
 
 // NewExecCMDHandler generates a new ExecCMD Handler
-func NewExecCMDHandler() *ExecCMD {
+func NewExecCMDHandler() handlers.Handler {
 	act := &ExecCMD{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

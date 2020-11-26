@@ -77,7 +77,7 @@ func TestNetworkInterfaceValidateConfiguration(t *testing.T) {
 		rfg := NewNetworkInterfaceHandler()
 
 		for name, prop := range tc.Cfgs {
-			err := rfg.Cfg.SetProperty(name, prop)
+			err := rfg.GetConfiguration().SetProperty(name, prop)
 			if !errors.Is(err, tc.ExpectedErr) {
 				if err != nil && tc.ExpectedErr != nil {
 					t.Fatalf("%s Expected: %s, but found: %s", tc.Name, tc.ExpectedErr, err.Error())

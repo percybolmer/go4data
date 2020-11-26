@@ -1,7 +1,6 @@
 package filters
 
 import (
-	"errors"
 	"regexp"
 	"testing"
 
@@ -34,37 +33,21 @@ func TestEmailRegexp(t *testing.T) {
 	}
 
 }
-func TestParseFilterLine(t *testing.T) {
-	line := "userinformation:^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
 
-	f, err := payload.ParseFilterLine(line)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if !f.Regexp.MatchString("percy@hotmail.com") {
-		t.Fatal("Should be valid email")
-	}
-
-	badLine := "blablipopp"
-	_, err = payload.ParseFilterLine(badLine)
-	if !errors.Is(err, payload.ErrBadFilterFormat) {
-		t.Fatal("Should have triggerd abad filter format")
-	}
-}
 func TestFilterHandle(t *testing.T) {
 	// use a CSV payload and see if both Strict groups and Non Strict works
 	fh := NewFilterHandler()
 	fh.SetMetricProvider(metric.NewPrometheusProvider(), "filterhandler")
 	// strictMode should be an Array of GroupNames instead, That way you could specify that THIS x Group has to match All
-
-	fh.Cfg.SetProperty("strict", []string{"userinformation"})
-	fh.Cfg.SetProperty("filterDirectory", "testing")
+	Cfg := fh.GetConfiguration()
+	Cfg.SetProperty("strict", []string{"userinformation"})
+	Cfg.SetProperty("filterDirectory", "testing")
 
 	valid, _ := fh.ValidateConfiguration()
 	if !valid {
 		t.Fatal("Failed to init test FilterHandle")
 	}
+	h := fh.(*FilterHandler)
 
 	// Send 2 CSV Rows, one with userinformation email set, one without
 	emailPayload := FilterPayload{
@@ -76,8 +59,8 @@ func TestFilterHandle(t *testing.T) {
 		Email:    "",
 	}
 
-	isEmailMatch := fh.isMatch(&emailPayload, nil)
-	isNoEmailMatch := fh.isMatch(&noEmailPayload, nil)
+	isEmailMatch := isMatch(&emailPayload, nil, h.filters, h.strictgroups)
+	isNoEmailMatch := isMatch(&noEmailPayload, nil, h.filters, h.strictgroups)
 
 	if !isEmailMatch {
 		t.Fatal("IsEmailMatch is not true, should be true")
@@ -89,7 +72,7 @@ func TestFilterHandle(t *testing.T) {
 	metacontainer := property.NewConfiguration()
 	metacontainer.AddProperty("filter_group_hits", "this property contains all the filter groups that has hit, also the certain filters that hit", false)
 
-	isEmailMatch = fh.isMatch(&emailPayload, metacontainer)
+	isEmailMatch = isMatch(&emailPayload, metacontainer, h.filters, h.strictgroups)
 	if !isEmailMatch {
 		t.Fatal("isEmailMatch should be true, even with metacontainer")
 	}
@@ -108,7 +91,7 @@ func TestFilterHandle(t *testing.T) {
 	}
 
 	// Lets reuse the metacontainer, this is not the usecase in real examples, each payload will have its own, but we want to spoof this
-	findMeMatch := fh.isMatch(&findMePayload, metacontainer)
+	findMeMatch := isMatch(&findMePayload, metacontainer, h.filters, h.strictgroups)
 	if !findMeMatch {
 		t.Fatal("findMeMatch should be a match")
 	}
@@ -134,57 +117,22 @@ func TestFilterValidateConfiguration(t *testing.T) {
 
 	filterMap := make(map[string][]string, 0)
 	filterMap["userdata"] = []string{"username:^[a-zA-Z0-9]{0,20}"}
-	fh.Cfg.SetProperty("filterDirectory", "testing")
-	fh.Cfg.SetProperty("filters", filterMap)
-	fh.Cfg.SetProperty("strict", []string{"userinformation"})
+	Cfg := fh.GetConfiguration()
+	Cfg.SetProperty("filterDirectory", "testing")
+	Cfg.SetProperty("filters", filterMap)
+	Cfg.SetProperty("strict", []string{"userinformation"})
 
+	h := fh.(*FilterHandler)
 	valid, errs := fh.ValidateConfiguration()
 	if errs != nil {
 		t.Fatal(errs[0])
 	}
 
 	if valid {
-		if len(fh.filters) != 3 {
+		if len(h.filters) != 3 {
 			t.Fatal("Wrong length type for filter group")
 		}
 	}
 
-	t.Logf("%+v", fh.filters)
-}
-func TestLoadFilterDirectory(t *testing.T) {
-	type testcase struct {
-		Name        string
-		Path        string
-		ExpectedErr error
-		GroupLength int
-		GroupName   string
-		Filters     int
-	}
-
-	testCases := []testcase{
-		{Name: "EmptyPath", Path: "", ExpectedErr: payload.ErrEmptyFilterDirectory},
-		{Name: "RealPath", Path: "testing", ExpectedErr: nil, GroupLength: 2, GroupName: "userinformation", Filters: 1},
-	}
-
-	for _, tc := range testCases {
-		groups, err := payload.LoadFilterDirectory(tc.Path)
-
-		if !errors.Is(err, tc.ExpectedErr) {
-			t.Fatalf("%s: %s", tc.Name, err.Error())
-		}
-
-		if groups != nil {
-			if tc.GroupLength != len(groups) {
-				t.Fatal("Wrong group length")
-			}
-
-			if tc.GroupName != "" {
-				if groups[tc.GroupName] != nil {
-					if len(groups[tc.GroupName]) != tc.Filters {
-						t.Fatal("Wrong amount of filters found")
-					}
-				}
-			}
-		}
-	}
+	t.Logf("%+v", h.filters)
 }

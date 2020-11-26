@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -33,11 +34,11 @@ type StdoutHandler struct {
 }
 
 func init() {
-	register.Register("Stdout", NewStdoutHandler())
+	register.Register("Stdout", NewStdoutHandler)
 }
 
 // NewStdoutHandler generates a new Stdout Handler
-func NewStdoutHandler() *StdoutHandler {
+func NewStdoutHandler() handlers.Handler {
 	act := &StdoutHandler{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

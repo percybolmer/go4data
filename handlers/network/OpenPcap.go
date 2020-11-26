@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -35,11 +36,11 @@ type OpenPcap struct {
 }
 
 func init() {
-	register.Register("OpenPcap", NewOpenPcapHandler())
+	register.Register("OpenPcap", NewOpenPcapHandler)
 }
 
 // NewOpenPcapHandler generates a new OpenPcap Handler
-func NewOpenPcapHandler() *OpenPcap {
+func NewOpenPcapHandler() handlers.Handler {
 	act := &OpenPcap{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),

@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
@@ -44,11 +45,11 @@ var (
 )
 
 func init() {
-	register.Register("WriteFile", NewWriteFileHandler())
+	register.Register("WriteFile", NewWriteFileHandler)
 }
 
 // NewWriteFileHandler generates a new WriteFile Handler
-func NewWriteFileHandler() *WriteFile {
+func NewWriteFileHandler() handlers.Handler {
 	act := &WriteFile{
 		Cfg: &property.Configuration{
 			Properties: make([]*property.Property, 0),
