@@ -16,11 +16,13 @@ They are sectioned after package name, each packagename is related to the topic 
 | Properties  | Type | Description |
 | ------------- | ------------- | ------------- |
 | buffertime  | int  | An integer in seconds on how long to store found files in memory, stored files will not be outputted during this duration.
-| path | string | The path to the directory to monitor.
+| path | string | The path to the directory to monitor.  
+
 **ReadFile -** Reads a file on the system and outputs the content. Expects payloads that come in to be a string with the path.
 | Properties  | Type | Description |
 | ------------- | ------------- | ------------- |
-| remove_after  | boolean  | Setting this to true will remove the file after its read
+| remove_after  | boolean  | Setting this to true will remove the file after its read  
+
 **WriteFile -** Outputs the content of incomming payloads into files.
 | Properties  | Type | Description |
 | ------------- | ------------- | ------------- |
@@ -34,7 +36,8 @@ They are sectioned after package name, each packagename is related to the topic 
 | bpf  | string  | If a Bpf filter should be applied.
 | snapshotlength | int | The length of snapshots.
 | promiscuousmode | boolean | If promiscuousmode should be enabled or not.
-| interface | string | the interface to read packets from
+| interface | string | the interface to read packets from  
+
 **OpenPcap -** Reads pcap files and output packets.
 | Properties  | Type | Description |
 | ------------- | ------------- | ------------- |

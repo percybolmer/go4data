@@ -15,6 +15,22 @@ Subscription is a way for the Topic to output data. When subscribing to a topic 
 Using the pubsub system usually only needs 2 functions.
 Its the publish and Subscribe methods.
 
+### Subscribing
+To subscribe one needs to call the Subscribe function and give the correct key to the topic.
+
+Subscribe accepts 3 parameters, Topicname, A unique ID for the subscriber, and a QueueSize that will change how many payloads you accept to be put on hold.
+
+To stop subscribing call the Unsubscribe method. This will accept the Topic and the Unique ID of the subscriber. 
+
+
+```golang
+  channel, err := pubsub.Subscribe("MyTopic", 1, 1)
+  if err != nil {
+      t.Fatal(err)
+  }
+
+  pubsub.Unsubscribe("MyTopic", 1)
+```
 ### Publishing
 To publish payloads one will use the following 2 alternatives
 Publish will accept one Topic, and a variadic payload input.
