@@ -53,7 +53,7 @@ func TestWriteFileHandle(t *testing.T) {
 
 		act.ValidateConfiguration()
 
-		pay := payload.BasePayload{
+		pay := &payload.BasePayload{
 			Source:  "test",
 			Payload: tc.data,
 		}

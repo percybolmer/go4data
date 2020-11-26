@@ -164,7 +164,7 @@ func TestPublish(t *testing.T) {
 	}
 	// Now Queue Should be full and we should geta Queue is full Err from Sub
 	// But sub2 should have 1 item in queue
-	perr = Publish("test", payload.BasePayload{
+	perr = Publish("test", &payload.BasePayload{
 		Source: "test",
 	})
 	if len(perr) != 1 {

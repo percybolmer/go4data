@@ -60,6 +60,8 @@ func NewListDirectoryHandler() handlers.Handler {
 		found:            make(map[string]int64),
 		subscriptionless: true,
 		errChan:          make(chan error, 1000),
+
+		metrics: metric.NewPrometheusProvider(),
 	}
 
 	act.Cfg.AddProperty("path", "the path to search for", true)
@@ -89,6 +91,7 @@ func (a *ListDirectory) Handle(ctx context.Context, p payload.Payload, topics ..
 				a.metrics.IncrementMetric(a.MetricPayloadOut, float64(len(payloads)))
 				errs := pubsub.PublishTopics(topics, payloads...)
 				for _, err := range errs {
+					fmt.Println(err)
 					a.errChan <- err
 				}
 

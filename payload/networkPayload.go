@@ -32,6 +32,9 @@ func NewNetworkPayload(pay Payload) (*NetworkPayload, error) {
 
 // GetPayloadLength will return the payload X Bytes
 func (nf *NetworkPayload) GetPayloadLength() float64 {
+	if nf.Payload == nil {
+		return 0
+	}
 	return float64(len(nf.Payload.ApplicationLayer().Payload()))
 }
 

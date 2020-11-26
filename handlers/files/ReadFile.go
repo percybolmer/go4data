@@ -46,6 +46,7 @@ func NewReadFileHandler() handlers.Handler {
 		},
 		Name:    "ReadFile",
 		errChan: make(chan error, 1000),
+		metrics: metric.NewPrometheusProvider(),
 	}
 	act.Cfg.AddProperty("remove_after", "This property is used to configure if files that are read should be removed after", true)
 	return act

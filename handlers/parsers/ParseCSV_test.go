@@ -57,7 +57,7 @@ func TestParseCSVHandle(t *testing.T) {
 			d.WriteString(s)
 		}
 
-		err := r.Handle(context.Background(), payload.BasePayload{
+		err := r.Handle(context.Background(), &payload.BasePayload{
 			Payload: d.Bytes(),
 		}, "test")
 

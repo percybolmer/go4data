@@ -25,6 +25,6 @@ Currently available payloads are
 
 | Payload | Description | Filterable |
 | ------------- | ------------- | ------------- | 
-| BasePayload  | A simple payload used by most handlers, it is used when transfering a []byte is enough  | false
+| BasePayload  | A simple payload used by most handlers, it is used when transfering a []byte is enough  | true
 | CsvPayload | A Csv payload that contains information about the csv header aswell as the delimiter to decode the payload | true
 | NetworkPayload | A payload that holds network packets. The payload is a gopacket.Packet | false

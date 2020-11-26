@@ -56,6 +56,7 @@ func NewWriteFileHandler() handlers.Handler {
 		},
 		Name:    "WriteFile",
 		errChan: make(chan error, 1000),
+		metrics: metric.NewPrometheusProvider(),
 	}
 	act.Cfg.AddProperty("path", "the path on where to write files", true)
 	act.Cfg.AddProperty("append", "if set to true it will append to files instead of overwriting collisions", true)

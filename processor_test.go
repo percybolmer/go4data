@@ -162,7 +162,7 @@ func TestPubSub(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Now everything is setup, What sender sends will be printed by Printer
-	pay := payload.BasePayload{
+	pay := &payload.BasePayload{
 		Source:  "Test",
 		Payload: []byte(`Hello world`),
 	}

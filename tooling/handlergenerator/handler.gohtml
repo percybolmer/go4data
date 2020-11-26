@@ -39,6 +39,7 @@ func New{{.HandlerName}}Handler() handlers.Handler {
 		},
 		Name: "{{.HandlerName}}",
 		errChan: make(chan error, 1000),
+		metrics: metric.NewPrometheusProvider(),
 	}
 	act.Cfg.AddProperty("test", "the configuration you need", true)
 	return act
