@@ -22,6 +22,11 @@ The idea in workflow is too try to make it as seamless as possible.
 All [Processors](#processors) has to have an [Handler](#handler) assigned before it can start processing any data. It is the handler that contains processing capabilities.
 The goal of handlers is to make them as seamless as possible.
 
+An example of how workflow is intended to work with its pubsub system and handlers doing processing seamless .
+![Screenshot](https://user-images.githubusercontent.com/7509921/100387851-5acb5700-3029-11eb-995e-d885d46e7dd8.png)
+
+Some people like UML, so I've used Dumels, great job those who made it. 
+Here you can see a UML of the project. [Dumels](https://www.dumels.com/diagram/324180ad-864b-4640-9411-4f6678cf8c23)
 
 
 ## Installation
