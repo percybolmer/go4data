@@ -24,13 +24,13 @@ type ExecCMD struct {
 	Name string                  `json:"handler_name" yaml:"handler_name"`
 	// command is the command to run in terminal
 	command string
-	// arguments is a set of arugments to include in the command
+	// arguments is a set of arguments to include in the command
 	arguments []string
 	// Subscriptionless is set to true if Payload is set in the arguments
 	subscriptionless bool
 	// appendOldPayload is a value that can be set to add the exec output to the old payload, used if you want to keep the payload that went into this one
 	appendOldPayload bool
-	// appendDelimiter is a value that will be set to seperate the newpayload
+	// appendDelimiter is a value that will be set to separate the newpayload
 	appendDelimiter string
 	errChan         chan error
 	metrics         metric.Provider
@@ -65,7 +65,7 @@ func NewExecCMDHandler() *ExecCMD {
 	act.Cfg.AddProperty("command", "the command to run ", true)
 	act.Cfg.AddProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument", false)
 	act.Cfg.AddProperty("append_old_payload", "Setting this to true will make the output of the handler become the oldpayload + the exec payload", false)
-	act.Cfg.AddProperty("append_delimiter", "The value to seperate payloads with", false)
+	act.Cfg.AddProperty("append_delimiter", "The value to separate payloads with", false)
 
 	return act
 }

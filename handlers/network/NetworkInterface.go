@@ -69,7 +69,7 @@ func NewNetworkInterfaceHandler() *NetworkInterface {
 
 	act.Cfg.AddProperty("bpf", "A bpf filter to be used on the input interface", false)
 	act.Cfg.AddProperty("snapshotlength", "The snapshot length to use", false)
-	act.Cfg.AddProperty("promiscuousmode", "True or false to use promiscious mode", false)
+	act.Cfg.AddProperty("promiscuousmode", "True or false to use promiscuous mode", false)
 
 	act.Cfg.AddProperty("interface", "The interface to read network traffic from", true)
 	return act

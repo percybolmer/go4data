@@ -29,13 +29,13 @@ type Filterable interface {
 type Filter struct {
 	// Regexp is the regexp to apply
 	Regexp *regexp.Regexp
-	// Key is the field to apply the Regexp to, like in csv it resembels the header field value.
+	// Key is the field to apply the Regexp to, like in csv it resembles the header field value.
 	Key string
 	// Groupname is a reference to the group that the filter belongs too
 	GroupName string
 }
 
-// LoadFilterDirectory is used to load the filter direcotry into the handler
+// LoadFilterDirectory is used to load the filter directory into the handler
 func LoadFilterDirectory(path string) (map[string][]*Filter, error) {
 	if path == "" {
 		return nil, ErrEmptyFilterDirectory

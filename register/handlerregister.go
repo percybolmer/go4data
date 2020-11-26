@@ -10,29 +10,29 @@ import (
 // To have a processor use a custom Handler It need to be Register with RegisterHandler
 var HandlerRegister map[string]handlers.Handler
 
-// ErrHandlerAlreadyRegisterd is an error when trying to add Handlers that already is registerd
-var ErrHandlerAlreadyRegisterd = errors.New("an Handler with this name is already registerd")
+// ErrHandlerAlreadyRegistered is an error when trying to add Handlers that already is Registered
+var ErrHandlerAlreadyRegistered = errors.New("an Handler with this name is already Registered")
 
-// ErrHandlerNotRegisterd is an error that is thrown when trying to find an Handler that does not exist
-var ErrHandlerNotRegisterd = errors.New("the Handler asked for is not registerd")
+// ErrHandlerNotRegistered is an error that is thrown when trying to find an Handler that does not exist
+var ErrHandlerNotRegistered = errors.New("the Handler asked for is not Registered")
 
 func init() {
 	HandlerRegister = make(map[string]handlers.Handler, 0)
 }
 
-// Register is used to register an Handler. If a Handler with that name already exists it will return an ErrHandlerAlreadyRegisterd
+// Register is used to register an Handler. If a Handler with that name already exists it will return an ErrHandlerAlreadyRegistered
 func Register(name string, f handlers.Handler) error {
 	if _, ok := HandlerRegister[name]; ok {
-		return ErrHandlerAlreadyRegisterd
+		return ErrHandlerAlreadyRegistered
 	}
 	HandlerRegister[name] = f
 	return nil
 }
 
-// GetHandler is used to extract a registerd Handler, should return a NEW Copy of an Handler
+// GetHandler is used to extract a Registered Handler, should return a NEW Copy of an Handler
 func GetHandler(name string) (handlers.Handler, error) {
 	if _, ok := HandlerRegister[name]; !ok {
-		return nil, ErrHandlerNotRegisterd
+		return nil, ErrHandlerNotRegistered
 	}
 	// @TODO FIX so it returns a copy instead
 	return HandlerRegister[name], nil

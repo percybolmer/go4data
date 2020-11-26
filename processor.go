@@ -1,5 +1,5 @@
 // Package workflow is a package that is used to create procescors that runs any kind of handler on a payload flow
-// The payloads will be transferd between processors that has a relationship assigned
+// The payloads will be transferred between processors that has a relationship assigned
 package workflow
 
 import (
@@ -62,12 +62,12 @@ var (
 	ErrNilContext = errors.New("nil context is not allowed when starting a processor")
 	//ErrProcessorAlreadyStopped is when trying to stop a processor that is alrady stopped
 	ErrProcessorAlreadyStopped = errors.New("the processor is already stopped")
-	//ErrRequiredPropertiesNotFulfilled is when trying to start a Handler but it needs additonal properties
+	//ErrRequiredPropertiesNotFulfilled is when trying to start a Handler but it needs additional properties
 	ErrRequiredPropertiesNotFulfilled = errors.New("the Handler needs additional properties to work, see the Handlers documentation")
 	//ErrHandlerDoesNotAcceptPublishers is when trying to register an publisher to a processor that has a selfpublishing Handler
 	ErrHandlerDoesNotAcceptPublishers = errors.New("the used Handler does not allow publishers")
 	//ErrDuplicateTopic is when trying to register an duplicate TOPIC to publish to
-	ErrDuplicateTopic = errors.New("the topic is already registerd")
+	ErrDuplicateTopic = errors.New("the topic is already registered")
 	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
 	ErrFailedToUnmarshal = errors.New("failed to unmarshal since data provided is not correct")
 )
@@ -79,7 +79,7 @@ func NewID() uint {
 }
 
 // NewProcessor is used to spawn a new processor
-// You need to set a Registerd Handler or it will return an error
+// You need to set a registered Handler or it will return an error
 // Topics is a vararg that allows you to insert any topic you want the processor
 // to publish its payloads to
 func NewProcessor(name string, topics ...string) *Processor {

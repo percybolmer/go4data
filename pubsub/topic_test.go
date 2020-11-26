@@ -79,7 +79,7 @@ func TestPublish(t *testing.T) {
 	// Drain buffer and sub.Flow should be = 1
 	DrainTopicsBuffer()
 	if len(sub.Flow) != 1 {
-		t.Fatal("Sub didnt recieve Buffer item")
+		t.Fatal("Sub didnt Receive Buffer item")
 	} else if (len(Topics["test"].Buffer.Flow)) != 0 {
 		t.Fatal("didnt properly Empty buffer")
 	}
@@ -150,8 +150,8 @@ func TestSubscribe(t *testing.T) {
 	}
 
 	_, err = Subscribe("test", 1, 1)
-	if !errors.Is(err, ErrPidAlreadyRegisterd) {
-		t.Fatal("Should have gotten an error that the subcription is already registerd")
+	if !errors.Is(err, ErrPidAlreadyRegistered) {
+		t.Fatal("Should have gotten an error that the subcription is already Registered")
 	}
 
 	_, err = Subscribe("test", 2, 1)

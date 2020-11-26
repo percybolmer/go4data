@@ -47,7 +47,7 @@ func (p *Property) Int() (int, error) {
 	return value, nil
 }
 
-// Int64 ressemblance of the property is returned
+// Int64 resemblance of the property is returned
 func (p *Property) Int64() (int64, error) {
 	var value int
 	var ok bool

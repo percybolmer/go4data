@@ -16,9 +16,9 @@ var (
 // Failure is the Workflows Custom error handeling struct
 // It contains Error and some meta data about what Processor that triggerd the error
 type Failure struct {
-	// Err is the error that occured
+	// Err is the error that occurred
 	Err error `json:"error"`
-	// Payload is the payload that was being processed when a Failure occured
+	// Payload is the payload that was being processed when a Failure occurred
 	Payload payload.Payload `json:"payload"`
 	// Processor is the UUID of the procesor that triggers the Error
 	Processor uint `json:"processor"`

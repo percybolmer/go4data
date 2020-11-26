@@ -14,8 +14,8 @@ var Topics map[string]*Topic
 var (
 	//ErrTopicAlreadyExists is thrown when running NewTopic on a topic that already exists
 	ErrTopicAlreadyExists = errors.New("this topic does already exist, cannot create a duplicate topic")
-	//ErrPidAlreadyRegisterd is thrown when trying to publish/subscribe with a processor already publishing/subscribing on a certain topic
-	ErrPidAlreadyRegisterd = errors.New("the pid is already registerd, duplicate Pub/Subs not allowed")
+	//ErrPidAlreadyRegistered is thrown when trying to publish/subscribe with a processor already publishing/subscribing on a certain topic
+	ErrPidAlreadyRegistered = errors.New("the pid is already Registered, duplicate Pub/Subs not allowed")
 	//ErrNoSuchTopic is a error that can be thrown when no topic is found
 	ErrNoSuchTopic = errors.New("thrown when no topic is found")
 	//ErrNoSuchPid is when no Pid in a topic is found
@@ -108,10 +108,10 @@ func TopicExists(key string) bool {
 // DrainTopicsBuffer will itterate all topics and drain their buffer if there is any subscribers
 func DrainTopicsBuffer() {
 	for _, top := range Topics {
-		xCanRecieve := len(top.Subscribers)
+		xCanReceive := len(top.Subscribers)
 		for len(top.Buffer.Flow) > 0 {
-			// If no subscriber can recieve more data, stop draining
-			if xCanRecieve == 0 {
+			// If no subscriber can Receive more data, stop draining
+			if xCanReceive == 0 {
 				break
 			}
 			payload := <-top.Buffer.Flow
@@ -121,7 +121,7 @@ func DrainTopicsBuffer() {
 					// Managed to send item
 				default:
 					// The pipe is full
-					xCanRecieve--
+					xCanReceive--
 				}
 			}
 
@@ -164,7 +164,7 @@ func Subscribe(key string, pid uint, queueSize int) (*Pipe, error) {
 		// Topic exists, see if PID is not duplicate
 		for _, sub := range Topics[key].Subscribers {
 			if sub.Pid == pid {
-				return nil, ErrPidAlreadyRegisterd
+				return nil, ErrPidAlreadyRegistered
 			}
 		}
 		top = Topics[key]

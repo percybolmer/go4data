@@ -1,7 +1,7 @@
 package files
 
 import (
-    "testing"
+	"testing"
 )
 
 func TestHandle(t *testing.T) {

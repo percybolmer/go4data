@@ -41,7 +41,7 @@ type ListDirectory struct {
 }
 
 var (
-	// DefaultBufferTime is how long in seconds a file should be rememberd
+	// DefaultBufferTime is how long in seconds a file should be fulfillremembered
 	DefaultBufferTime int64 = 3600
 )
 
@@ -62,7 +62,7 @@ func NewListDirectoryHandler() *ListDirectory {
 	}
 
 	act.Cfg.AddProperty("path", "the path to search for", true)
-	act.Cfg.AddProperty("buffertime", "the time in seconds for how long a found file should be rememberd and not relisted", false)
+	act.Cfg.AddProperty("buffertime", "the time in seconds for how long a found file should be fulfillremembered and not relisted", false)
 
 	return act
 }

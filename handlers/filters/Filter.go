@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	//ErrNotFilterablePayload is thrown when the input payload does not fullfill filterable
+	//ErrNotFilterablePayload is thrown when the input payload does not fulfill filterable
 	ErrNotFilterablePayload error = errors.New("The input payload is not filterable")
 )
 
