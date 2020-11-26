@@ -1,6 +1,8 @@
 # Workflow
 
 Automate all things  
+[![codecov](https://codecov.io/gh/percybolmer/workflow/branch/master/graph/badge.svg?token=E33GL0U61D)](https://codecov.io/gh/percybolmer/workflow)
+![go report](https://goreportcard.com/badge/github.com/percybolmer/workflow)
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/percybolmer/workflow)](https://github.com/percybolmer/workflow/stargazers)
 ![Go](https://github.com/percybolmer/workflow/workflows/Go/badge.svg)

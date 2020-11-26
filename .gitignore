@@ -1,6 +1,4 @@
 workflow.code-workspace
-backup_p_test.txt
-backup_processor.txt
 tooling/handlergenerator/handlergenerator
 testing/realexample
-handlers/filters/backup
+handlers/files/testing/WriteFile
