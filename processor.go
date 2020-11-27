@@ -132,7 +132,7 @@ func (p *Processor) Start(ctx context.Context) error {
 			go p.handleSubscription(c, sub)
 		}
 	}
-
+	// Start listening on Handler errorChannel and transform errors into Failures and apply Failurehandler on em
 	p.Running = true
 
 	return nil

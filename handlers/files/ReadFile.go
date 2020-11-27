@@ -92,7 +92,7 @@ func (a *ReadFile) ValidateConfiguration() (bool, []string) {
 	removeProp := a.Cfg.GetProperty("remove_after")
 	missing := make([]string, 0)
 
-	if removeProp == nil && removeProp.Value == nil {
+	if removeProp == nil || removeProp.Value == nil {
 		missing = append(missing, "remove_after")
 		return false, missing
 	}

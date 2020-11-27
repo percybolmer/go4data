@@ -46,7 +46,36 @@ func TestReadFileHandle(t *testing.T) {
 		t.Fatal("Bad output length")
 	}
 }
+func TestReadFileMetrics(t *testing.T) {
+	rfg := NewReadFileHandler()
+	handler := rfg.(*ReadFile)
 
+	if handler.Subscriptionless() {
+		t.Fatal("should be subscriptionless")
+	}
+
+	if handler.GetErrorChannel() == nil {
+		t.Fatal("Should not be nil errChan")
+	}
+
+	handler.SetMetricProvider(metric.NewPrometheusProvider(), "test")
+	if handler.metrics == nil {
+		t.Fatal("Should not have failed to assigned metric")
+	}
+
+	if handler.metricPrefix != "test" {
+		t.Fatal("Pefix not applied")
+	}
+	if met := handler.metrics.GetMetric("test_payloads_in"); met == nil {
+		t.Fatal("Didnt create payload in metric")
+	}
+	if met := handler.metrics.GetMetric("test_payloads_out"); met == nil {
+		t.Fatal("Didnt create payload in metric")
+	}
+	if handler.GetHandlerName() != "ReadFile" {
+		t.Fatal("Wrong handler name")
+	}
+}
 func TestReadFileValidateConfiguration(t *testing.T) {
 	type testCase struct {
 		Name        string
@@ -78,5 +107,22 @@ func TestReadFileValidateConfiguration(t *testing.T) {
 		if !tc.IsValid && valid {
 			t.Fatal("Missmatch between Valid and tc.IsValid")
 		}
+	}
+
+	rfg := NewReadFileHandler()
+	rfg.GetConfiguration().RemoveProperty("remove_after")
+	valid, err := rfg.ValidateConfiguration()
+	if valid {
+		t.Fatal("wrong, should not be valid without required topic")
+	}
+	if err[0] != "remove_after" {
+		t.Fatal("Should have shown that remove_after property is missing")
+	}
+	rfg = NewReadFileHandler()
+	rfg.GetConfiguration().SetProperty("remove_after", true)
+	rfg.ValidateConfiguration()
+	rf := rfg.(*ReadFile)
+	if !rf.remove {
+		t.Fatal("Didnt change or apply remove_after")
 	}
 }

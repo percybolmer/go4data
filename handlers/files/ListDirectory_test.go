@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
 )
@@ -74,6 +75,37 @@ func TestListDirectory(t *testing.T) {
 		t.Fatal("Wrong length of payloads: ", len(payloads))
 	}
 
+}
+
+func TestListDirectoryMetrics(t *testing.T) {
+	rfg := NewListDirectoryHandler()
+	handler := rfg.(*ListDirectory)
+
+	if !handler.Subscriptionless() {
+		t.Fatal("should be subscriptionless")
+	}
+
+	if handler.GetErrorChannel() == nil {
+		t.Fatal("Should not be nil errChan")
+	}
+
+	handler.SetMetricProvider(metric.NewPrometheusProvider(), "test")
+	if handler.metrics == nil {
+		t.Fatal("Should not have failed to assigned metric")
+	}
+
+	if handler.metricPrefix != "test" {
+		t.Fatal("Pefix not applied")
+	}
+	if met := handler.metrics.GetMetric("test_payloads_in"); met == nil {
+		t.Fatal("Didnt create payload in metric")
+	}
+	if met := handler.metrics.GetMetric("test_payloads_out"); met == nil {
+		t.Fatal("Didnt create payload in metric")
+	}
+	if handler.GetHandlerName() != "ListDirectory" {
+		t.Fatal("Wrong handler name")
+	}
 }
 
 func TestListDirectoryValidateConfiguration(t *testing.T) {

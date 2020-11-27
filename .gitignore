@@ -3,3 +3,4 @@ tooling/handlergenerator/handlergenerator
 testing/realexample
 handlers/files/testing/WriteFile
 cover.out
+opencoverage.sh

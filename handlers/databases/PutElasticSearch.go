@@ -5,15 +5,18 @@ package databases
 import (
 	"context"
 	"fmt"
+	"strings"
 
-	"github.com/olivere/elastic"
-	"github.com/olivere/elastic/config"
 	"github.com/percybolmer/workflow/handlers"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/payload"
 	"github.com/percybolmer/workflow/property"
 	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
+
+	"github.com/elastic/go-elasticsearch/esapi"
+	elasticsearch6 "github.com/elastic/go-elasticsearch/v6"
+	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
 )
 
 // PutElasticSearch is used to push payloads onto a elasticsearch topic
@@ -39,8 +42,11 @@ type PutElasticSearch struct {
 	metrics metric.Provider
 	// metricPrefix is a unique string to attach to metrics
 	metricPrefix string
-	// eslogger is used to log to escluster
-	eslogger *elastic.Client
+
+	//es6 is for version 6
+	es6 *elasticsearch6.Client
+	//es 7 is for version 7
+	es7 *elasticsearch7.Client
 }
 
 func init() {
@@ -55,11 +61,13 @@ func NewPutElasticSearchHandler() handlers.Handler {
 		},
 		Name:    "PutElasticSearch",
 		errChan: make(chan error, 1000),
+		metrics: metric.NewPrometheusProvider(),
 	}
 	act.Cfg.AddProperty("index", "the index to push to", true)
 	act.Cfg.AddProperty("ip", "the ip of the elasticserver to connect", true)
 	act.Cfg.AddProperty("port", "the port used by the server", true)
 	act.Cfg.AddProperty("type", "the elastic type to use, has to be unique to avoid mapping collisions", true)
+	act.Cfg.AddProperty("version", "the elastic version to use", true)
 	return act
 }
 
@@ -72,12 +80,23 @@ func (a *PutElasticSearch) GetHandlerName() string {
 func (a *PutElasticSearch) Handle(ctx context.Context, input payload.Payload, topics ...string) error {
 	a.metrics.IncrementMetric(fmt.Sprintf("%s_payloads_in", a.metricPrefix), 1)
 
-	_, err := a.eslogger.Index().Index(a.index).
-		Type(a.elastictype).
-		BodyJson(input.GetPayload()).
-		Do(context.Background())
-	if err != nil {
-		return err
+	req := esapi.IndexRequest{
+		Index:   a.index,
+		Body:    strings.NewReader(string(input.GetPayload())),
+		Refresh: "true",
+	}
+	if a.es6 != nil {
+		res, err := req.Do(ctx, a.es6)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
+	} else if a.es7 != nil {
+		res, err := req.Do(ctx, a.es7)
+		if err != nil {
+			return err
+		}
+		defer res.Body.Close()
 	}
 
 	if len(topics) != 0 {
@@ -108,7 +127,9 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 	a.elastictype = elastictype
 	ipProp := a.Cfg.GetProperty("ip")
 	ip := ipProp.String()
-
+	if ip == "" {
+		return false, []string{"cannot use empty ip"}
+	}
 	portProp := a.Cfg.GetProperty("port")
 	port, err := portProp.Int()
 	if err != nil {
@@ -119,26 +140,47 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 	a.port = port
 	a.index = index
 
-	esclient, err := elastic.NewClientFromConfig(&config.Config{
-		Index: index,
-		URL:   fmt.Sprintf("http://%s:%d", ip, port),
-	})
-	if err != nil {
-		return false, []string{err.Error()}
+	versionProp := a.Cfg.GetProperty("version")
+	version := versionProp.String()
+	if version == "" {
+		return false, []string{"cannot have an empty version, please use 6.X or 7.X"}
 	}
-	a.eslogger = esclient
-
-	exists, err := esclient.IndexExists(index).Do(context.Background())
-	if err != nil {
-		return false, []string{err.Error()}
+	url := fmt.Sprintf("http://%s:%d", ip, port)
+	if strings.HasPrefix(version, "7") {
+		cfg := elasticsearch7.Config{
+			Addresses: []string{
+				url,
+			},
+		}
+		es, _ := elasticsearch7.NewClient(cfg)
+		a.es7 = es
+		a.es6 = nil
+	} else if strings.HasPrefix(version, "6") {
+		cfg := elasticsearch6.Config{
+			Addresses: []string{
+				url,
+			},
+		}
+		es6, _ := elasticsearch6.NewClient(cfg)
+		a.es6 = es6
+		a.es7 = nil
+	} else {
+		a.es6 = nil
+		a.es7 = nil
+		return false, []string{"unsupported version"}
 	}
-	if !exists {
-		_, err := esclient.CreateIndex(index).Do(context.Background())
+	// Make sure connection works
+	if a.es6 != nil {
+		_, err := a.es6.Info()
+		if err != nil {
+			return false, []string{err.Error()}
+		}
+	} else if a.es7 != nil {
+		_, err := a.es7.Info()
 		if err != nil {
 			return false, []string{err.Error()}
 		}
 	}
-
 	return true, nil
 }
 
