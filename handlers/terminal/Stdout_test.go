@@ -37,7 +37,7 @@ func TestHandle(t *testing.T) {
 
 }
 
-func TestValidateConfiguration(t *testing.T) {
+func TestStdoutValidateConfiguration(t *testing.T) {
 	type testCase struct {
 		Name        string
 		Cfgs        map[string]interface{}
@@ -47,8 +47,6 @@ func TestValidateConfiguration(t *testing.T) {
 
 	testCases := []testCase{
 		{Name: "InValidType", IsValid: false, Cfgs: map[string]interface{}{"forward": "hee"}, ExpectedErr: property.ErrWrongPropertyType},
-		{Name: "NoSuchConfig", IsValid: false, Cfgs: map[string]interface{}{"i_should_have_remove_after": true}, ExpectedErr: property.ErrNoSuchProperty},
-		{Name: "MissingConfig", IsValid: false, Cfgs: nil, ExpectedErr: nil},
 	}
 
 	for _, tc := range testCases {
@@ -66,19 +64,19 @@ func TestValidateConfiguration(t *testing.T) {
 
 		valid, _ := rfg.ValidateConfiguration()
 		if !tc.IsValid && valid {
-			t.Fatal("Missmatch between Valid and tc.IsValid")
+			t.Fatal(tc.Name, "Missmatch between Valid and tc.IsValid")
 		}
 	}
 
 	rfg := NewStdoutHandler()
-	rfg.GetConfiguration().RemoveProperty("forward")
+	/*rfg.GetConfiguration().RemoveProperty("forward")
 	valid, err := rfg.ValidateConfiguration()
 	if valid {
 		t.Fatal("Should not be valid after removing required property")
 	}
 	if err[0] != "forward" {
 		t.Fatal("Should warn that forward is not set")
-	}
+	}*/
 
 	rfg = NewStdoutHandler()
 	rfg.GetConfiguration().SetProperty("forward", true)

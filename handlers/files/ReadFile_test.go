@@ -58,18 +58,18 @@ func TestReadFileMetrics(t *testing.T) {
 		t.Fatal("Should not be nil errChan")
 	}
 
-	handler.SetMetricProvider(metric.NewPrometheusProvider(), "test")
+	handler.SetMetricProvider(metric.NewPrometheusProvider(), "test2")
 	if handler.metrics == nil {
 		t.Fatal("Should not have failed to assigned metric")
 	}
 
-	if handler.metricPrefix != "test" {
+	if handler.metricPrefix != "test2" {
 		t.Fatal("Pefix not applied")
 	}
-	if met := handler.metrics.GetMetric("test_payloads_in"); met == nil {
+	if met := handler.metrics.GetMetric("test2_payloads_in"); met == nil {
 		t.Fatal("Didnt create payload in metric")
 	}
-	if met := handler.metrics.GetMetric("test_payloads_out"); met == nil {
+	if met := handler.metrics.GetMetric("test2_payloads_out"); met == nil {
 		t.Fatal("Didnt create payload in metric")
 	}
 	if handler.GetHandlerName() != "ReadFile" {

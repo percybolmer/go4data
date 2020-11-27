@@ -47,7 +47,7 @@ func NewStdoutHandler() handlers.Handler {
 		forward: true,
 		errChan: make(chan error, 1000),
 	}
-	act.Cfg.AddProperty("forward", "Set to true if payloads should be forwarded", false)
+	act.Cfg.AddProperty("forward", "Set to true if payloads should be forwarded", true)
 	return act
 }
 
@@ -79,10 +79,10 @@ func (a *StdoutHandler) ValidateConfiguration() (bool, []string) {
 	if !valid {
 		return valid, miss
 	}
-	forwardProp := a.Cfg.GetProperty("forward")
 
-	if forwardProp.Value == nil {
-		return true, nil
+	forwardProp := a.Cfg.GetProperty("forward")
+	if forwardProp == nil || forwardProp.Value == nil {
+		return true, []string{"forward"}
 	}
 	forward, err := forwardProp.Bool()
 	if err != nil {
