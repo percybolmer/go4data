@@ -47,7 +47,7 @@ func NewStdoutHandler() handlers.Handler {
 		forward: true,
 		errChan: make(chan error, 1000),
 	}
-	act.Cfg.AddProperty("forward", "Set to true if payloads should be forwarded", true)
+	act.Cfg.AddProperty("forward", "Set to true if payloads should be forwarded", false)
 	return act
 }
 
