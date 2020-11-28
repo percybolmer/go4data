@@ -113,6 +113,15 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 		return valid, miss
 	}
 
+	mockProp := a.Cfg.GetProperty("mock")
+	var mock bool
+	if mockProp != nil {
+		mocki, err := mockProp.Bool()
+		if err != nil {
+			return false, []string{"mock should be true/false"}
+		}
+		mock = mocki
+	}
 	indexProp := a.Cfg.GetProperty("index")
 	index := indexProp.String()
 	if index == "" {
@@ -170,15 +179,17 @@ func (a *PutElasticSearch) ValidateConfiguration() (bool, []string) {
 		return false, []string{"unsupported version"}
 	}
 	// Make sure connection works
-	if a.es6 != nil {
-		_, err := a.es6.Info()
-		if err != nil {
-			return false, []string{err.Error()}
-		}
-	} else if a.es7 != nil {
-		_, err := a.es7.Info()
-		if err != nil {
-			return false, []string{err.Error()}
+	if !mock {
+		if a.es6 != nil {
+			_, err := a.es6.Info()
+			if err != nil {
+				return false, []string{err.Error()}
+			}
+		} else if a.es7 != nil {
+			_, err := a.es7.Info()
+			if err != nil {
+				return false, []string{err.Error()}
+			}
 		}
 	}
 	return true, nil
