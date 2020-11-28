@@ -48,3 +48,34 @@ func TestOpenPcapHandle(t *testing.T) {
 		}
 	}
 }
+
+func TestValidateConfiguration(t *testing.T) {
+	rfg := NewOpenPcapHandler()
+	if rfg.GetErrorChannel() == nil {
+		t.Fatal("Should return error channel")
+	}
+	if rfg.GetConfiguration() == nil {
+		t.Fatal("Should return a configuration")
+	}
+	if rfg.Subscriptionless() {
+		t.Fatal("OpenPcap is a  not subscriptionless handler")
+	}
+
+	rfg.GetConfiguration().SetProperty("bpf", "test")
+	valid, err := rfg.ValidateConfiguration()
+	if !valid {
+		t.Fatal("Should never fail without any requirements")
+	}
+	if len(err) != 0 {
+		t.Fatal("Should not return any errors")
+	}
+	handler := rfg.(*OpenPcap)
+	if handler.bpf != "test" {
+		t.Fatal("Didnt apply bpf filter")
+	}
+
+	if rfg.GetHandlerName() != "OpenPcap" {
+		t.Fatal("wrong named supplied")
+	}
+
+}

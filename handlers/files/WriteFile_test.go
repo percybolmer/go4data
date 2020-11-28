@@ -110,4 +110,39 @@ func TestWriteFileValidateConfiguration(t *testing.T) {
 			t.Fatal("Missmatch between Valid and tc.IsValid")
 		}
 	}
+	rfg := NewWriteFileHandler()
+	if rfg.GetHandlerName() != "WriteFile" {
+		t.Fatal("Wrong name of handler")
+	}
+	if rfg.GetErrorChannel() == nil {
+		t.Fatal("Should not return nil channel")
+	}
+	if rfg.Subscriptionless() {
+		t.Fatal("Writefile is not subscriptionless")
+	}
+	rfg.GetConfiguration().SetProperty("path", "test")
+
+	rfg.GetConfiguration().SetProperty("append", "not a bool")
+	valid, err := rfg.ValidateConfiguration()
+	if valid {
+		t.Fatal("Should not have been valid with bad append value")
+	}
+	if len(err) != 0 {
+		if err[0] != property.ErrWrongPropertyType.Error() {
+			t.Fatal("Should have been wrong property type: ", err[0])
+		}
+	}
+	rfg.GetConfiguration().SetProperty("append", true)
+
+	rfg.GetConfiguration().SetProperty("forward", "not a bool")
+	valid, err = rfg.ValidateConfiguration()
+	if valid {
+		t.Fatal("Should not have been valid with bad append value")
+	}
+	if len(err) != 0 {
+		if err[0] != property.ErrWrongPropertyType.Error() {
+			t.Fatal("Should have been wrong property type: ", err[0])
+		}
+	}
+
 }

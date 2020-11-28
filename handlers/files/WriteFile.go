@@ -135,11 +135,6 @@ func (a *WriteFile) ValidateConfiguration() (bool, []string) {
 	appendProp := a.Cfg.GetProperty("append")
 	forwardProp := a.Cfg.GetProperty("forward")
 
-	valid, missing := a.Cfg.ValidateProperties()
-	if !valid {
-		return false, missing
-	}
-
 	path := pathProp.String()
 	app, err := appendProp.Bool()
 	if err != nil {

@@ -61,7 +61,9 @@ func NewExecCMDHandler() handlers.Handler {
 		},
 		Name:             "ExecCMD",
 		errChan:          make(chan error, 1000),
+		metrics:          metric.NewPrometheusProvider(),
 		appendOldPayload: false,
+		subscriptionless: true,
 	}
 	act.Cfg.AddProperty("command", "the command to run ", true)
 	act.Cfg.AddProperty("arguments", "The arguments to add to the command, if this list of arguments contains the word payload, It will print the payload of the incomming payload as an argument", false)

@@ -102,10 +102,6 @@ func (a *OpenPcap) Handle(ctx context.Context, input payload.Payload, topics ...
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
 func (a *OpenPcap) ValidateConfiguration() (bool, []string) {
 	// Check if Cfgs are there as needed
-	valid, miss := a.Cfg.ValidateProperties()
-	if !valid {
-		return valid, miss
-	}
 
 	bpfProp := a.Cfg.GetProperty("bpf")
 	if bpfProp != nil && bpfProp.Value != nil {

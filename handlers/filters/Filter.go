@@ -169,7 +169,7 @@ func (a *FilterHandler) ValidateConfiguration() (bool, []string) {
 	filterProp := a.Cfg.GetProperty("filters")
 	directoryProp := a.Cfg.GetProperty("filterDirectory")
 	var missing []string
-	if (filterProp == nil && filterProp.Value == nil) && (directoryProp == nil && directoryProp.Value == nil) {
+	if filterProp == nil && directoryProp == nil {
 		missing = append(missing, payload.ErrFilterOrDirectory.Error())
 		return false, missing
 	}
@@ -198,6 +198,9 @@ func (a *FilterHandler) ValidateConfiguration() (bool, []string) {
 				a.filters[groupName] = append(a.filters[groupName], filter)
 			}
 		}
+	}
+	if len(a.filters) == 0 {
+		return false, []string{"no filters configured"}
 	}
 	// Check if strict Mode should be enabled
 	if strictProp != nil && strictProp.Value != nil {
