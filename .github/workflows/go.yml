@@ -40,7 +40,7 @@ jobs:
       run: sudo go test -v ./...
     - name: MultiTest coverage report
       run: |
-        bash test_coverage.sh
+        sudo bash test_coverage.sh
       
     - name: Codecov
       uses: codecov/codecov-action@v1.0.15
