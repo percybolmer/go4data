@@ -120,10 +120,6 @@ func (a *NetworkInterface) Handle(ctx context.Context, input payload.Payload, to
 // ValidateConfiguration is used to see that all needed configurations are assigned before starting
 func (a *NetworkInterface) ValidateConfiguration() (bool, []string) {
 	// Check if Cfgs are there as needed
-	valid, miss := a.Cfg.ValidateProperties()
-	if !valid {
-		return valid, miss
-	}
 	bpfProp := a.Cfg.GetProperty("bpf")
 	if bpfProp != nil && bpfProp.Value != nil {
 		a.bpf = bpfProp.String()
@@ -147,7 +143,7 @@ func (a *NetworkInterface) ValidateConfiguration() (bool, []string) {
 		return false, []string{ErrConfiguredInterface.Error()}
 	}
 
-	promModeProp := a.Cfg.GetProperty("promiscuous")
+	promModeProp := a.Cfg.GetProperty("promiscuousmode")
 	if promModeProp != nil && promModeProp.Value != nil {
 		promMode, err := promModeProp.Bool()
 		if err != nil {
