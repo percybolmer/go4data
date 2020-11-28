@@ -35,7 +35,7 @@ func TestNetworkInterfaceHandle(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	// Send a spoof packet on 127.0.0.1
 	sendSpoofPacket("lo", t)
-	time.Sleep(1 * time.Second)
+	time.Sleep(3 * time.Second)
 	// See metrics is set
 	outmet := nethand.metrics.GetMetric(nethand.MetricPayloadOut)
 	if outmet == nil {
