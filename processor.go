@@ -133,9 +133,30 @@ func (p *Processor) Start(ctx context.Context) error {
 		}
 	}
 	// Start listening on Handler errorChannel and transform errors into Failures and apply Failurehandler on em
+	go p.MonitorErrChannel(c)
 	p.Running = true
 
 	return nil
+}
+
+// MonitorErrChannel is used to monitor errorchannel of a handler if its not nil
+func (p *Processor) MonitorErrChannel(ctx context.Context) {
+	errChan := p.Handler.GetErrorChannel()
+	if errChan == nil {
+		return
+	}
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case err := <-errChan:
+			p.FailureHandler(Failure{
+				Err:       err,
+				Payload:   nil,
+				Processor: p.ID,
+			})
+		}
+	}
 }
 
 // Stop will cancel the goroutines running

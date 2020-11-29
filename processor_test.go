@@ -29,7 +29,9 @@ func NewTestHandler() handlers.Handler {
 		cfg: property.NewConfiguration(),
 	}
 }
-
+func (th *testHandler) GetErrorChannel() chan error {
+	return nil
+}
 func (th *testHandler) ValidateConfiguration() (bool, []string) {
 	return true, nil
 }
