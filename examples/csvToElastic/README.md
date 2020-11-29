@@ -162,6 +162,8 @@ The workflow file in this case would look like
               value: 9200
             - name: type
               value: csv
+            - name: version
+              value: "7.2"
     handler_name: PutElasticSearch
 
 

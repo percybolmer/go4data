@@ -179,7 +179,7 @@ func (a *ExecCMD) ValidateConfiguration() (bool, []string) {
 			return false, []string{err.Error()}
 		}
 		for _, arg := range splice {
-			if arg == "payload" {
+			if strings.Contains(arg, "payload") {
 				// This should make INGRESS not required since we expect payloads
 				a.subscriptionless = false
 			}

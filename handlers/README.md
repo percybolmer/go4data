@@ -11,6 +11,7 @@ They are sectioned after package name, each packagename is related to the topic 
 | ip | string | The ip address of the elastic node
 | port | int | The port of the elastic node
 | type | string | The elastic type to use, this is related to the mapping of elasticsearch.
+| version | string | The elastic version to use, current supported versions are 6.x and 7.x
 ## Files
 **ListDirectory -** Monitors a directory for files, any new files is sent out on the topics.
 | Properties  | Type | Description |
