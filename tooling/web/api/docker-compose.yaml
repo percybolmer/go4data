@@ -1,0 +1,27 @@
+# This compose is for API only, can be used if only wanting the api and not the webui
+version: "3.0"
+services:
+    api:
+        build:
+          context: .
+          dockerfile: Dockerfile
+          args:
+            host: "localhost:8000"
+        env_file:
+            - database.env
+        depends_on:
+            - database
+        network_mode: host    
+    database:
+        image: "postgres"
+        env_file:
+            - database.env
+        volumes:
+            - database-data:/var/lib/postgresql/data/ # persist data even if container shuts down
+        network_mode: host
+            
+volumes:
+    database-data:
+networks:
+  data-sharing:
+    driver: bridge

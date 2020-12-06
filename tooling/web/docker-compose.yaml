@@ -1,0 +1,20 @@
+version: "3"
+services:
+  ui:
+    image: ui:devel
+    network_mode: host
+  workflow_api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+      args:
+        host: "localhost:8000"
+  envoy:
+    network_mode: host
+    build:
+      context: ./envoy
+      dockerfile: Dockerfile
+      args:
+        envoyconfig: ./envoy-tls.yaml
+        api_port: 8000
+        ui_port: 8080

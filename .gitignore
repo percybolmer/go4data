@@ -4,3 +4,4 @@ testing/realexample
 handlers/files/testing/WriteFile
 cover.out
 opencoverage.sh
+tooling/web/ui/node_modules
