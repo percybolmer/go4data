@@ -5,3 +5,8 @@ handlers/files/testing/WriteFile
 cover.out
 opencoverage.sh
 tooling/web/ui/node_modules
+tooling/web/ui/.cert
+tooling/web/api/cert/ca*
+tooling/web/api/cert/server*
+tooling/web/envoy/ca.cert
+tooling/web/envoy/server*

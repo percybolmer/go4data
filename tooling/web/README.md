@@ -16,3 +16,9 @@ Proto is build for both the Golang Server API and the Javascript client.
 The third is the ui which is the react app.  
 
 The forth is the API.
+
+
+## Before using in Production
+Before this tool is used in production there is a number of steps that needs to be done.  
+Using the Docker-compose will complete most of the steps.  
+Changing the environment variables for the CERTS and the SecretKeys should be done to securly use.

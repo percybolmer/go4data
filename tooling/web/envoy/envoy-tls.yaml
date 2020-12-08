@@ -35,16 +35,6 @@ static_resources:
           - name: envoy.cors
           - name: envoy.grpc_web
           - name: envoy.router
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.api.v2.auth.DownstreamTlsContext
-          common_tls_context:
-            tls_certificates:
-              - certificate_chain:
-                  filename: /certs/server.pem
-                private_key:
-                  filename: /certs/server.key
   clusters:
   - name: processor_service
     connect_timeout: 0.25s
@@ -63,4 +53,11 @@ static_resources:
     transport_socket:
       name: envoy.transport_sockets.tls
       typed_config:
-        "@type": type.googleapis.com/envoy.extensions.transport_socket
+        "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+      sni: localhost
+      common_tls_context:
+        validation_context:
+          match_subject_alt_names:
+          - exact: '*.localhost'
+          trusted_ca:
+            filename: /certs/ca.cert

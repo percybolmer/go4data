@@ -19,6 +19,8 @@ type Config struct {
 	DbPassword  string
 	DbName      string
 	DbHost      string
+	DbSecretKey string
+	DbDevelMode string
 	// SetupAPI is used to setup the api, its a function since we want different api stuff based on the Config, etc if cert is set or not
 	SetupAPI func(cfg *Config) (*grpc.Server, error)
 }
@@ -28,10 +30,12 @@ func LoadConfig() *Config {
 	pem := os.Getenv("CERTPEM")
 	key := os.Getenv("KEY")
 	host := os.Getenv("HOST")
+	bcryptSecret := os.Getenv("BCRYPT_SECRET_KEY")
 	psqldb := os.Getenv("POSTGRES_DB")
 	psqluser := os.Getenv("POSTGRES_USER")
 	psqlpass := os.Getenv("POSTGRES_PASSWORD")
 	psqlhost := os.Getenv("POSTGRES_HOST")
+	truncateDB := os.Getenv("POSTGRES_DROPDB")
 	cfg := &Config{
 		CertPemPath: pem,
 		KeyPath:     key,
@@ -40,6 +44,8 @@ func LoadConfig() *Config {
 		DbPassword:  psqlpass,
 		DbName:      psqldb,
 		DbHost:      psqlhost,
+		DbSecretKey: bcryptSecret,
+		DbDevelMode: truncateDB,
 	}
 	if pem == "" || key == "" {
 		log.Println("CERTPEM and KEY was not set, using unsecure API. To secure api please set valid cert and key values")
@@ -78,11 +84,14 @@ func SetupDatabase(cfg *Config) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.MustExec(`DROP TABLE users;`)
-	// We need to init schema if not already done
-	db.MustExec(schema)
+	if cfg.DbDevelMode == "true" {
+		db.MustExec(`DROP TABLE users;`)
+		// We need to init schema if not already done
+		db.MustExec(schema)
 
-	db.MustExec(`INSERT INTO users (email,name,password) VALUES ('tester@testersson.test', 'admin','');`)
+		db.MustExec(`INSERT INTO users (email,name,password) VALUES ('tester@testersson.test', 'admin','');`)
+	}
+
 	return db, err
 
 }

@@ -13,7 +13,7 @@ RUN sed -i "s/UIPORT/${ui_port}/" /etc/envoy/envoy.yaml
 
 RUN cat /etc/envoy/envoy.yaml
 
-COPY ca.cert /certs/crt
+COPY ca.cert /certs/ca.cert
 COPY server.key /certs/server.key
 COPY server.pem /certs/server.pem
 CMD /usr/local/bin/envoy -c /etc/envoy/envoy.yaml

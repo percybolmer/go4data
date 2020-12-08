@@ -22,8 +22,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	userservice.RegisterUserServer(s, &userservice.Server{Db: db})
+	server := userservice.NewServer(db, cfg)
+	err = server.PrepareStatements()
+	if err != nil {
+		log.Fatal(err)
+	}
+	userservice.RegisterUserServer(s, server)
 	lis, err := net.Listen("tcp", cfg.Host)
 	if err != nil {
 		log.Fatal(err)
