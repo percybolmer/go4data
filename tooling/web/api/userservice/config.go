@@ -8,6 +8,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	grpc "google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+
+	_ "github.com/lib/pq"
 )
 
 // Config is used to control and generate the needs items in the api server

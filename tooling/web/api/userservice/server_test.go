@@ -7,10 +7,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	sqlx "github.com/jmoiron/sqlx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/test/bufconn"
@@ -25,21 +26,29 @@ var mock sqlmock.Sqlmock
 
 func init() {
 	lis = bufconn.Listen(bufSize)
-
-	s, err := SetupTLSGrpcAPI(&Config{
-		CertPemPath: "../cert/server.pem",
-		KeyPath:     "../cert/server.key",
-	})
+	/* Set test Environments */
+	os.Setenv("CERTPEM", "../cert/server.pem")
+	os.Setenv("KEY", "../cert/server.key")
+	os.Setenv("BCRYPT_SECRET_KEY", "test")
+	os.Setenv("POSTGRES_DB", "workflow")
+	os.Setenv("POSTGRES_USER", "user")
+	os.Setenv("POSTGRES_PASSWORD", "userpass")
+	os.Setenv("POSTGRES_HOST", "postgres")
+	os.Setenv("POSTGRES_DROPDB", "true")
+	cfg := LoadConfig()
+	s, err := cfg.SetupAPI(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	mockDB, localmock, err := sqlmock.New()
+	db, err := SetupDatabase(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlx := sqlx.NewDb(mockDB, "postgres")
-	server := NewServer(sqlx, nil)
-	mock = localmock
+	server := NewServer(db, cfg)
+	err = server.PrepareStatements()
+	if err != nil {
+		log.Fatal(err)
+	}
 	RegisterUserServer(s, server)
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -80,11 +89,13 @@ func TestGetUser(t *testing.T) {
 	client, conn := newTestClient(t)
 	defer conn.Close()
 
-	rows := sqlmock.NewRows([]string{"id", "name", "password", "email"}).AddRow(1, "test", "test", "test@test.com")
-	mock.ExpectQuery("SELECT id,name,password,email FROM users ").WithArgs(1).WillReturnRows(rows)
-	resp, err := client.GetUser(ctx, &UserRequest{Id: 1})
-	if err != nil {
+	_, err := client.GetUser(ctx, &UserRequest{Id: 0})
+	if err != nil && !strings.Contains(err.Error(), ErrNoSuchUser.Error()) {
 		t.Fatal(err)
 	}
-	log.Println(resp)
+
+}
+
+func TestCreateUser(t *testing.T) {
+
 }
