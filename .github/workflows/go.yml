@@ -53,10 +53,13 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    
+    - name: Generate Test Certificate
+      run: |
+        sudo bash ./tooling/web/api/cert/certgen.sh
+      
     - name: Test & Cover
       env:
-        POSTGRES_HOST: postgres
+        POSTGRES_HOST: localhost
         POSTGRES_USER: user
         POSTGRES_PASS: userpass
         POSTGRES_DB: workflow
