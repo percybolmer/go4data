@@ -38,9 +38,9 @@ jobs:
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
       
-    - name: Get Libpcap
+    - name: Get Linux dependencies
       run: |
-        sudo apt-get install libpcap-dev
+        sudo apt-get install libpcap-dev libssl-dev libssl
         
     - name: Get dependencies
       run: |
@@ -55,7 +55,7 @@ jobs:
 
     - name: Generate Test Certificate
       run: |
-        sudo bash ./tooling/web/api/cert/certgen.sh
+        cd ./tooling/web/api/cert/ && sudo bash ./tooling/web/api/cert/certgen.sh
       
     - name: Test & Cover
       env:
