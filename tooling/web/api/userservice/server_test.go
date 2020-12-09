@@ -29,12 +29,6 @@ func init() {
 	/* Set test Environments */
 	os.Setenv("CERTPEM", "../cert/server.pem")
 	os.Setenv("KEY", "../cert/server.key")
-	os.Setenv("BCRYPT_SECRET_KEY", "test")
-	os.Setenv("POSTGRES_DB", "workflow")
-	os.Setenv("POSTGRES_USER", "user")
-	os.Setenv("POSTGRES_PASSWORD", "userpass")
-	os.Setenv("POSTGRES_HOST", "postgres")
-	os.Setenv("POSTGRES_DROPDB", "true")
 	cfg := LoadConfig()
 	s, err := cfg.SetupAPI(cfg)
 	if err != nil {

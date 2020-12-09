@@ -53,12 +53,16 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: sudo go test -v ./...
-    - name: MultiTest coverage report
+    
+    - name: Test & Cover
+      env:
+        POSTGRES_HOST: postgres
+        POSTGRES_USER: user
+        POSTGRES_PASS: userpass
+        POSTGRES_DB: workflow
       run: |
+        sudo go test -v ./...
         sudo bash test_coverage.sh
-      
     - name: Codecov
       uses: codecov/codecov-action@v1.0.15
       with: 
