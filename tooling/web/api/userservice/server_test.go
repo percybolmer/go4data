@@ -33,7 +33,7 @@ func init() {
 	os.Setenv("POSTGRES_USER", "user")
 	os.Setenv("POSTGRES_HOSTT", "localhost")
 	os.Setenv("POSTGRES_PASSWORD", "qwerty")
-	os.Setenv("POSTGRES_DROPDB")
+	os.Setenv("POSTGRES_DROPDB", "true")
 	cfg := LoadConfig()
 	s, err := cfg.SetupAPI(cfg)
 	if err != nil {
