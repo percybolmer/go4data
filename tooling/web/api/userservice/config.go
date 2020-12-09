@@ -88,7 +88,8 @@ func SetupDatabase(cfg *Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 	if cfg.DbDevelMode == "true" {
-		db.MustExec(`DROP TABLE users;`)
+
+		db.MustExec(`DROP TABLE IF EXISTS users;`)
 		// We need to init schema if not already done
 		db.MustExec(schema)
 
