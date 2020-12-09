@@ -1,9 +1,5 @@
 name: Go
-env:
-  POSTGRES_HOST: localhost
-  POSTGRES_USER: user
-  POSTGRES_PASS: userpass
-  POSTGRES_DB: workflow
+
 on:
   push:
     branches: [master]
@@ -13,8 +9,13 @@ on:
 jobs:
   build:
     name: Build
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_USER: user
+      POSTGRES_PASS: userpass
+      POSTGRES_DB: workflow
     runs-on: ubuntu-latest
-
+    
     services:
       postgres:
         image: postgres:12
