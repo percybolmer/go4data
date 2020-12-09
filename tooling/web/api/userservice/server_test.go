@@ -36,7 +36,7 @@ func init() {
 	}
 	db, err := SetupDatabase(cfg)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to setup database", err)
 	}
 	server := NewServer(db, cfg)
 	err = server.PrepareStatements()

@@ -82,6 +82,7 @@ func SetupUnsecureGrpcAPI(cfg *Config) (*grpc.Server, error) {
 // SetupDatabase is used to trigger a new database connection to store API data
 func SetupDatabase(cfg *Config) (*sqlx.DB, error) {
 	uri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", cfg.DbHost, cfg.DbUser, cfg.DbName, cfg.DbPassword)
+	log.Println(uri)
 	db, err := sqlx.Connect("postgres", uri)
 	if err != nil {
 		return nil, err
