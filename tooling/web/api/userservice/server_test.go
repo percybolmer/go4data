@@ -31,7 +31,7 @@ func init() {
 	os.Setenv("KEY", "../cert/server.key")
 	os.Setenv("POSTGRES_DB", "workflow")
 	os.Setenv("POSTGRES_USER", "user")
-	os.Setenv("POSTGRES_HOSTT", "localhost")
+	os.Setenv("POSTGRES_HOST", "localhost")
 	os.Setenv("POSTGRES_PASSWORD", "qwerty")
 	os.Setenv("POSTGRES_DROPDB", "true")
 	cfg := LoadConfig()
