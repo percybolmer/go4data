@@ -40,7 +40,7 @@ jobs:
       
     - name: Get Linux dependencies
       run: |
-        sudo apt-get install libpcap-dev libssl-dev libssl
+        sudo apt-get install libpcap-dev libssl-dev
         
     - name: Get dependencies
       run: |
