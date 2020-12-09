@@ -9,19 +9,14 @@ on:
 jobs:
   build:
     name: Build
-    env:
-      POSTGRES_HOST: localhost
-      POSTGRES_USER: user
-      POSTGRES_PASS: userpass
-      POSTGRES_DB: workflow
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:12
         env:
           POSTGRES_USER: user
-          POSTGRES_PASSWORD: userpass
+          POSTGRES_PASSWORD: qwerty
           POSTGRES_DB: workflow
         ports:
           - 5432:5432
@@ -64,6 +59,11 @@ jobs:
         run: |
           sudo go test -v ./...
           sudo bash test_coverage.sh
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: user
+          POSTGRES_PASS: qwerty
+          POSTGRES_DB: workflow
       - name: Codecov
         uses: codecov/codecov-action@v1.0.15
         with:
