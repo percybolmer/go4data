@@ -55,7 +55,8 @@ jobs:
 
     - name: Generate Test Certificate
       run: |
-        cd ./tooling/web/api/cert/ && sudo bash ./tooling/web/api/cert/certgen.sh
+        
+        export startpos=$(pwd) && cd ./tooling/web/api/cert/ && sudo bash certgen.sh && cd $(startpos)
       
     - name: Test & Cover
       env:
