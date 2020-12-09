@@ -1,13 +1,16 @@
 name: Go
-
+env:
+  POSTGRES_HOST: localhost
+  POSTGRES_USER: user
+  POSTGRES_PASS: userpass
+  POSTGRES_DB: workflow
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -27,47 +30,40 @@ jobs:
           --health-timeout 5s
           --health-retries 5
 
-
     steps:
+      - name: Set up Go 1.x
+        uses: actions/setup-go@v2
+        with:
+          go-version: ^1.15.5
 
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.15.5
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-      
-    - name: Get Linux dependencies
-      run: |
-        sudo apt-get install libpcap-dev libssl-dev
-        
-    - name: Get dependencies
-      run: |
-        go get -v -t -d ./...
-        if [ -f Gopkg.toml ]; then
-            curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-            dep ensure
-        fi
+      - name: Get Linux dependencies
+        run: |
+          sudo apt-get install libpcap-dev libssl-dev
 
-    - name: Build
-      run: go build -v ./...
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+          if [ -f Gopkg.toml ]; then
+              curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+              dep ensure
+          fi
 
-    - name: Generate Test Certificate
-      run: |
-        
-        export startpos=$(pwd) && cd ./tooling/web/api/cert/ && sudo bash certgen.sh && cd $startpos
-      
-    - name: Test & Cover
-      env:
-        POSTGRES_HOST: localhost
-        POSTGRES_USER: user
-        POSTGRES_PASS: userpass
-        POSTGRES_DB: workflow
-      run: |
-        sudo go test -v ./...
-        sudo bash test_coverage.sh
-    - name: Codecov
-      uses: codecov/codecov-action@v1.0.15
-      with: 
-        token: 3f3cae24-24ff-4c1e-89cc-0ed11d63472a 
+      - name: Build
+        run: go build -v ./...
+
+      - name: Generate Test Certificate
+        run: |
+
+          export startpos=$(pwd) && cd ./tooling/web/api/cert/ && sudo bash certgen.sh && cd $startpos
+
+      - name: Test & Cover
+        run: |
+          sudo go test -v ./...
+          sudo bash test_coverage.sh
+      - name: Codecov
+        uses: codecov/codecov-action@v1.0.15
+        with:
+          token: 3f3cae24-24ff-4c1e-89cc-0ed11d63472a
