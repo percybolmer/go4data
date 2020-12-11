@@ -17,8 +17,8 @@ WORKDIR /app
 # Commented out since I cant get Javascript client to work with TLS yet. Uncomment when Ready
 #ENV CERTPEM="/app/cert/server.pem"
 #ENV KEY="/app/cert/server.key"
-# The BCRYPT_SECRET_KEY Should be changed to a secret key upon deployment to secure database values
-ENV BCRYPT_SECRET_KEY="this-pony-dropped-from-sailing-boat"
+# The JWT_SECRET_KEY Should be changed to a secret key upon deployment to secure database values
+ENV JWT_SECRET_KEY="this-pony-dropped-from-sailing-boat"
 ENV HOST=${host}
 
 CMD ["/app/api"]

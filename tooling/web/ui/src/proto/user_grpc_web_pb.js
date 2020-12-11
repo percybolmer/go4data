@@ -316,13 +316,13 @@ proto.users.UserPromiseClient.prototype.createUser =
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.users.UserRequest,
- *   !proto.users.UserResponse>}
+ *   !proto.users.AckResponse>}
  */
 const methodDescriptor_User_DeleteUser = new grpc.web.MethodDescriptor(
   '/users.User/DeleteUser',
   grpc.web.MethodType.UNARY,
   proto.users.UserRequest,
-  proto.users.UserResponse,
+  proto.users.AckResponse,
   /**
    * @param {!proto.users.UserRequest} request
    * @return {!Uint8Array}
@@ -330,7 +330,7 @@ const methodDescriptor_User_DeleteUser = new grpc.web.MethodDescriptor(
   function(request) {
     return request.serializeBinary();
   },
-  proto.users.UserResponse.deserializeBinary
+  proto.users.AckResponse.deserializeBinary
 );
 
 
@@ -338,10 +338,10 @@ const methodDescriptor_User_DeleteUser = new grpc.web.MethodDescriptor(
  * @const
  * @type {!grpc.web.AbstractClientBase.MethodInfo<
  *   !proto.users.UserRequest,
- *   !proto.users.UserResponse>}
+ *   !proto.users.AckResponse>}
  */
 const methodInfo_User_DeleteUser = new grpc.web.AbstractClientBase.MethodInfo(
-  proto.users.UserResponse,
+  proto.users.AckResponse,
   /**
    * @param {!proto.users.UserRequest} request
    * @return {!Uint8Array}
@@ -349,7 +349,7 @@ const methodInfo_User_DeleteUser = new grpc.web.AbstractClientBase.MethodInfo(
   function(request) {
     return request.serializeBinary();
   },
-  proto.users.UserResponse.deserializeBinary
+  proto.users.AckResponse.deserializeBinary
 );
 
 
@@ -358,9 +358,9 @@ const methodInfo_User_DeleteUser = new grpc.web.AbstractClientBase.MethodInfo(
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.Error, ?proto.users.UserResponse)}
+ * @param {function(?grpc.web.Error, ?proto.users.AckResponse)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.users.UserResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.users.AckResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.users.UserClient.prototype.deleteUser =
@@ -379,7 +379,7 @@ proto.users.UserClient.prototype.deleteUser =
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.users.UserResponse>}
+ * @return {!Promise<!proto.users.AckResponse>}
  *     A native promise that resolves to the response
  */
 proto.users.UserPromiseClient.prototype.deleteUser =

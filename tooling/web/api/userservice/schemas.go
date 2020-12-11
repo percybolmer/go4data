@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 	password varchar(450) NOT NULL,
 	email varchar(100) NOT NULL,
 	createdAt timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	token varchar(255) NOT NULL DEFAULT '',
 	PRIMARY KEY (name)
 )
 `

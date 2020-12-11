@@ -11,18 +11,18 @@ import (
 
 func main() {
 	cfg := userservice.LoadConfig()
-
-	s, err := cfg.SetupAPI(cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	time.Sleep(2 * time.Second)
 	db, err := userservice.SetupDatabase(cfg)
 	if err != nil {
 		log.Fatal(err)
 	}
 	server := userservice.NewServer(db, cfg)
+	s, err := cfg.SetupAPI(cfg, server)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	time.Sleep(2 * time.Second)
+
 	err = server.PrepareStatements()
 	if err != nil {
 		log.Fatal(err)

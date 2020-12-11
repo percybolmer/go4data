@@ -20,13 +20,16 @@ message UserResponse {
     string password = 3;
     int64 id = 4;
     google.protobuf.Timestamp createdAt = 5;
+    string token = 6;
+}
 
-
+message AckResponse {
+    bool ok = 1;
 }
 
 service User{
     rpc GetUser(UserRequest) returns (UserResponse) {};
     rpc Login(BaseRequest) returns (UserResponse) {};
     rpc CreateUser(BaseRequest) returns (UserResponse) {};
-    rpc DeleteUser(UserRequest) returns (UserResponse) {};
+    rpc DeleteUser(UserRequest) returns (AckResponse) {};
 }
