@@ -190,6 +190,8 @@ func DrainTopicsBuffer() {
 		if !ok {
 			return ok
 		}
+		top.Lock()
+		defer top.Unlock()
 		xCanReceive := len(top.Subscribers)
 		for len(top.Buffer.Flow) > 0 {
 			// If no subscriber can Receive more data, stop draining
@@ -232,6 +234,8 @@ func Publish(key string, payloads ...payload.Payload) []PublishingError {
 	}
 
 	// If Subscribers is empty, add to Buffer
+	top.Lock()
+	defer top.Unlock()
 	for _, payload := range payloads {
 		if len(top.Subscribers) == 0 {
 
