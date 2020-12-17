@@ -175,14 +175,11 @@ func TestPubSub(t *testing.T) {
 	pubsub.Publish("topicthatbuffers", pay)
 	time.Sleep(1 * time.Second)
 	metricName := fmt.Sprintf("%s_%d_payloads_in", printer.Name, printer.ID)
-	provider := printer.Metric.(*metric.PrometheusProvider)
-	provider.Lock()
 	printerMetric := printer.Metric.GetMetrics()
 	t.Logf("%+v", printerMetric)
 	if printerMetric[metricName].Value != 1 {
 		t.Fatal("Wrong Printer metric value")
 	}
-	provider.Unlock()
 
 	printer2 := NewProcessor("bufferProcessor")
 	printer2.SetHandler(testf)
@@ -203,13 +200,10 @@ func TestPubSub(t *testing.T) {
 	pubsub.DrainTopicsBuffer()
 	time.Sleep(1 * time.Second)
 	metricName = fmt.Sprintf("%s_%d_payloads_in", printer2.Name, printer2.ID)
-	provider = printer2.Metric.(*metric.PrometheusProvider)
-	provider.Lock()
 	printerMetric = printer2.Metric.GetMetrics()
 	if printerMetric[metricName].Value != 1 {
 		t.Fatal("Wrong Printer2 metric value")
 	}
-	provider.Unlock()
 
 }
 
@@ -281,9 +275,7 @@ func TestRealLifeCase(t *testing.T) {
 		t.Fatal(err)
 	}
 	time.Sleep(1 * time.Second)
-	provider := writeFileProc.Metric.(*metric.PrometheusProvider)
-	provider.Lock()
 	t.Logf("%+v", writeFileProc.Metric.GetMetric(fmt.Sprintf("%s_%d_payloads_in", writeFileProc.Name, writeFileProc.ID)))
-	provider.Unlock()
+
 	// Compare metrics so that they Match
 }

@@ -141,9 +141,7 @@ func (p *Processor) Start(ctx context.Context) error {
 
 // MonitorErrChannel is used to monitor errorchannel of a handler if its not nil
 func (p *Processor) MonitorErrChannel(ctx context.Context) {
-	p.Lock()
 	errChan := p.Handler.GetErrorChannel()
-	p.Unlock()
 	if errChan == nil {
 		return
 	}
@@ -191,9 +189,7 @@ func (p *Processor) SetName(n string) {
 // SetHandler will change the Handler the Processor performs on incomming payloads
 // Should hot reloading like this be ok? Do we need to Stop / Start the proccessor after?
 func (p *Processor) SetHandler(a handlers.Handler) {
-	p.Lock()
 	p.Handler = a
-	p.Unlock()
 }
 
 // HandleSubscriptionless is used to handle Handlers that has no requirement of subscriptions
