@@ -11,7 +11,6 @@ import (
 	"github.com/google/gopacket/pcap"
 	"github.com/percybolmer/workflow/metric"
 	"github.com/percybolmer/workflow/property"
-
 )
 
 func TestNetworkInterfaceHandle(t *testing.T) {

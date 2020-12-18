@@ -176,7 +176,7 @@ func TestPubSub(t *testing.T) {
 	time.Sleep(1 * time.Second)
 	metricName := fmt.Sprintf("%s_%d_payloads_in", printer.Name, printer.ID)
 	printerMetric := printer.Metric.GetMetrics()
-	t.Logf("%+v", printerMetric)
+	//t.Logf("%+v", printerMetric)
 	if printerMetric[metricName].Value != 1 {
 		t.Fatal("Wrong Printer metric value")
 	}
@@ -275,7 +275,7 @@ func TestRealLifeCase(t *testing.T) {
 		t.Fatal(err)
 	}
 	time.Sleep(1 * time.Second)
-	t.Logf("%+v", writeFileProc.Metric.GetMetric(fmt.Sprintf("%s_%d_payloads_in", writeFileProc.Name, writeFileProc.ID)))
+	//t.Logf("%+v", writeFileProc.Metric.GetMetric(fmt.Sprintf("%s_%d_payloads_in", writeFileProc.Name, writeFileProc.ID)))
 
 	// Compare metrics so that they Match
 }

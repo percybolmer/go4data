@@ -41,7 +41,7 @@ func TestOpenPcapHandle(t *testing.T) {
 			if len(netpay.Payload.Data()) == 0 {
 				t.Fatalf("Wrong packet length, %s", netpay.Payload.Dump())
 			}
-			t.Log(netpay.Payload.Dump())
+			//t.Log(netpay.Payload.Dump())
 
 		case <-exit.C:
 			return

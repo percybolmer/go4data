@@ -26,7 +26,7 @@ func TestExecCMDHandle(t *testing.T) {
 	pay, err = rfg.Exec(nil)
 
 	if string(pay.GetPayload()) != "Hello World!\n" {
-		t.Log(pay.GetPayload())
+		//t.Log(pay.GetPayload())
 		t.Fatalf("Wrong payload found: %s", string(pay.GetPayload()))
 	}
 	// test with Flags
@@ -35,8 +35,8 @@ func TestExecCMDHandle(t *testing.T) {
 	pay, _ = rfg.Exec(nil)
 
 	if string(pay.GetPayload()) != "Hello World!" {
-		t.Log(pay.GetPayload())
-		t.Log(pay.GetSource())
+		//t.Log(pay.GetPayload())
+		//t.Log(pay.GetSource())
 		t.Fatalf("Wrong payload with Flags found: %s", string(pay.GetPayload()))
 	}
 	// test with Payload

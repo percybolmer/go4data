@@ -76,12 +76,12 @@ func TestLoad(t *testing.T) {
 
 func TestLoadMap(t *testing.T) {
 
-	loaded, err := Load("testing/loader/loadMap.yml")
+	_, err := Load("testing/loader/loadMap.yml")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Logf("%+v", loaded)
+	///t.Logf("%+v", loaded)
 }
 
 func TestLoadSlice(t *testing.T) {

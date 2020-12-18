@@ -14,9 +14,9 @@ import (
 	"github.com/percybolmer/workflow/pubsub"
 	"github.com/percybolmer/workflow/register"
 
-	"github.com/elastic/go-elasticsearch/esapi"
 	elasticsearch6 "github.com/elastic/go-elasticsearch/v6"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
 // PutElasticSearch is used to push payloads onto a elasticsearch topic

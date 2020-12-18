@@ -313,5 +313,5 @@ func TestFilterValidateConfiguration(t *testing.T) {
 		}
 	}
 
-	t.Logf("%+v", h.filters)
+	//t.Logf("%+v", h.filters)
 }
