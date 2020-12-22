@@ -13,7 +13,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"google.golang.org/grpc"
 
 	"google.golang.org/grpc/credentials"
@@ -26,13 +25,12 @@ var address = "0.0.0.0:8080"
 const bufSize = 1024 * 1024
 
 var lis *bufconn.Listener
-var mock sqlmock.Sqlmock
 var testserver *Server
 
 func init() {
 	lis = bufconn.Listen(bufSize)
 	/* Set test Environments */
-	os.Setenv("CERTPEM", "../cert/server.pem")
+	os.Setenv("CERTPEM", "../cert/server.crt")
 	os.Setenv("KEY", "../cert/server.key")
 	os.Setenv("POSTGRES_DB", "workflow")
 	os.Setenv("POSTGRES_USER", "user")
@@ -70,7 +68,7 @@ func bufDialer(context.Context, string) (net.Conn, error) {
 }
 
 func loadTLSCfg(t *testing.T) *tls.Config {
-	b, _ := ioutil.ReadFile("../cert/ca.cert")
+	b, _ := ioutil.ReadFile("../cert/server.crt")
 	cp := x509.NewCertPool()
 	if !cp.AppendCertsFromPEM(b) {
 		t.Fatal("credentials: failed to append certificates")
@@ -138,7 +136,8 @@ func TestCreateUser(t *testing.T) {
 		t.Fatal(err)
 	}
 	meta := metadata.New(nil)
-	meta.Set("authorization", fmt.Sprintf("%d", user.Id), user.Token)
+	meta.Set("x-user-auth-token", user.Token)
+	meta.Set("x-user-auth-id", fmt.Sprintf("%d", user.Id))
 	ctx = metadata.NewOutgoingContext(ctx, meta)
 	gotuser, err := client.GetUser(ctx, &UserRequest{Id: 2})
 	if err != nil {
@@ -190,7 +189,8 @@ func TestDeleteUser(t *testing.T) {
 		t.Fatal(err)
 	}
 	meta := metadata.New(nil)
-	meta.Set("authorization", fmt.Sprintf("%d", user.Id), user.Token)
+	meta.Set("x-user-auth-token", user.Token)
+	meta.Set("x-user-auth-id", fmt.Sprintf("%d", user.Id))
 	ctx = metadata.NewOutgoingContext(ctx, meta)
 
 	_, err = client.DeleteUser(ctx, &UserRequest{Id: user.Id})

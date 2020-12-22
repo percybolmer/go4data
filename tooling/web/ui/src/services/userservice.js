@@ -3,7 +3,7 @@ import { UserRequest, BaseRequest } from "../proto/user_pb";
 import { UserClient } from "../proto/user_grpc_web_pb";
 
 
-var client = new UserClient("http://localhost:8080");
+var client = new UserClient("https://localhost:8180");
 
 
 // GetUser is used to fetch a User from the API
@@ -14,7 +14,11 @@ export function GetUser(callback) {
     var userRequest = new UserRequest();
     if (user !== null) {
         userRequest.setId(user.id);
-        client.getUser(userRequest, {}, callback);
+        var metadata = {
+            "x-user-auth-token": user.token,
+            "x-user-auth-id": user.id,
+        }
+        client.getUser(userRequest, metadata, callback);
     }
     
     
@@ -39,7 +43,7 @@ export function SignupUser(user, callback) {
 export function LoginUser(user, callback) {
     var request = new BaseRequest();
     if (!user) {
-        callback({message: "Cannot use a emtpy user in login"});
+        callback({message: "Cannot use a empty user in login"});
     }
     request.setName(user.name);
     request.setPassword(user.password);

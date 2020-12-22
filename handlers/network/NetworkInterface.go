@@ -130,6 +130,7 @@ func (a *NetworkInterface) ValidateConfiguration() (bool, []string) {
 	}
 	wantedInterface := interfaceProp.String()
 	availableInterfaces, err := FindDevices()
+	fmt.Println(availableInterfaces)
 	if err != nil {
 		return false, []string{err.Error()}
 	}
