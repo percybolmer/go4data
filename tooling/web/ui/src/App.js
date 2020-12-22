@@ -36,6 +36,7 @@ class App extends Component {
         // Overwrite
         this.setState({user: null});
       }
+      console.log("Im inside this cool state now, ", user)
       localStorage.setItem("user", JSON.stringify(user.toObject()));
       this.setState({ user: user.toObject()});
     }  

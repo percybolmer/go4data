@@ -1,17 +1,23 @@
 #!/usr/bin/make
 
-API_CONTAINER_NAME="workflow:devel"
 
-main: clean buildproto gobuild run
+main: clean gobuild run
 
-run:
-	sudo docker-compose up --build -d
+install: clean gencert npmbuild gobuild  run
 
 clean:
 	@sudo docker-compose down
+	
+gencert:
+	cd ./api/cert/ && bash certgen.sh
 
 gobuild:
 	cd ./api && go build -o api
 
-buildproto: 
-	protoc proto/user.proto --js_out=import_style=commonjs,binary:./ui/src/ --grpc-web_out=import_style=commonjs,mode=grpcwebtext:./ui/src/ --go_out=plugins=grpc:./api/userservice/
+npmbuild:
+	rm -rf ./api/ui
+	cd ./ui && npm run build
+	mv ./ui/build ./api/ui
+
+run: 
+	sudo docker-compose up --build

@@ -21,7 +21,7 @@ class Login extends Component {
     handleSubmit(event) {
         event.preventDefault();
         const user = {
-            name: this.state.username,
+            name: this.state.name,
             password: this.state.password,
         }
         LoginUser(user, this.props.assignUser);
@@ -31,7 +31,6 @@ class Login extends Component {
         const target = event.target;
         const value = target.value;
         const name = target.name;
-
         this.setState({
             [name]: value
         });

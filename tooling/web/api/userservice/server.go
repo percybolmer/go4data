@@ -86,7 +86,7 @@ func (s *Server) PrepareStatements() error {
 	if err != nil {
 		return err
 	}
-	getUserStmt, err := s.Db.Preparex("SELECT id,name,password,email,token FROM users WHERE id=$1")
+	getUserStmt, err := s.Db.Preparex("SELECT id,name,email,token FROM users WHERE id=$1")
 	if err != nil {
 		return err
 	}
@@ -148,6 +148,8 @@ func (s *Server) Login(ctx context.Context, req *BaseRequest) (*UserResponse, er
 	if err != nil {
 		return nil, err
 	}
+	// Clear Password
+	user.Password = ""
 	return user, err
 
 }
@@ -178,6 +180,7 @@ func (s *Server) CreateUser(ctx context.Context, req *BaseRequest) (*UserRespons
 			if err != nil {
 				return nil, err
 			}
+			user.Password = ""
 			return user, nil
 
 		}
@@ -219,15 +222,17 @@ func (s *Server) verifyJWT(ctx context.Context) error {
 	if !ok {
 		return errors.New("failed to parse metadata from context, make sure yours grpc client is configured correctly")
 	}
-	auth, ok := meta["authorization"]
+
+	authtoken, ok := meta["x-user-auth-token"]
 	if !ok {
 		return ErrNoAuthorizationHeader
 	}
-	if len(auth) != 2 {
-		return ErrBadAuthorizationHeader
+	authid, ok := meta["x-user-auth-id"]
+	if !ok {
+		return ErrNoAuthorizationHeader
 	}
-	id := auth[0]
-	token := auth[1]
+	id := authid[0]
+	token := authtoken[0]
 	// Get user based on ID and then Verify it
 	claim := &jwt.StandardClaims{}
 

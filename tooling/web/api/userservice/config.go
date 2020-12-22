@@ -14,14 +14,14 @@ import (
 type Config struct {
 	CertPemPath  string
 	KeyPath      string
-	Host         string
+	BackendHost  string
 	DbUser       string
 	DbPassword   string
 	DbName       string
 	DbHost       string
 	DbDevelMode  string
 	JWTSecretKey string
-
+	SecureMode   bool
 	// SetupAPI is used to setup the api, its a function since we want different api stuff based on the Config, etc if cert is set or not
 	SetupAPI func(cfg *Config, server *Server) (*grpc.Server, error)
 }
@@ -30,7 +30,7 @@ type Config struct {
 func LoadConfig() *Config {
 	pem := os.Getenv("CERTPEM")
 	key := os.Getenv("KEY")
-	host := os.Getenv("HOST")
+	backendHost := os.Getenv("BACKEND_HOST")
 	JWTSecret := os.Getenv("JWT_SECRET_KEY")
 	psqldb := os.Getenv("POSTGRES_DB")
 	psqluser := os.Getenv("POSTGRES_USER")
@@ -40,7 +40,7 @@ func LoadConfig() *Config {
 	cfg := &Config{
 		CertPemPath:  pem,
 		KeyPath:      key,
-		Host:         host,
+		BackendHost:  backendHost,
 		DbUser:       psqluser,
 		DbPassword:   psqlpass,
 		DbName:       psqldb,
@@ -51,8 +51,10 @@ func LoadConfig() *Config {
 	if pem == "" || key == "" {
 		log.Println("CERTPEM and KEY was not set, using unsecure API. To secure api please set valid cert and key values")
 		cfg.SetupAPI = SetupUnsecureGrpcAPI
+		cfg.SecureMode = false
 	} else {
 		cfg.SetupAPI = SetupTLSGrpcAPI
+		cfg.SecureMode = true
 	}
 
 	return cfg
