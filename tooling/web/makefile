@@ -16,7 +16,7 @@ gobuild:
 
 npmbuild:
 	rm -rf ./api/ui
-	cd ./ui && npm run build
+	cd ./ui && npm install && npm run build
 	mv ./ui/build ./api/ui
 
 run: 

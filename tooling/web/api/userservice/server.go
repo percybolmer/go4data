@@ -59,12 +59,10 @@ func NewServer(db *sqlx.DB, cfg *Config) *Server {
 		Cfg: cfg,
 	}
 	if cfg.DbDevelMode == "true" {
-
 		db.MustExec(`DROP TABLE IF EXISTS users;`)
-		// We need to init schema if not already done
-		db.MustExec(schema)
-
 	}
+	// We need to init schema if not already done
+	db.MustExec(schema)
 	return server
 }
 
