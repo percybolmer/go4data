@@ -50,11 +50,6 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      - name: Generate Test Certificate
-        run: |
-
-          export startpos=$(pwd) && cd ./tooling/web/api/cert/ && sudo bash certgen.sh && cd $startpos
-
       - name: Test & Cover
         run: |
           sudo go test -v ./...
