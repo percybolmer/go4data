@@ -146,7 +146,7 @@ func (a *WriteFile) ValidateConfiguration() (bool, []string) {
 	pidProp := a.Cfg.GetProperty("pid")
 	gidProp := a.Cfg.GetProperty("gid") 
 	
-	if pidPropr != nil {
+	if pidProp != nil {
 		pid, err := pidProp.Int()
 		if err != nil {
 			return false, append(missing, err.Error())	
