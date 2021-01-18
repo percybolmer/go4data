@@ -30,6 +30,9 @@ They are sectioned after package name, each packagename is related to the topic 
 | path  | string  | The path to where the files will be written.
 | append | boolean | Setting it to true it will append the content of payloads into a single file. False value will generate new files per payload.
 | forward | boolean | Setting it to true will send payloads onto topics after written. 
+| pid | int | Set the PID for the written files.
+| gid | int | Set the GID for the written files.
+
 ## Network
 **NetworkInterface -** Start listening on a network interface for Packets and output them as payloads
 | Properties  | Type | Description |
