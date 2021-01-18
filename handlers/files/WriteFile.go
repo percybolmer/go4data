@@ -143,8 +143,8 @@ func (a *WriteFile) ValidateConfiguration() (bool, []string) {
 	pathProp := a.Cfg.GetProperty("path")
 	appendProp := a.Cfg.GetProperty("append")
 	forwardProp := a.Cfg.GetProperty("forward")
-	pidProp = a.Cfg.GetProperty("pid")
-	gidProp = a.Cfg.GetProperty("gid") 
+	pidProp := a.Cfg.GetProperty("pid")
+	gidProp := a.Cfg.GetProperty("gid") 
 	
 	if pidPropr != nil {
 		pid, err := pidProp.Int()
