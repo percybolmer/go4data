@@ -50,6 +50,8 @@ type LoaderProccessor struct {
 	Name string `json:"name" yaml:"name"`
 	// Running is a boolean indicator if the processor is currently Running
 	Running bool `json:"running" yaml:"running"`
+	// Workers is a int that represents how many concurrent handlers to run
+	Workers int `json:"workers" yaml:"workers"`
 	// Topics is the Topics to publish payload onto
 	Topics []string `json:"topics" yaml:"topics"`
 	// Subscriptions is the Topics to subscribe to
@@ -72,7 +74,15 @@ func (la *LoaderProccessor) ConvertToProcessor() (*Processor, error) {
 	// Load all Processor stuff, Topics etc etc
 	p := NewProcessor(la.Name, la.Topics...)
 	p.QueueSize = la.QueueSize
+	
+	//Set default value for Workers to 1 if un configured
+	if la.Workers == 0 {
+		p.Workers = 1 	
+	} else {
+		p.Workers = la.Workers	
+	}
 	// Get NewHandler from Register
+	
 	handler, err := register.GetHandler(la.Handler.Name)
 	if err != nil {
 		return nil, err
