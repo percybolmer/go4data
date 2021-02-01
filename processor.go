@@ -90,7 +90,7 @@ func NewProcessor(name string, topics ...string) *Processor {
 		Name:           name,
 		FailureHandler: PrintFailure,
 		Handler:        nil,
-		Workers: 1,
+		Workers:        1,
 		subscriptions:  make([]*pubsub.Pipe, 0),
 		Topics:         make([]string, 0),
 		QueueSize:      DefaultQueueSize,
@@ -214,8 +214,8 @@ func (p *Processor) HandleSubscriptionless(ctx context.Context) {
 // handleSubscription is used to run the
 // assigned Handler on incomming payloads
 func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
-	for w := 1; w <= p.Workers; w++{
-		go p.runHandle(ctx,sub)	
+	for w := 1; w <= p.Workers; w++ {
+		go p.runHandle(ctx, sub)
 	}
 	// Lock so we can close on ctx
 	for {
@@ -225,21 +225,22 @@ func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
 		}
 	}
 }
+
 // runHandle is used to execute the processors set handler on a payload, will be started concurrently by handleSubscription
-func (p *Processor) runHandle(ctx context.Context, jobs pubsub.Pipe) {
+func (p *Processor) runHandle(ctx context.Context, jobs *pubsub.Pipe) {
 	for {
 		select {
-		case payload := <- jobs.Flow:
+		case payload := <-jobs.Flow:
 			err := p.Handler.Handle(ctx, payload, p.Topics...)
 			if err != nil {
 				p.Metric.IncrementMetric(fmt.Sprintf("%s_%d_failures", p.Name, p.ID), 1)
 				p.FailureHandler(Failure{
-					Err: err,
-					Payload: payload,
+					Err:       err,
+					Payload:   payload,
 					Processor: p.ID,
 				})
 			}
-		case <- ctx.Done():
+		case <-ctx.Done():
 			return
 		}
 	}
