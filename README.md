@@ -22,7 +22,7 @@ All [Processors](#processors) has to have an [Handler](#handler) assigned before
 The goal of handlers is to make them as seamless as possible.
 
 An example of how Go4Data is intended to work with its pubsub system and handlers doing processing seamless .
-![Screenshot](https://github.com/percybolmer/go4data/resources/go4data.png)
+![Screenshot](https://github.com/percybolmer/go4data/blob/master/resources/go4data.png)
 
 Some people like UML, so I've used Dumels, great job those who made it. 
 Here you can see a UML of the project. [Dumels](https://www.dumels.com/diagram/324180ad-864b-4640-9411-4f6678cf8c23)
