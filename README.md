@@ -8,11 +8,10 @@ Automate all things
 ![Go](https://github.com/percybolmer/go4data/workflows/Go/badge.svg)
 ## About Go4Data
 Go4Data is a data processing tool.  
-The idea behind Go4Data is that you should be able to create automated tasks at ease.  
+The idea behind Go4Data is that you should be able to create automated concurrent data processing flows.  
 
 There are a few components that one would need to know more about to develop with Go4Data. But a regular user should be able to use Go4Data without too much knowledge about different indepth knowledge. 
 To learn more about components and what they do, view [Components](#components-in-go4data)
-
 
 
 Go4Data is built around [Processors](#processors) that is a component used by Go4Data to handle the data pipeline.  
@@ -23,7 +22,7 @@ All [Processors](#processors) has to have an [Handler](#handler) assigned before
 The goal of handlers is to make them as seamless as possible.
 
 An example of how Go4Data is intended to work with its pubsub system and handlers doing processing seamless .
-![Screenshot](https://user-images.githubusercontent.com/7509921/100387851-5acb5700-3029-11eb-995e-d885d46e7dd8.png)
+![Screenshot](https://github.com/percybolmer/go4data/resources/go4data.png)
 
 Some people like UML, so I've used Dumels, great job those who made it. 
 Here you can see a UML of the project. [Dumels](https://www.dumels.com/diagram/324180ad-864b-4640-9411-4f6678cf8c23)
