@@ -1,6 +1,6 @@
 ## Creating a Processor and subscribing to output
-This example shows how to use Workflow as a package instead of a cli tool. 
-The first thing to do is to make sure the process you want done is available in [Handlers](https://github.com/percybolmer/workflow/blob/master/handlers/README.md)
+This example shows how to use go4data as a package instead of a cli tool. 
+The first thing to do is to make sure the process you want done is available in [Handlers](https://github.com/percybolmer/go4data/blob/master/handlers/README.md)
 
 The code belows shows how to list directories and read all the files
 ```golang

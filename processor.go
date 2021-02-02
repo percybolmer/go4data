@@ -1,6 +1,6 @@
-// Package workflow is a package that is used to create procescors that runs any kind of handler on a payload flow
+// Package go4data is a package that is used to create procescors that runs any kind of handler on a payload flow
 // The payloads will be transferred between processors that has a relationship assigned
-package workflow
+package go4data
 
 import (
 	"context"
@@ -8,20 +8,20 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 
 	// Add shadow import to all known Handler categories?
-	_ "github.com/percybolmer/workflow/handlers/databases"
-	_ "github.com/percybolmer/workflow/handlers/files"
-	_ "github.com/percybolmer/workflow/handlers/filters"
+	_ "github.com/percybolmer/go4data/handlers/databases"
+	_ "github.com/percybolmer/go4data/handlers/files"
+	_ "github.com/percybolmer/go4data/handlers/filters"
 
 	// Removed network from shadow since we dont wanna force users to download libpcap
-	//_ "github.com/percybolmer/workflow/handlers/network"
-	_ "github.com/percybolmer/workflow/handlers/parsers"
-	_ "github.com/percybolmer/workflow/handlers/terminal"
+	//_ "github.com/percybolmer/go4data/handlers/network"
+	_ "github.com/percybolmer/go4data/handlers/parsers"
+	_ "github.com/percybolmer/go4data/handlers/terminal"
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed
@@ -70,7 +70,7 @@ var (
 	ErrHandlerDoesNotAcceptPublishers = errors.New("the used Handler does not allow publishers")
 	//ErrDuplicateTopic is when trying to register an duplicate TOPIC to publish to
 	ErrDuplicateTopic = errors.New("the topic is already registered")
-	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
+	// ErrFailedToUnmarshal is thrown when trying to unmarshal go4datas but it fails
 	ErrFailedToUnmarshal = errors.New("failed to unmarshal since data provided is not correct")
 )
 

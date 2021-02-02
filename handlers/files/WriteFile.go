@@ -9,12 +9,12 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
-	"github.com/percybolmer/workflow/register"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
+	"github.com/percybolmer/go4data/register"
 )
 
 // WriteFile is used to will print the stringified version of GetPayload into a file

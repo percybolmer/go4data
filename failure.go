@@ -1,11 +1,11 @@
-// Package workflow has failures that ca nbe sent by Processors to either logging or just stdout etc
-package workflow
+// Package go4data has failures that ca nbe sent by Processors to either logging or just stdout etc
+package go4data
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/go4data/payload"
 )
 
 var (
@@ -13,7 +13,7 @@ var (
 	ErrIngressRelationshipNeeded = errors.New("the processor needs an ingress to properly run")
 )
 
-// Failure is the Workflows Custom error handeling struct
+// Failure is the go4datas Custom error handeling struct
 // It contains Error and some meta data about what Processor that triggerd the error
 type Failure struct {
 	// Err is the error that occurred

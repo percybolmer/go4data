@@ -4,8 +4,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/property"
 )
 
 type testHandler struct {

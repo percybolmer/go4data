@@ -3,7 +3,7 @@ package register
 import (
 	"errors"
 
-	"github.com/percybolmer/workflow/handlers"
+	"github.com/percybolmer/go4data/handlers"
 )
 
 // HandlerRegister is used to keep track of all available Handlers that a processor can use

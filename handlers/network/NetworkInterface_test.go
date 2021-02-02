@@ -9,8 +9,8 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/property"
 )
 
 func TestNetworkInterfaceHandle(t *testing.T) {

@@ -1,6 +1,6 @@
 package payload
 
-import "github.com/percybolmer/workflow/property"
+import "github.com/percybolmer/go4data/property"
 
 // BasePayload is a simple struct for processor to use if they dont have a custom payload
 type BasePayload struct {

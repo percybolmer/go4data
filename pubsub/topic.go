@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/go4data/payload"
 )
 
 // Topics is a container for topics that has been created.

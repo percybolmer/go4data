@@ -1,11 +1,11 @@
 ## CSV files to ElasticSearch
-This workflow file would be an example how to setup the ingestion of CSV files
+This go4data file would be an example how to setup the ingestion of CSV files
 and output them to a Elastic database.
 
-The workflow could be started by running 
+The go4data could be started by running 
 
 ```golang
-wf, err := workflow.Load("workflow.yml")
+wf, err := go4data.Load("go4data.yml")
 if err != nil {
 	log.Fatal(err)
 }
@@ -19,7 +19,7 @@ for _, proc := range wf {
 
 ```
 
-The workflow file in this case would look like
+The go4data file in this case would look like
 ```yaml
 - id: 1
   name: listdirectory

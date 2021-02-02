@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 )
 
 func TestListDirHandle(t *testing.T) {

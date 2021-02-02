@@ -3,9 +3,9 @@ package handlers
 import (
 	"context"
 
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
 )
 
 // Handler is a interface that allows users to create structs with certain functions attached that can be used inside a processor

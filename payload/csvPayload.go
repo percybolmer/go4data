@@ -4,7 +4,7 @@ package payload
 import (
 	"strings"
 
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/property"
 )
 
 //CsvPayload is a struct representing Csv data as a map

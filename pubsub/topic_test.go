@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/percybolmer/workflow/payload"
+	"github.com/percybolmer/go4data/payload"
 )
 
 func TestNewTopic(t *testing.T) {

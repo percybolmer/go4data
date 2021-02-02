@@ -10,12 +10,12 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
-	"github.com/percybolmer/workflow/register"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
+	"github.com/percybolmer/go4data/register"
 )
 
 // ExecCMD is used to execute a commandline command. This can be used to extend and use functions that are not part of the Workflow atm.

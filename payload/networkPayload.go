@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/google/gopacket"
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/property"
 )
 
 var (

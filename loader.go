@@ -1,12 +1,12 @@
-package workflow
+package go4data
 
 import (
 	"context"
 	"errors"
 	"io/ioutil"
 
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/register"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/register"
 	"gopkg.in/yaml.v3"
 )
 
@@ -74,15 +74,15 @@ func (la *LoaderProccessor) ConvertToProcessor() (*Processor, error) {
 	// Load all Processor stuff, Topics etc etc
 	p := NewProcessor(la.Name, la.Topics...)
 	p.QueueSize = la.QueueSize
-	
+
 	//Set default value for Workers to 1 if un configured
 	if la.Workers == 0 {
-		p.Workers = 1 	
+		p.Workers = 1
 	} else {
-		p.Workers = la.Workers	
+		p.Workers = la.Workers
 	}
 	// Get NewHandler from Register
-	
+
 	handler, err := register.GetHandler(la.Handler.Name)
 	if err != nil {
 		return nil, err

@@ -1,4 +1,4 @@
-package workflow
+package go4data
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/handlers/files"
-	"github.com/percybolmer/workflow/handlers/filters"
-	"github.com/percybolmer/workflow/handlers/parsers"
-	"github.com/percybolmer/workflow/handlers/terminal"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/handlers/files"
+	"github.com/percybolmer/go4data/handlers/filters"
+	"github.com/percybolmer/go4data/handlers/parsers"
+	"github.com/percybolmer/go4data/handlers/terminal"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 )
 
 type testHandler struct {

@@ -4,7 +4,7 @@
 // as long as it fulfills our interface
 package payload
 
-import "github.com/percybolmer/workflow/property"
+import "github.com/percybolmer/go4data/property"
 
 // Payload is a interface that will allows different Processors to send data between them in a unified fashion
 type Payload interface {

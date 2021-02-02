@@ -1,6 +1,6 @@
 package pubsub
 
-import "github.com/percybolmer/workflow/payload"
+import "github.com/percybolmer/go4data/payload"
 
 // Pipe is PUB/SUB output/input Struct used for publishing or Subscribing to data flows
 type Pipe struct {

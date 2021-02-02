@@ -1,4 +1,4 @@
-// package runner tool to run workflow files
+// package runner tool to run go4data files
 package main
 
 import (
@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/percybolmer/workflow"
+	"github.com/percybolmer/go4data"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -19,7 +19,7 @@ func main() {
 	var path string
 	var port int
 
-	flag.StringVar(&path, "workflow", "", "the path to the workflow YAML file to run")
+	flag.StringVar(&path, "go4data", "", "the path to the go4data YAML file to run")
 	flag.IntVar(&port, "port", 0, "the port to host the prometheus metrics on")
 
 	flag.Parse()
@@ -28,8 +28,8 @@ func main() {
 		flag.Usage()
 		os.Exit(0)
 	}
-	log.Println("Setting up workflow")
-	wf, err := workflow.Load(path)
+	log.Println("Setting up go4data")
+	wf, err := go4data.Load(path)
 	if err != nil {
 		log.Fatal(err)
 	}
