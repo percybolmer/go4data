@@ -1,0 +1,44 @@
+- id: 1
+  name: listdirectory
+  running: false
+  topics:
+    - found_files
+  subscriptions: []
+  executioninterval: 10s
+  queuesize: 1000
+  handler:
+    configs:
+        properties:
+            - name: path
+              value: ./ingress
+            - name: buffertime
+              value: 3600
+    handler_name: ListDirectory
+- id: 2
+  name: readfile
+  running: false
+  topics:
+    - file_data
+  subscriptions:
+    - found_files
+  executioninterval: 10s
+  queuesize: 1000
+  handler:
+    configs:
+        properties:
+            - name: remove_after
+              value: false
+    handler_name: ReadFile
+- name: Debugger
+  running: false
+  subscriptions:
+    - file_data
+  queuesize: 100
+  handler:
+    configs:
+      properties:
+        - name: forward
+          value: false
+    handler_name: Stdout
+
+

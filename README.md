@@ -48,6 +48,7 @@ You can either load processors from a yaml file or you can initialize them by ha
 See examples folder for examples.  
 [Csv files to Elasticsearch with Filtering](examples/csvToElastic/README.md)  
 [Creating processor and subscribing to output](examples/inline/README.md)  
+[Using Redis as the Pub/Sub engine](examples/redisEngine/README.md)  
 
 # Components in Go4Data  
 Below is a more indepth explaination of all the components that are found in Go4Data. 
