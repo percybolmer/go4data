@@ -8,8 +8,27 @@ import (
 	"github.com/percybolmer/go4data/payload"
 )
 
+func TestWithDefaultEngine(t *testing.T) {
+	NewEngine(WithDefaultEngine(2))
+
+	pipe, err := Subscribe("test", 1, 10)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Test publish and Subscribe
+	Publish("test", payload.NewBasePayload([]byte(`Hello World from DefaultEngine`), "test", nil))
+	// Pipe should now have 1 item in it
+	if len(pipe.Flow) != 1 {
+		t.Log(len(pipe.Flow))
+		t.Fatal("Data was not Published properly with DefaultEngine")
+	}
+}
 func TestNewTopic(t *testing.T) {
-	top, err := NewTopic("this")
+	de := &DefaultEngine{
+		Topics: sync.Map{},
+	}
+	top, err := de.NewTopic("this")
 	if err != nil {
 		t.Fatal("Should have been able to create first topic")
 	}
@@ -17,7 +36,7 @@ func TestNewTopic(t *testing.T) {
 		t.Fatal("Topic should not have been nil")
 	}
 
-	top, err = NewTopic("this")
+	top, err = de.NewTopic("this")
 	if !errors.Is(err, ErrTopicAlreadyExists) {
 		t.Fatal("Didnt trigger the correct error")
 	}
@@ -28,13 +47,15 @@ func TestNewTopic(t *testing.T) {
 }
 
 func TestGetTopic(t *testing.T) {
-	Topics = sync.Map{}
-	_, err := NewTopic("thisexists")
+	de := &DefaultEngine{
+		Topics: sync.Map{},
+	}
+	_, err := de.NewTopic("thisexists")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	topic, err := getTopic("doesnotexist")
+	topic, err := de.getTopic("doesnotexist")
 	if !errors.Is(err, ErrNoSuchTopic) {
 		t.Fatal("Got the wrong error when fetching a non existing topic ", err.Error())
 	}
@@ -43,13 +64,13 @@ func TestGetTopic(t *testing.T) {
 	}
 
 	// Hack a bad item into topic
-	Topics.Store("baditem", 1)
-	topic, err = getTopic("baditem")
+	de.Topics.Store("baditem", 1)
+	topic, err = de.getTopic("baditem")
 	if !errors.Is(err, ErrIsNotTopic) {
 		t.Fatal("Should have detected that this is not a topic item")
 	}
 
-	topic, err = getTopic("thisexists")
+	topic, err = de.getTopic("thisexists")
 	if err != nil {
 		t.Fatal("Error should be nil when item exists")
 	}
@@ -60,13 +81,13 @@ func TestGetTopic(t *testing.T) {
 }
 
 func TestSubscribe(t *testing.T) {
-	Topics = sync.Map{}
-	_, err := Subscribe("test", 1, 1)
+	de := &DefaultEngine{Topics: sync.Map{}}
+	_, err := de.Subscribe("test", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	topicInterface, ok := Topics.Load("test")
+	topicInterface, ok := de.Topics.Load("test")
 	if !ok {
 		t.Fatal("Should have found an test item")
 	}
@@ -76,12 +97,12 @@ func TestSubscribe(t *testing.T) {
 		t.Fatal("Wrong length of publishers")
 	}
 
-	_, err = Subscribe("test", 1, 1)
+	_, err = de.Subscribe("test", 1, 1)
 	if !errors.Is(err, ErrPidAlreadyRegistered) {
 		t.Fatal("Should have gotten an error that the subcription is already Registered")
 	}
 
-	_, err = Subscribe("test", 2, 1)
+	_, err = de.Subscribe("test", 2, 1)
 	if err != nil {
 		t.Fatal("Could not add a second publisher")
 	}
@@ -91,13 +112,13 @@ func TestSubscribe(t *testing.T) {
 }
 
 func TestUnsubscribe(t *testing.T) {
-	Topics = sync.Map{}
-	_, err := Subscribe("test", 1, 1)
+	de := &DefaultEngine{Topics: sync.Map{}}
+	_, err := de.Subscribe("test", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	topic, err := getTopic("test")
+	topic, err := de.getTopic("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,17 +126,17 @@ func TestUnsubscribe(t *testing.T) {
 		t.Fatal("Wrong length of Subscribers")
 	}
 
-	err = Unsubscribe("nosuchkey", 1)
+	err = de.Unsubscribe("nosuchkey", 1)
 	if !errors.Is(err, ErrNoSuchTopic) {
 		t.Fatal("Got the wrong error in first unsubscribe")
 	}
 
-	err = Unsubscribe("test", 2)
+	err = de.Unsubscribe("test", 2)
 	if !errors.Is(err, ErrNoSuchPid) {
 		t.Fatal("Should have gotten a ErrNoSuchPid when removing a pid that does not exist")
 	}
 
-	err = Unsubscribe("test", 1)
+	err = de.Unsubscribe("test", 1)
 	if err != nil {
 		t.Fatal("Error should be nil when removing a PID that exists")
 	}
@@ -127,13 +148,12 @@ func TestUnsubscribe(t *testing.T) {
 }
 
 func TestPublish(t *testing.T) {
-	Topics = sync.Map{}
-
-	perr := Publish("test", nil)
+	de := &DefaultEngine{Topics: sync.Map{}}
+	perr := de.Publish("test", nil)
 	if len(perr) != 0 {
 		t.Fatal("Should be no error creating a topic by publishing to it")
 	}
-	topic, err := getTopic("test")
+	topic, err := de.getTopic("test")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,7 +161,7 @@ func TestPublish(t *testing.T) {
 		t.Fatal("Buffer should be 1")
 	}
 
-	sub, err := Subscribe("test", 1, 1)
+	sub, err := de.Subscribe("test", 1, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -151,20 +171,20 @@ func TestPublish(t *testing.T) {
 	}
 
 	// Drain buffer and sub.Flow should be = 1
-	DrainTopicsBuffer()
+	de.DrainTopicsBuffer()
 	if len(sub.Flow) != 1 {
 		t.Fatal("Sub didnt Receive Buffer item")
 	} else if (len(topic.Buffer.Flow)) != 0 {
 		t.Fatal("didnt properly Empty buffer")
 	}
 	// Register new SUB too see that its handled properly when queue is full
-	sub2, err := Subscribe("test", 2, 1)
+	sub2, err := de.Subscribe("test", 2, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Now Queue Should be full and we should geta Queue is full Err from Sub
 	// But sub2 should have 1 item in queue
-	perr = Publish("test", &payload.BasePayload{
+	perr = de.Publish("test", &payload.BasePayload{
 		Source: "test",
 	})
 	if len(perr) != 1 {
@@ -181,8 +201,7 @@ func TestPublish(t *testing.T) {
 }
 
 func TestPublishTopics(t *testing.T) {
-	Topics = sync.Map{}
-
+	de := &DefaultEngine{Topics: sync.Map{}}
 	// Create full topic
 	top := &Topic{
 		Key:         "topic2",
@@ -192,23 +211,23 @@ func TestPublishTopics(t *testing.T) {
 			Flow: make(chan payload.Payload, 1),
 		},
 	}
-	Topics.Store("topic2", top)
+	de.Topics.Store("topic2", top)
 
 	topics := []string{"topic1", "topic2"}
 
-	puberrs := PublishTopics(topics, nil)
+	puberrs := de.PublishTopics(topics, nil)
 	if len(puberrs) != 0 {
 		t.Fatal("should see 0 errors")
 	}
 
-	puberrs = PublishTopics(topics, nil)
+	puberrs = de.PublishTopics(topics, nil)
 	if len(puberrs) != 1 {
 		t.Fatal("Should see atleast 1 puberror")
 	}
 }
 
 func TestDrainBuffer(t *testing.T) {
-	Topics = sync.Map{}
+	de := &DefaultEngine{Topics: sync.Map{}}
 	// Scenario to test is this
 	// 3 Subscribers
 	// SUB 1 is Full
@@ -216,22 +235,22 @@ func TestDrainBuffer(t *testing.T) {
 	// Sub 3 is empty with 2 spot left
 	// Buffer has 3 Items in queue
 	// After drain Buffer should have 1 item in queue since all Subs are full
-	Publish("test", nil)
-	Publish("test", nil)
-	Publish("test", nil)
+	de.Publish("test", nil)
+	de.Publish("test", nil)
+	de.Publish("test", nil)
 
-	topic, err := getTopic("test")
+	topic, err := de.getTopic("test")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(topic.Buffer.Flow) != 3 {
 		t.Fatal("Bad buffer length")
 	}
-	Subscribe("test", 1, 0)
-	sub2, _ := Subscribe("test", 2, 1)
-	sub3, _ := Subscribe("test", 3, 2)
+	de.Subscribe("test", 1, 0)
+	sub2, _ := de.Subscribe("test", 2, 1)
+	sub3, _ := de.Subscribe("test", 3, 2)
 
-	DrainTopicsBuffer()
+	de.DrainTopicsBuffer()
 
 	if len(topic.Buffer.Flow) != 1 {
 		t.Fatal("Bad buffer length after drain")

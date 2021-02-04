@@ -2,6 +2,7 @@
 package payload
 
 import (
+	"encoding/json"
 	"strings"
 
 	"github.com/percybolmer/go4data/property"
@@ -32,6 +33,21 @@ func NewCsvPayload(header, payload, delimiter string, meta *property.Configurati
 	}
 	return pay
 
+}
+
+// MarshalBinary is used to marshal the whole payload into a Byte array
+// This is particullary used to enable Redis Pub/Sub
+func (nf *CsvPayload) MarshalBinary() ([]byte, error) {
+	return json.Marshal(nf)
+}
+
+// UnmarshalBinary is used to Decode a byte array into the proper fields
+// In base payloads case its simple JSON
+func (nf *CsvPayload) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, nf); err != nil {
+		return err
+	}
+	return nil
 }
 
 // ApplyFilter is used to make this part of the Filterable interface

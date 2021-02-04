@@ -107,7 +107,12 @@ func TestFilterHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pubsub.DrainTopicsBuffer()
+	// Get DefaultEngine and Drain it
+	de, err := pubsub.EngineAsDefaultEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	de.DrainTopicsBuffer()
 	if len(flow.Flow) != 1 {
 		t.Fatal("topic should have found 1 payload")
 	}

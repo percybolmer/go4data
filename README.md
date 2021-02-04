@@ -10,6 +10,8 @@ Automate all things
 Go4Data is a data processing tool.  
 The idea behind Go4Data is that you should be able to create automated concurrent data processing flows.  
 
+Go4Data is still under heavy development! 
+
 There are a few components that one would need to know more about to develop with Go4Data. But a regular user should be able to use Go4Data without too much knowledge about different indepth knowledge. 
 To learn more about components and what they do, view [Components](#components-in-go4data)
 
@@ -62,6 +64,7 @@ A processor consists of the following fields
 **Topics -** is where to send data after processing it.   
 **QueueSize -** is how many [payloads](#payload)  are allowed to be on queue in the Processor. This is to limit and avoid memory burning if a topic isnt drained.  
 **Metric -** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics). 
+**Workers -** is how many concurrent workers the handler is allowed to run. Modify this only if you want to increase the amount of goroutines your handler should run. This can be increased to make certain handlers work faster, but remember that it can also slow things down if you set too many.
 
 ## Handler  
 Handler is the data processing unit that will actually do any work. 
@@ -155,6 +158,13 @@ Payloads are transported between Handlers by using a [Publish/Subscription](pubs
 The main idea is that when processing is done, a payload is published onto a Topic, or Topics. The topics that will be published to is assigned when initializing the Processor with [NewProcessor](https://github.com/percybolmer/go4data/blob/764514cdb32c30f480f1a8823457b8e369dbdf2b/processor.go#L85).  
 
 For another Processor to receive the published payloads, they have to Subscribe on the topics.
+
+Currently there are two supported Pub/Sub engines that Go4Data can use.
+It has a DefaultEngine that is set by default and no configuration is needed.
+There is also a RedisEngine that allows the user to instead use Redis.
+
+DefaultEngine - Used by default, works great for single node data flows.
+RedisEngine - Can be configured to be used, works best if you have multiple Go4Data nodes that all should Pub/Sub on the same Topics.
 
 ## Failures
 So once in a while, a Processor or Handler may experience errors. This is ofcourse something that wants to be noticed.  

@@ -40,7 +40,12 @@ func TestReadFileHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pubsub.DrainTopicsBuffer()
+	// Get DefaultEngine and Drain it
+	de, err := pubsub.EngineAsDefaultEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	de.DrainTopicsBuffer()
 
 	if len(output.Flow) != 1 {
 		t.Fatal("Bad output length")

@@ -78,7 +78,12 @@ func TestPutElasticSearchHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pubsub.DrainTopicsBuffer()
+	// Get DefaultEngine and Drain it
+	de, err := pubsub.EngineAsDefaultEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	de.DrainTopicsBuffer()
 
 	if len(pipe.Flow) != 1 {
 		t.Fatal("Found no payload on topic")
