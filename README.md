@@ -64,7 +64,7 @@ A processor consists of the following fields
 **Subscriptions -** is all the [topics](#pubsub) to listen for data on.  
 **Topics -** is where to send data after processing it.   
 **QueueSize -** is how many [payloads](#payload)  are allowed to be on queue in the Processor. This is to limit and avoid memory burning if a topic isnt drained.  
-**Metric -** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics). 
+**Metric -** is stored by both the Handler and Processor. The handler will inherit the Processors set metric. The default metric is Prometheus. But this can be changed by the user by setting a new [metricProvider](#metrics).  
 **Workers -** is how many concurrent workers the handler is allowed to run. Modify this only if you want to increase the amount of goroutines your handler should run. This can be increased to make certain handlers work faster, but remember that it can also slow things down if you set too many.
 
 ## Handler  
