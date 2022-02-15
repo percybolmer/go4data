@@ -9,7 +9,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/percybolmer/go4data"
+	"github.com/percybolmer/go4data/pubsub"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -28,15 +30,15 @@ func main() {
 		flag.Usage()
 		os.Exit(0)
 	}
-	// Change the PubSub Engine
-	/*_, err := pubsub.NewEngine(pubsub.WithRedisEngine(&redis.Options{
+
+	_, err := pubsub.NewEngine(pubsub.WithRedisEngine(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "",
 		DB:       0,
 	}))
 	if err != nil {
 		panic(err)
-	}*/
+	}
 	log.Println("Setting up go4data")
 	wf, err := go4data.Load(path)
 	if err != nil {

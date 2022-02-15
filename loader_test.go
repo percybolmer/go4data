@@ -1,4 +1,4 @@
-package workflow
+package go4data
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/percybolmer/workflow/handlers/files"
+	"github.com/percybolmer/go4data/handlers/files"
 )
 
 func generateProcs(t *testing.T) []*Processor {

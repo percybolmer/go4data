@@ -1,10 +1,11 @@
 package payload
 
 import (
+	"encoding/json"
 	"errors"
 
 	"github.com/google/gopacket"
-	"github.com/percybolmer/workflow/property"
+	"github.com/percybolmer/go4data/property"
 )
 
 var (
@@ -28,6 +29,21 @@ func NewNetworkPayload(pay Payload) (*NetworkPayload, error) {
 		return conv, nil
 	}
 	return nil, ErrPayloadIsNotANetworkPayload
+}
+
+// MarshalBinary is used to marshal the whole payload into a Byte array
+// This is particullary used to enable Redis Pub/Sub
+func (nf *NetworkPayload) MarshalBinary() ([]byte, error) {
+	return json.Marshal(nf)
+}
+
+// UnmarshalBinary is used to Decode a byte array into the proper fields
+// In base payloads case its simple JSON
+func (nf *NetworkPayload) UnmarshalBinary(data []byte) error {
+	if err := json.Unmarshal(data, nf); err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetPayloadLength will return the payload X Bytes

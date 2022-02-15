@@ -9,12 +9,12 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
-	"github.com/percybolmer/workflow/register"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
+	"github.com/percybolmer/go4data/register"
 )
 
 // WriteFile is used to will print the stringified version of GetPayload into a file
@@ -25,7 +25,9 @@ type WriteFile struct {
 	path    string
 	append  bool
 	forward bool
-
+	//pid and gid are set to change pid/gid fpr temp files
+	pid              int
+	gid              int
 	subscriptionless bool
 
 	errChan      chan error
@@ -61,6 +63,8 @@ func NewWriteFileHandler() handlers.Handler {
 	act.Cfg.AddProperty("path", "the path on where to write files", true)
 	act.Cfg.AddProperty("append", "if set to true it will append to files instead of overwriting collisions", true)
 	act.Cfg.AddProperty("forward", "if set to true it will output the payload after writing it", true)
+	act.Cfg.AddProperty("pid", "Set the PID that written files will have", false)
+	act.Cfg.AddProperty("gid", "Set the GID that written files will have", false)
 	return act
 }
 
@@ -80,6 +84,11 @@ func (a *WriteFile) Handle(ctx context.Context, input payload.Payload, topics ..
 	if finfo != nil && finfo.IsDir() {
 		// Write is to a folder, No need for error, but lets create a random name with tmpfile
 		file, err := ioutil.TempFile(a.path, "WriteFile_")
+		if err != nil {
+			return err
+		}
+		// set gid/pid
+		err = os.Chown(file.Name(), a.pid, a.gid)
 		if err != nil {
 			return err
 		}
@@ -134,7 +143,27 @@ func (a *WriteFile) ValidateConfiguration() (bool, []string) {
 	pathProp := a.Cfg.GetProperty("path")
 	appendProp := a.Cfg.GetProperty("append")
 	forwardProp := a.Cfg.GetProperty("forward")
+	pidProp := a.Cfg.GetProperty("pid")
+	gidProp := a.Cfg.GetProperty("gid")
 
+	if pidProp != nil && pidProp.Value != nil {
+		pid, err := pidProp.Int()
+		if err != nil {
+			return false, append(missing, err.Error())
+		}
+		a.pid = pid
+	} else {
+		a.pid = 1000
+	}
+	if gidProp != nil && gidProp.Value != nil {
+		gid, err := gidProp.Int()
+		if err != nil {
+			return false, append(missing, err.Error())
+		}
+		a.gid = gid
+	} else {
+		a.gid = 1000
+	}
 	path := pathProp.String()
 	app, err := appendProp.Bool()
 	if err != nil {

@@ -1,6 +1,6 @@
-// Package workflow is a package that is used to create procescors that runs any kind of handler on a payload flow
+// Package go4data is a package that is used to create procescors that runs any kind of handler on a payload flow
 // The payloads will be transferred between processors that has a relationship assigned
-package workflow
+package go4data
 
 import (
 	"context"
@@ -8,20 +8,20 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/percybolmer/workflow/handlers"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/handlers"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 
 	// Add shadow import to all known Handler categories?
-	_ "github.com/percybolmer/workflow/handlers/databases"
-	_ "github.com/percybolmer/workflow/handlers/files"
-	_ "github.com/percybolmer/workflow/handlers/filters"
+	_ "github.com/percybolmer/go4data/handlers/databases"
+	_ "github.com/percybolmer/go4data/handlers/files"
+	_ "github.com/percybolmer/go4data/handlers/filters"
 
 	// Removed network from shadow since we dont wanna force users to download libpcap
-	//_ "github.com/percybolmer/workflow/handlers/network"
-	_ "github.com/percybolmer/workflow/handlers/parsers"
-	_ "github.com/percybolmer/workflow/handlers/terminal"
+	//_ "github.com/percybolmer/go4data/handlers/network"
+	_ "github.com/percybolmer/go4data/handlers/parsers"
+	_ "github.com/percybolmer/go4data/handlers/terminal"
 )
 
 // Processor is used to perform an Handler on each Item that is ingressed
@@ -32,6 +32,8 @@ type Processor struct {
 	Name string `json:"name" yaml:"name"`
 	// Running is a boolean indicator if the processor is currently Running
 	Running bool `json:"running" yaml:"running"`
+	// Workers is a int that determines how many Concurrent workers the processor should run
+	Workers int `json:"workers yaml:"workers"`
 	// FailureHandler is the failurehandler to use with the Processor
 	FailureHandler func(f Failure) `json:"-" yaml:"-"`
 	// Handler is the handler to Perform on the Payload  received
@@ -68,7 +70,7 @@ var (
 	ErrHandlerDoesNotAcceptPublishers = errors.New("the used Handler does not allow publishers")
 	//ErrDuplicateTopic is when trying to register an duplicate TOPIC to publish to
 	ErrDuplicateTopic = errors.New("the topic is already registered")
-	// ErrFailedToUnmarshal is thrown when trying to unmarhsla workflows but it fails
+	// ErrFailedToUnmarshal is thrown when trying to unmarshal go4datas but it fails
 	ErrFailedToUnmarshal = errors.New("failed to unmarshal since data provided is not correct")
 )
 
@@ -88,6 +90,7 @@ func NewProcessor(name string, topics ...string) *Processor {
 		Name:           name,
 		FailureHandler: PrintFailure,
 		Handler:        nil,
+		Workers:        1,
 		subscriptions:  make([]*pubsub.Pipe, 0),
 		Topics:         make([]string, 0),
 		QueueSize:      DefaultQueueSize,
@@ -211,11 +214,26 @@ func (p *Processor) HandleSubscriptionless(ctx context.Context) {
 // handleSubscription is used to run the
 // assigned Handler on incomming payloads
 func (p *Processor) handleSubscription(ctx context.Context, sub *pubsub.Pipe) {
+	for w := 1; w <= p.Workers; w++ {
+		go p.runHandle(ctx, sub)
+	}
+	// Lock so we can close on ctx
 	for {
 		select {
-		case payload := <-sub.Flow:
+		case <-ctx.Done():
+			return
+		}
+	}
+}
+
+// runHandle is used to execute the processors set handler on a payload, will be started concurrently by handleSubscription
+func (p *Processor) runHandle(ctx context.Context, jobs *pubsub.Pipe) {
+	for {
+		select {
+		case payload := <-jobs.Flow:
 			err := p.Handler.Handle(ctx, payload, p.Topics...)
 			if err != nil {
+				p.Metric.IncrementMetric(fmt.Sprintf("%s_%d_failures", p.Name, p.ID), 1)
 				p.FailureHandler(Failure{
 					Err:       err,
 					Payload:   payload,
@@ -276,6 +294,7 @@ func (p *Processor) ConvertToLoader() *LoaderProccessor {
 		ID:            p.ID,
 		Name:          p.Name,
 		QueueSize:     p.QueueSize,
+		Workers:       p.Workers,
 		Running:       p.Running,
 		Topics:        p.Topics,
 		Subscriptions: subnames,

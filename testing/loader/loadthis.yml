@@ -1,6 +1,7 @@
 - id: 3
   name: listdir
   running: true
+  workers: 1
   topics:
     - found_files
   subscriptions: []
@@ -22,6 +23,7 @@
 - id: 4
   name: readfile
   running: true
+  workers: 1
   topics:
     - file_data
   subscriptions:

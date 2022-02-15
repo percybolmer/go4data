@@ -8,10 +8,10 @@ import (
 
 	elasticsearch6 "github.com/elastic/go-elasticsearch/v6"
 	elasticsearch7 "github.com/elastic/go-elasticsearch/v7"
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 )
 
 var handler = func(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +78,12 @@ func TestPutElasticSearchHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pubsub.DrainTopicsBuffer()
+	// Get DefaultEngine and Drain it
+	de, err := pubsub.EngineAsDefaultEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	de.DrainTopicsBuffer()
 
 	if len(pipe.Flow) != 1 {
 		t.Fatal("Found no payload on topic")

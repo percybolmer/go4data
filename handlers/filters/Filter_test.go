@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/percybolmer/workflow/metric"
-	"github.com/percybolmer/workflow/payload"
-	"github.com/percybolmer/workflow/property"
-	"github.com/percybolmer/workflow/pubsub"
+	"github.com/percybolmer/go4data/metric"
+	"github.com/percybolmer/go4data/payload"
+	"github.com/percybolmer/go4data/property"
+	"github.com/percybolmer/go4data/pubsub"
 )
 
 type FilterPayload struct {
@@ -107,7 +107,12 @@ func TestFilterHandle(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	pubsub.DrainTopicsBuffer()
+	// Get DefaultEngine and Drain it
+	de, err := pubsub.EngineAsDefaultEngine()
+	if err != nil {
+		t.Fatal(err)
+	}
+	de.DrainTopicsBuffer()
 	if len(flow.Flow) != 1 {
 		t.Fatal("topic should have found 1 payload")
 	}
